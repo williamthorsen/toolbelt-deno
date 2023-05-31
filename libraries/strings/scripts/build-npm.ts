@@ -22,6 +22,7 @@ await build({
   entryPoints: [
     "./mod.ts",
   ],
+  declaration: "separate",
   outDir: DIST_DIR,
   scriptModule: false, // Don't generate CommonJS/UMD output
   shims: {
@@ -45,7 +46,7 @@ await build({
     license: "UNLICENSED",
     typesVersions: {
       "*": {
-        "*": ["./esm"],
+        "*": ["./types"],
       },
     },
     publishConfig: {
