@@ -1,14 +1,27 @@
 import { build, emptyDir } from "https://deno.land/x/dnt/mod.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 
-const distDir = "../../dist/libraries/strings";
+const DIST_DIR = "../../dist/libraries/strings";
 
-await emptyDir(distDir);
+// Read the version from the VERSION file
+const version = Deno.args[0] || Deno.readTextFileSync("VERSION").trim();
+
+if (!isValidSemver(version)) {
+  console.error(
+    `ERROR: Invalid VERSION file. Expected a semver string, got "${version}"`,
+  );
+  Deno.exit(1);
+}
+
+await emptyDir(DIST_DIR);
 
 await build({
   packageManager: "pnpm",
-  entryPoints: ["./mod.ts"],
-  outDir: distDir,
+  entryPoints: [
+    "./mod.ts",
+  ],
+  outDir: DIST_DIR,
+  scriptModule: false, // Don't generate CommonJS/UMD output
   shims: {
     // see JS docs for overview and more options
     deno: true,
@@ -16,20 +29,33 @@ await build({
   package: {
     // package.json properties
     name: "@williamthorsen/toolbelt.strings",
-    version: Deno.args[0],
+    version,
     description: "String manipulation utilities.",
-    license: "UNLICENSED",
+    bugs: {
+      url:
+        "https://github.com/williamthorsen/toolbelt/issues/new?labels=strings",
+    },
     repository: {
+      directory: "libraries/strings",
       type: "git",
       url: "git+https://github.com/williamthorsen/toolbelt.git",
-      "directory": "libraries/strings",
     },
-    bugs: {
-      url: "https://github.com/williamthorsen/toolbelt/issues/new?labels=strings",
+    license: "UNLICENSED",
+    publishConfig: {
+      access: "public",
+      registry: "https://npm.pkg.github.com",
     },
   },
   postBuild() {
     // steps to run after building and before running the tests
-    Deno.copyFileSync("README.md", join(distDir, "README.md"));
+    Deno.copyFileSync("README.md", join(DIST_DIR, "README.md"));
   },
 });
+
+/**
+ * Returns true if the string is a valid semver string.
+ * Prerelease versions such as "1.0.0-alpha.1" are allowed.
+ */
+function isValidSemver(version: string): boolean {
+  return /^\d+\.\d+\.\d+(-.+)?$/.test(version);
+}
