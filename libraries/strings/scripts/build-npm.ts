@@ -43,6 +43,11 @@ await build({
       url: "git+https://github.com/williamthorsen/toolbelt.git",
     },
     license: "UNLICENSED",
+    typesVersions: {
+      "*": {
+        "*": ["./esm"],
+      },
+    },
     publishConfig: {
       access: "public",
       registry: "https://npm.pkg.github.com",
