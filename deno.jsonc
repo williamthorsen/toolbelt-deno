@@ -1,5 +1,6 @@
 {
   "tasks": {
-    "fmt": "deno fmt --ignore=dist"
+    "fmt": "deno fmt --ignore=dist",
+    "check": "deno task fmt && deno lint && deno test --allow-all"
   }
 }
