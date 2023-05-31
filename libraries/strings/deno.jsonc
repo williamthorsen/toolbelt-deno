@@ -1,5 +1,6 @@
 {
   "tasks": {
-    "fmt": "deno fmt",
-  },
+    "build": "deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=../../dist scripts/build-npm.ts",
+    "fmt": "deno fmt"
+  }
 }
