@@ -1,0 +1,10 @@
+{
+  "version": "2",
+  "remote": {
+    "https://deno.land/std@0.101.0/fmt/colors.ts": "d2f8355f00a74404668fc5a1e4a92983ce1a9b0a6ac1d40efbd681cb8f519586",
+    "https://deno.land/std@0.101.0/testing/_diff.ts": "a214632660e819a099f3ce719770031a69ba165853f930b90b44d7317a05585b",
+    "https://deno.land/std@0.101.0/testing/asserts.ts": "40740a6a16efd07e052cac8280a8c7c445a81131f00a2bd5d8c3e851dfa2ef90",
+    "https://deno.land/std@0.190.0/testing/_test_suite.ts": "30f018feeb3835f12ab198d8a518f9089b1bcb2e8c838a8b615ab10d5005465c",
+    "https://deno.land/std@0.190.0/testing/bdd.ts": "59f7f7503066d66a12e50ace81bfffae5b735b6be1208f5684b630ae6b4de1d0"
+  }
+}
