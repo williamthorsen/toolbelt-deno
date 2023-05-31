@@ -3,8 +3,10 @@ import { join } from "https://deno.land/std/path/mod.ts";
 
 const DIST_DIR = "../../dist/libraries/strings";
 
-// Read the version from the VERSION file
-const version = Deno.args[0] || Deno.readTextFileSync("VERSION").trim();
+// Get the version from CLI argument (i.e., in CI workflow) or read it from the VERSION file
+const version = (Deno.args[0] || Deno.readTextFileSync("VERSION"))
+  .trim()
+  .replace(/^v/, "");
 
 if (!isValidSemver(version)) {
   console.error(
