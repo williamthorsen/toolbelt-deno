@@ -3,6 +3,7 @@ const DIST_DIR = "../../dist/libraries/strings";
 async function main() {
   console.log(`Publishing package from ${DIST_DIR}`);
 
+  // deno-lint-ignore no-deprecated-deno-api
   const install = Deno.run({
     cmd: ["pnpm", "install"],
     cwd: DIST_DIR,
@@ -14,6 +15,7 @@ async function main() {
     Deno.exit(1);
   }
 
+  // deno-lint-ignore no-deprecated-deno-api
   const publish = Deno.run({
     cmd: ["pnpm", "publish"],
     cwd: DIST_DIR,
