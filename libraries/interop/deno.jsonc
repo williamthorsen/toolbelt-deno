@@ -1,0 +1,10 @@
+/* See the deno.jsonc file in the project root for comments. */
+{
+  fmt: {
+    exclude: [
+      'deno.jsonc',
+    ],
+    lineWidth: 120,
+    singleQuote: true,
+  },
+}

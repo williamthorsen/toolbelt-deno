@@ -14,7 +14,7 @@
     ],
   },
   tasks: {
-    build: 'deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build.ts',
+    build: 'deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build-node-module.ts',
     check: 'deno lint && deno test --allow-all',
     publish: 'deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/publish-node-module.ts',
   },
