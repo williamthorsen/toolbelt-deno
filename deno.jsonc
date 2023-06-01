@@ -1,6 +1,22 @@
+/* @link https://deno.com/manual/getting_started/configuration_file */
 {
-  "tasks": {
-    "fmt": "deno fmt --ignore=dist",
-    "check": "deno task fmt && deno lint && deno test --allow-all"
+  fmt: {
+    exclude: [
+      "**/dist/",
+      "**/deno.jsonc", // excluded so that JSON5 formatting is preserved; otherwise, deno fmt would format as JSONC
+    ],
+  },
+  lint: {
+    exclude: [
+      "**/dist/",
+    ],
+  },
+  tasks: {
+    check: "deno lint && deno test --allow-all",
+  },
+  test: {
+    exclude: [
+      "**/dist/",
+    ]
   }
 }

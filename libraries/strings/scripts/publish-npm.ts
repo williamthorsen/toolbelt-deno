@@ -1,4 +1,4 @@
-const DIST_DIR = "../../dist/libraries/strings";
+const DIST_DIR = "dist";
 
 async function main() {
   console.log(`Publishing package from ${DIST_DIR}`);

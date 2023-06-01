@@ -1,8 +1,24 @@
+/* See the deno.jsonc file in the project root for comments. */
 {
-  "tasks": {
-    "build": "deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=../../dist scripts/build-npm.ts",
-    "check": "deno task fmt && deno lint && deno test --allow-all",
-    "fmt": "deno fmt",
-    "publish": "deno run --allow-net --allow-read --allow-run=pnpm --allow-write=../../dist scripts/publish-npm.ts"
-  }
+  fmt: {
+    exclude: [
+      "**/dist/",
+      "deno.jsonc",
+    ]
+  },
+  lint: {
+    exclude: [
+      "**/dist/",
+    ]
+  },
+  tasks: {
+    build: "deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build-npm.ts",
+    check: "deno lint && deno test --allow-all",
+    publish: "deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/publish-npm.ts"
+  },
+  test: {
+    exclude: [
+      "**/dist/",
+    ]
+  },
 }

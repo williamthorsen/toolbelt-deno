@@ -1,7 +1,7 @@
 import { build, emptyDir } from "https://deno.land/x/dnt/mod.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 
-const DIST_DIR = "../../dist/libraries/strings";
+const DIST_DIR = "dist";
 
 // Get the version from CLI argument (i.e., in CI workflow) or read it from the VERSION file
 const version = (Deno.args[0] || Deno.readTextFileSync("VERSION"))
