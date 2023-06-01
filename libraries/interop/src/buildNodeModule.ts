@@ -1,5 +1,4 @@
-import { build, emptyDir, join, z } from '../deps.ts';
-
+import { build, emptyDir, join, resolve, z } from '../dev_deps.ts';
 import { isValidSemver } from '../../tooling/isValidSemver.ts';
 
 const REPO_URL = 'https://github.com/williamthorsen/toolbelt';
@@ -44,7 +43,7 @@ export async function buildNodeModule(options: Options): Promise<void> {
     versionFilePath,
   } = optionsSchema.parse(options);
 
-  const inDirFullPath = join(Deno.cwd(), inDir);
+  const inDirFullPath = resolve(Deno.cwd(), inDir);
   const versionFileFullPath = join(inDirFullPath, versionFilePath);
   const resolvedVersion = (version || Deno.readTextFileSync(versionFileFullPath))
     .trim()
@@ -94,7 +93,7 @@ export async function buildNodeModule(options: Options): Promise<void> {
     },
     postBuild() { // runs after the build is done and before tests are run
       filesToCopy.forEach((filePath) => {
-        Deno.copyFileSync(filePath, join(outDir, filePath));
+        Deno.copyFileSync(filePath, resolve(outDir, filePath));
       });
     },
   });

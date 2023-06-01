@@ -1,5 +1,5 @@
 import { END_OF_LINE, unindent } from '../unindent.ts';
-import { assertEquals, assertThrows, describe, it } from './test.deps.ts';
+import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
 
 describe('unindent``', () => {
   it('if the first and last line are empty, discards them', () => {

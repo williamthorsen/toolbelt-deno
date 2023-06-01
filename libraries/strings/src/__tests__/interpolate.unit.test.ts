@@ -1,5 +1,5 @@
 import { interpolate } from '../interpolate.ts';
-import { assertEquals, describe, it } from './test.deps.ts';
+import { assertEquals, describe, it } from '../../dev_deps.ts';
 
 describe('interpolate()', () => {
   it('when a placeholder matches a key in the dictionary, replaces the placeholder with the corresponding value', () => {
