@@ -2,23 +2,24 @@
 {
   fmt: {
     exclude: [
-      "**/dist/",
-      "deno.jsonc",
-    ]
+      '**/dist/',
+      'deno.jsonc',
+    ],
+    singleQuote: true,
   },
   lint: {
     exclude: [
-      "**/dist/",
-    ]
+      '**/dist/',
+    ],
   },
   tasks: {
-    build: "deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build-npm.ts",
-    check: "deno lint && deno test --allow-all",
-    publish: "deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/publish-npm.ts"
+    build: 'deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build.ts',
+    check: 'deno lint && deno test --allow-all',
+    publish: 'deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/publish-npm.ts',
   },
   test: {
     exclude: [
       "**/dist/",
-    ]
+    ],
   },
 }

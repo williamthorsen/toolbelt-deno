@@ -2,21 +2,22 @@
 {
   fmt: {
     exclude: [
-      "**/dist/",
-      "**/deno.jsonc", // excluded so that JSON5 formatting is preserved; otherwise, deno fmt would format as JSONC
+      '**/dist/',
+      '**/deno.jsonc' // excluded so that JSON5 formatting is preserved; otherwise, deno fmt would format as JSONC
     ],
+    singleQuote: true,
   },
   lint: {
     exclude: [
-      "**/dist/",
+      '**/dist/',
     ],
   },
   tasks: {
-    check: "deno lint && deno test --allow-all",
+    check: 'deno lint && deno test --allow-all',
   },
   test: {
     exclude: [
-      "**/dist/",
-    ]
-  }
+      '**/dist/',
+    ],
+  },
 }

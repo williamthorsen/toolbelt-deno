@@ -1,11 +1,11 @@
-const DIST_DIR = "dist";
+const DIST_DIR = 'dist';
 
 async function main() {
   console.log(`Publishing package from ${DIST_DIR}`);
 
   // deno-lint-ignore no-deprecated-deno-api
   const install = Deno.run({
-    cmd: ["pnpm", "install"],
+    cmd: ['pnpm', 'install'],
     cwd: DIST_DIR,
   });
   const installStatus = await install.status();
@@ -17,7 +17,7 @@ async function main() {
 
   // deno-lint-ignore no-deprecated-deno-api
   const publish = Deno.run({
-    cmd: ["pnpm", "publish"],
+    cmd: ['pnpm', 'publish'],
     cwd: DIST_DIR,
   });
 
