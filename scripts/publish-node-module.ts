@@ -1,34 +1,32 @@
-const DIST_DIR = 'dist';
-
-async function main() {
-  console.log(`Publishing package from ${DIST_DIR}`);
+async function publishNodeModule(distDir = 'dist'): Promise<string> {
+  console.log(`Publishing package from ${distDir}`);
 
   // deno-lint-ignore no-deprecated-deno-api
   const install = Deno.run({
     cmd: ['pnpm', 'install'],
-    cwd: DIST_DIR,
+    cwd: distDir,
   });
   const installStatus = await install.status();
 
   if (!installStatus.success) {
-    console.error(`Failed to run 'pnpm install' in ${DIST_DIR}`);
+    console.error(`Failed to run 'pnpm install' in ${distDir}`);
     Deno.exit(1);
   }
 
   // deno-lint-ignore no-deprecated-deno-api
   const publish = Deno.run({
     cmd: ['pnpm', 'publish'],
-    cwd: DIST_DIR,
+    cwd: distDir,
   });
 
   const publishStatus = await publish.status();
 
   if (!publishStatus.success) {
-    console.error(`Failed to publish package from ${DIST_DIR}`);
+    console.error(`Failed to publish package from ${distDir}`);
     Deno.exit(1);
   }
+
+  console.log(`Package published successfully from ${distDir}`);
 }
 
-main().then(() => {
-  console.log(`Package published successfully from ${DIST_DIR}`);
-});
+await publishNodeModule();
