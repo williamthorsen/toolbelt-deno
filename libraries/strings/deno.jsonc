@@ -5,6 +5,7 @@
       '**/dist/',
       'deno.jsonc',
     ],
+    lineWidth: 120,
     singleQuote: true,
   },
   lint: {
