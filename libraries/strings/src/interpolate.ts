@@ -8,17 +8,17 @@ export function interpolate<K extends string>(
   dictionary: Record<K, string>,
   options: Options = {},
 ): string {
-  const { missingKeyBehavior = "leave" } = options;
+  const { missingKeyBehavior = 'leave' } = options;
   const placeholderRegex = /{([a-zA-Z_]+[a-zA-Z0-9_]*)}/g;
   return text.replace(placeholderRegex, (match, placeholder: K): string => {
     if (placeholder in dictionary) {
       return dictionary[placeholder];
     } else {
-      return missingKeyBehavior === "replace" ? placeholder : match;
+      return missingKeyBehavior === 'replace' ? placeholder : match;
     }
   });
 }
 
 interface Options {
-  missingKeyBehavior?: "leave" | "replace";
+  missingKeyBehavior?: 'leave' | 'replace';
 }

@@ -1,11 +1,11 @@
-import { END_OF_LINE, unindent } from "../unindent.ts";
-import { assertEquals, assertThrows, describe, it } from "./test.deps.ts";
+import { END_OF_LINE, unindent } from '../unindent.ts';
+import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
 
-describe("unindent``", () => {
-  it("if the first and last line are empty, discards them", () => {
+describe('unindent``', () => {
+  it('if the first and last line are empty, discards them', () => {
     const expected = [
-      "first line",
-      "second line",
+      'first line',
+      'second line',
     ].join(END_OF_LINE);
 
     const unindented = unindent`
@@ -16,10 +16,10 @@ describe("unindent``", () => {
     assertEquals(unindented, expected);
   });
 
-  it("if a line other than the first or last is empty, ignores it for purposes of computing the final indent", () => {
+  it('if a line other than the first or last is empty, ignores it for purposes of computing the final indent', () => {
     const expected = [
-      "",
-      "previous line is empty but ignored",
+      '',
+      'previous line is empty but ignored',
     ].join(END_OF_LINE);
 
     const unindented = unindent`
@@ -30,7 +30,7 @@ describe("unindent``", () => {
     assertEquals(unindented, expected);
   });
 
-  it("if all lines are empty, returns only the line breaks between them", () => {
+  it('if all lines are empty, returns only the line breaks between them', () => {
     const unindented = unindent`
 
 
@@ -39,10 +39,10 @@ describe("unindent``", () => {
     assertEquals(unindented, END_OF_LINE);
   });
 
-  it("if the last line is not empty, unindents that line along with the others", () => {
+  it('if the last line is not empty, unindents that line along with the others', () => {
     const expected = [
-      "first line",
-      "last line",
+      'first line',
+      'last line',
     ].join(END_OF_LINE);
 
     const unindented = unindent`
@@ -52,11 +52,11 @@ describe("unindent``", () => {
     assertEquals(unindented, expected);
   });
 
-  it("if the smallest indent is 6 spaces, removes 6 spaces from every line", () => {
+  it('if the smallest indent is 6 spaces, removes 6 spaces from every line', () => {
     const expected = [
-      "indent 6",
-      "  indent 8",
-      "indent 6",
+      'indent 6',
+      '  indent 8',
+      'indent 6',
     ].join(END_OF_LINE);
 
     const unindented = unindent`
@@ -68,19 +68,19 @@ describe("unindent``", () => {
     assertEquals(unindented, expected);
   });
 
-  it("if the first line is not empty, throws an error", () => {
+  it('if the first line is not empty, throws an error', () => {
     const errorFn = () => unindent`not empty`;
     assertThrows(
       errorFn,
       Error,
-      "The first line of the template string must be empty.",
+      'The first line of the template string must be empty.',
     );
   });
 
-  it("if the string contains embedded expressions, replaces the expressions with the results of their evaluation", () => {
-    const delimiter = "|";
-    const value = "new value";
-    const expected = "|new value|";
+  it('if the string contains embedded expressions, replaces the expressions with the results of their evaluation', () => {
+    const delimiter = '|';
+    const value = 'new value';
+    const expected = '|new value|';
 
     const unindented = unindent`
       ${delimiter}${value}${delimiter}
