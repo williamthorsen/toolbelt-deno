@@ -43,16 +43,13 @@ function detectTransformation(original: string, transformed: string): ((text: st
     throw new Error(`Transformed string does not match original string: ${transformed} !== ${original}`);
   }
   if (original !== lcOriginal) {
-    console.warn('Key is not lowercase');
     return null;
   }
   if (transformed === original) {
     return null;
   } else if (transformed === original.toUpperCase()) {
-    console.log('UPPERCASE detected');
     return (text: string) => text.toUpperCase();
   } else if (transformed === original[0].toUpperCase() + original.slice(1)) {
-    console.log('CAPITALIZED detected');
     return (text: string) => text[0].toUpperCase() + text.slice(1).toLowerCase();
   } else {
     return false;

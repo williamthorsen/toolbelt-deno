@@ -22,8 +22,6 @@ export function unindent(
   const lastLineIsEmpty = lines[lines.length - 1]?.trim() === '';
   const linesToDeindent = lines.slice(1, lastLineIsEmpty ? -1 : undefined);
 
-  console.info('linesToIndent:', linesToDeindent);
-
   const minimumIndent = linesToDeindent.reduce((indentSize, line) => {
     if (!line) {
       return indentSize;
