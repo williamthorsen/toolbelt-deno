@@ -2,6 +2,7 @@
 {
   fmt: {
     exclude: [
+      '**/cov_profile/',
       '**/dist/',
       '**/deno.jsonc' // excluded so that JSON5 formatting is preserved; otherwise, deno fmt would format as JSONC
     ],
@@ -10,14 +11,17 @@
   },
   lint: {
     exclude: [
+      '**/cov_profile/',
       '**/dist/',
     ],
   },
   tasks: {
-    check: 'deno lint && deno test --allow-all',
+    check: 'deno fmt --check && deno lint && deno task test:coverage',
+    'test:coverage': 'deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
   },
   test: {
     exclude: [
+      '**/cov_profile/',
       '**/dist/',
     ],
   },
