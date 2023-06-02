@@ -1,1 +1,1 @@
-export { assertArrayIncludes, assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+export { assertArrayIncludes, assertEquals, assertNotEquals, assertThrows, describe, it } from '../../dev_deps.ts';
