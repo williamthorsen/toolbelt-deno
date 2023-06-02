@@ -1,3 +1,3 @@
 # @williamthorsen/toolbelt.strings
 
-String-manipulation utilities.
+Utilities for working with strings.
