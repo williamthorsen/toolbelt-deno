@@ -27,4 +27,6 @@ logs
 .DS_Store
 
 # Testing
+coverage/
 cov_profile/
+tracefile.lcov

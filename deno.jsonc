@@ -17,7 +17,7 @@
   },
   tasks: {
     check: 'deno fmt --check && deno lint && deno task test:coverage',
-    'test:coverage': 'deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
+    'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
   },
   test: {
     exclude: [

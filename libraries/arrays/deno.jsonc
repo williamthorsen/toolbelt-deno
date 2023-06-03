@@ -19,7 +19,8 @@
     build: 'deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build-node-module.ts',
     check: 'deno fmt --check && deno lint && deno task test:coverage',
     publish: 'deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist ../../scripts/publish-node-module.ts',
-    'test:coverage': 'deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
+    'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
+    'view-coverage': 'deno coverage --lcov cov_profile > tracefile.lcov && genhtml --output-directory ./coverage tracefile.lcov && open coverage/index.html',
   },
   test: {
     exclude: [
