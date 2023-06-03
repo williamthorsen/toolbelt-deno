@@ -89,7 +89,7 @@ describe('interpolate()', () => {
   describe('adaptCase=true', () => {
     const adaptCase = true;
 
-    it('if the placeholder is equal to the uppercased key, transforms the value to upper case', () => {
+    it('if the transform can be identified, applies the transform to the value', () => {
       const input = 'Hello, {AUDIENCE}!';
       const dictionary = { 'audience': 'world' };
       const expectedOutput = 'Hello, WORLD!';
@@ -97,50 +97,22 @@ describe('interpolate()', () => {
       assertEquals(output, expectedOutput);
     });
 
-    it('if the placeholder is equal to the capitalized key, capitalizes the value', () => {
-      const input = 'Hello, {Audience}!';
-      const dictionary = { 'audience': 'world' };
-      const expectedOutput = 'Hello, World!';
-      const output = interpolate(input, dictionary, { adaptCase });
-      assertEquals(output, expectedOutput);
-    });
-
-    it('if a mixed-case placeholder exactly matches a key, uses the value', () => {
-      const input = 'Hello, {myPlanet}!';
-      const dictionary = { 'myPlanet': 'Earth' };
-      const expectedOutput = 'Hello, Earth!';
-      const output = interpolate(input, dictionary, { adaptCase });
-      assertEquals(output, expectedOutput);
-    });
-
-    it('if a mixed-case placeholder does not exactly match a key, leaves the placeholder unchanged', () => {
-      const input = 'Hello, {myPlanet}!';
-      const dictionary = { 'myplanet': 'Earth' };
-      const expectedOutput = 'Hello, {myPlanet}!';
-
-      const output = interpolate(input, dictionary, { adaptCase });
-
-      assertEquals(output, expectedOutput);
-    });
-
     it('applies case-transformation individually to each occurrence', () => {
-      const input = 'lowercase {key}, uppercase {KEY}, capitalized {Key}, unmatched {kEy}';
-      const dictionary = { 'key': 'value' };
-      const expectedOutput = 'lowercase value, uppercase VALUE, capitalized Value, unmatched {kEy}';
+      const input = 'lowercase {key}, uppercase {KEY}, capitalized {Key}, mixed-case {mixedKey}, unmatched {otherKey}';
+      const dictionary = { 'key': 'value', 'mixedKey': 'value' };
+      const expectedOutput =
+        'lowercase value, uppercase VALUE, capitalized Value, mixed-case value, unmatched {otherKey}';
 
       const output = interpolate(input, dictionary, { adaptCase });
 
       assertEquals(output, expectedOutput);
     });
 
-    it('if a mixed-case placeholder does not exactly match a key and fallbackToKey=true, removes the delimiters of unmatched placeholders', () => {
+    it('if the transform cannot be identified, leaves the placeholder unchanged', () => {
       const input = '{greeting}, {myPlanet}! This is a {grEeting}!';
-      const dictionary = { greeting: 'Hello' };
-      const expectedOutput = 'Hello, myPlanet! This is a grEeting!';
-      const output = interpolate(input, dictionary, {
-        adaptCase,
-        fallbackToKey: true,
-      });
+      const dictionary = { greeting: 'Hello', myPlanet: 'World' };
+      const expectedOutput = 'Hello, World! This is a {grEeting}!';
+      const output = interpolate(input, dictionary, { adaptCase });
       assertEquals(output, expectedOutput);
     });
   });

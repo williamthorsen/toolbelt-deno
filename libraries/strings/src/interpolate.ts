@@ -1,3 +1,5 @@
+import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
+
 /**
  * Replaces the placeholders in a string with the values passed in the dictionary object.
  * If a placeholder does not match any key in the dictionary, it is left unchanged.
@@ -15,45 +17,19 @@ export function interpolate<K extends string>(
     // The simplest case is that the placeholder matches a key in the dictionary. No transformation is needed.
     if (placeholder in dictionary) {
       return dictionary[placeholder];
-    } // If the placeholder is not lowercase and not in the dictionary, check whether its lowercase version is in the
-    // dictionary. We don't try to automate any other conversions.
+    } // If the placeholder is not in the dictionary, check whether its lowercase version is in the dictionary.
+    // We don't try to automate any other conversions.
     else if (adaptCase && lcPlaceholder in dictionary) {
-      // What transformation do we need to apply to the dictionary value to match the case of the placeholder?
-      const transform = detectTransformation(lcPlaceholder, placeholder);
-      if (typeof transform !== 'boolean') {
-        return transform?.(dictionary[lcPlaceholder]) ?? dictionary[lcPlaceholder];
+      // Identify the transformation that transforms the dictionary key to have the same case as the placeholder.
+      // We can then apply the same function to the dictionary value.
+      const transform = deriveCaseTransformer(lcPlaceholder, placeholder);
+      if (transform !== null) {
+        return transform(dictionary[lcPlaceholder]);
       }
     }
     // The key wasn't found. Return the placeholder itself or the delimited placeholder, depending on the option.
     return fallbackToKey ? placeholder : delimitedPlaceholder;
   });
-}
-
-/**
- * Returns a function that transforms the original text into the transformed text.
- * If the original and the transformed text are already identical, return null.
- * If the placeholder is lowercase, return null.
- * If the placeholder is uppercase, return 'uppercase'.
- * If the placeholder is capitalized, return 'capitalized'.
- * If the placeholder is not lowercase, uppercase, or capitalized, throw an error.
- */
-function detectTransformation(original: string, transformed: string): ((text: string) => string) | null | boolean {
-  const lcOriginal = original.toLowerCase();
-  if (lcOriginal !== transformed.toLowerCase()) {
-    throw new Error(`Transformed string does not match original string: ${transformed} !== ${original}`);
-  }
-  if (original !== lcOriginal) {
-    return null;
-  }
-  if (transformed === original) {
-    return null;
-  } else if (transformed === original.toUpperCase()) {
-    return (text: string) => text.toUpperCase();
-  } else if (transformed === original[0].toUpperCase() + original.slice(1)) {
-    return (text: string) => text[0].toUpperCase() + text.slice(1).toLowerCase();
-  } else {
-    return false;
-  }
 }
 
 interface Options {
