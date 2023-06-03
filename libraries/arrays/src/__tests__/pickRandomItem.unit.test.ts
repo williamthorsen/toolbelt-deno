@@ -14,6 +14,11 @@ describe('pickRandomItem()', () => {
     assertEquals(pickRandomItem([1]), 1);
   });
 
+  it('accepts a read-only array', () => {
+    const sourceArray = Object.freeze([1, 2, 3, 4]);
+    pickRandomItem(sourceArray);
+  });
+
   it('if the array is empty, throws an error', () => {
     const throwingFn = () => pickRandomItem([]);
     assertThrows(
