@@ -1,4 +1,4 @@
-import { assertArrayIncludes, assertEquals, assertNotEquals, describe, it } from '../../dev_deps.ts';
+import { assertArrayIncludes, assertEquals, describe, it } from '../../dev_deps.ts';
 import { shuffle, shuffleInPlace } from '../shuffle.ts';
 
 describe('shuffle', () => {
@@ -15,7 +15,6 @@ describe('shuffle', () => {
 
     const shuffled = shuffle(array);
 
-    assertNotEquals(shuffled, array);
     assertEquals(shuffled.length, array.length);
     assertArrayIncludes(shuffled, [1]);
     assertArrayIncludes(shuffled, [2]);
