@@ -6,12 +6,19 @@
  * TODO: Accept an optional seed that makes the results deterministic.
  */
 export function pickVariants(text: string): string {
-  // Validate input
-  const leftDelimiters = (text.match(/\[/g) || []).length;
-  const rightDelimiters = (text.match(/]/g) || []).length;
-
-  if (leftDelimiters !== rightDelimiters) {
-    throw new Error('Variant delimiters [ ] are mismatched.');
+  // Check that the delimiters are correctly nested
+  const stack = [];
+  for (const char of text) {
+    if (char === '[') {
+      stack.push(char);
+    } else if (char === ']') {
+      if (stack.length === 0 || stack.pop() !== '[') {
+        throw new Error('Variant delimiters [ ] are incorrectly nested.');
+      }
+    }
+  }
+  if (stack.length > 0) {
+    throw new Error('Variant delimiters [ ] are incorrectly nested.');
   }
 
   const variantRegex = /\[([^\[\]]*?)]/g;

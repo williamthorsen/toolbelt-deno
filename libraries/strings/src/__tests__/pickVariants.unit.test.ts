@@ -44,7 +44,18 @@ describe('pickVariants()', () => {
     assertThrows(
       throwingFn,
       Error,
-      'Variant delimiters [ ] are mismatched.',
+      'Variant delimiters [ ] are incorrectly nested.',
+    );
+  });
+
+  it('if delimiters are incorrectly nested, throws an error', () => {
+    const input = 'Hello, ][!';
+
+    const throwingFn = () => pickVariants(input);
+    assertThrows(
+      throwingFn,
+      Error,
+      'Variant delimiters [ ] are incorrectly nested.',
     );
   });
 });
