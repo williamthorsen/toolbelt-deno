@@ -12,14 +12,14 @@ describe('createNumberGenerator', () => {
     const generator2 = createNumberGenerator(1);
 
     const values1 = [
-      generator1({ min: 0, max: 10 }),
-      generator1({ min: 0, max: 10 }),
-      generator1({ min: 0, max: 10 }),
+      generator1(),
+      generator1(),
+      generator1(),
     ];
     const values2 = [
-      generator2({ min: 0, max: 10 }),
-      generator2({ min: 0, max: 10 }),
-      generator2({ min: 0, max: 10 }),
+      generator2(),
+      generator2(),
+      generator2(),
     ];
 
     assertNotEquals(generator1, generator2);
@@ -30,21 +30,12 @@ describe('createNumberGenerator', () => {
     const generator1 = createNumberGenerator(1);
     const generator2 = createNumberGenerator(2);
 
-    assertNotEquals(generator1({ min: 0, max: 10 }), generator2({ min: 0, max: 10 }));
+    assertNotEquals(generator1(), generator2());
   });
 
-  it('returns values within specified range', () => {
+  it('returns values within the [0, -1)', () => {
     const generator = createNumberGenerator(1);
-    const result = generator({ min: 10, max: 20 });
-    assert(result >= 10 && result < 20);
-  });
-
-  it('works with a seed close to Math.PI (implementation detail)', () => {
-    const seed = 3 * Math.PI - 0.0001;
-
-    const generator = createNumberGenerator(seed);
-    const result = generator({ min: 10, max: 20 });
-
-    assert(result >= 10 && result < 20);
+    const result = generator();
+    assert(result >= 0 && result < 1);
   });
 });
