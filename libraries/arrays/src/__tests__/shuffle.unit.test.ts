@@ -1,21 +1,26 @@
-import { assertArrayIncludes, assertEquals, describe, it } from '../../dev_deps.ts';
+import { assert, assertArrayIncludes, assertEquals, describe, it } from '../../dev_deps.ts';
 import { shuffle, shuffleInPlace } from '../shuffle.ts';
 
 describe('shuffle', () => {
-  it('returns empty array when given empty array', () => {
+  it('if given an empty array, returns an equivalent empty array', () => {
+    const original: number[] = [];
+    const shuffled = shuffle(original);
+
+    assert(shuffled !== original);
     assertEquals(shuffle([]), []);
   });
 
-  it('returns same single-item array when given single-item array', () => {
+  it('if given a single-item array, returns an equivalent single-item array', () => {
     assertEquals(shuffle([1]), [1]);
   });
 
-  it('returns shuffled array when given multi-item array', () => {
-    const array = [1, 2, 3];
+  it('if given a multi-item array, returns a new array with the same contents', () => {
+    const original = [1, 2, 3];
 
-    const shuffled = shuffle(array);
+    const shuffled = shuffle(original);
 
-    assertEquals(shuffled.length, array.length);
+    assert(shuffled !== original);
+    assertEquals(shuffled.length, original.length);
     assertArrayIncludes(shuffled, [1]);
     assertArrayIncludes(shuffled, [2]);
     assertArrayIncludes(shuffled, [3]);
@@ -41,5 +46,15 @@ describe('shuffleInPlace', () => {
     assertArrayIncludes(array, [1]);
     assertArrayIncludes(array, [2]);
     assertArrayIncludes(array, [3]);
+  });
+
+  it('given a seed, deterministically shuffles the array', () => {
+    const original = [1, 2, 3];
+    const duplicate = [...original];
+
+    shuffleInPlace(original, { seed: 1 });
+    shuffleInPlace(duplicate, { seed: 1 });
+
+    assertEquals(original, duplicate);
   });
 });
