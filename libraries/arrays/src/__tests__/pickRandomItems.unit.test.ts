@@ -20,5 +20,12 @@ describe('pickRandomItems', () => {
     assertEquals(picked.length, 3);
   });
 
+  it('given a seed, deterministically picks items', () => {
+    const picked1 = pickRandomItems(array, 2, { seed: 2 });
+    const picked2 = pickRandomItems(array, 2, { seed: 2 });
+
+    assertEquals(picked1, picked2);
+  });
+
   itTodo('optionally throws error when n is greater than array length');
 });
