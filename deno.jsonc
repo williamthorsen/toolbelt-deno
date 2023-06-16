@@ -1,5 +1,6 @@
 /* @link https://deno.com/manual/getting_started/configuration_file */
 {
+  '$schema': 'https://deno.land/x/deno/cli/schemas/config-file.v1.json',
   fmt: {
     exclude: [
       '**/cov_profile/',
@@ -16,8 +17,9 @@
     ],
   },
   tasks: {
-    check: 'deno fmt --check && deno lint && deno task test:coverage',
+    check: 'deno task typecheck && deno fmt --check && deno lint && deno task test:coverage',
     'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
+    typecheck: "./scripts/typecheck.sh"
   },
   test: {
     exclude: [
