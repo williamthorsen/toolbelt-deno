@@ -99,4 +99,4 @@ export async function buildNodeModule(options: Options): Promise<void> {
   });
 }
 
-type Options = z.infer<typeof optionsSchema>;
+type Options = z.input<typeof optionsSchema>;
