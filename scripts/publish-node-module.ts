@@ -1,4 +1,4 @@
-async function publishNodeModule(distDir = 'dist'): Promise<string> {
+async function publishNodeModule(distDir = 'dist'): Promise<void> {
   console.log(`Publishing package from ${distDir}`);
 
   // deno-lint-ignore no-deprecated-deno-api
