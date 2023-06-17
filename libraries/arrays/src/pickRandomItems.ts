@@ -8,15 +8,11 @@ import { shuffle } from './shuffle.ts';
  * TODO: Optionally throw an error if `n` is greater than the length of the array.
  */
 export function pickRandomItems<T>(items: ReadonlyArray<T>, n: number, options: Options = {}): T[] {
-  const { offset, seed } = options;
+  const { offset = 0, seed } = options;
 
   const tempItems = shuffle(items, { seed });
 
-  if (offset) {
-    return tempItems.slice(offset, n);
-  }
-
-  return tempItems.slice(0, n);
+  return tempItems.slice(offset, offset + n);
 }
 
 type Options = {

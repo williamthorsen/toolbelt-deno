@@ -6,7 +6,7 @@ import { pickRandomItems } from '../pickRandomItems.ts';
 const SEED = 1;
 
 describe('pickRandomItems', () => {
-  const array = [1, 2, 3];
+  const array = [1, 2, 3, 4];
 
   it('returns empty array when n is 0', () => {
     assertEquals(pickRandomItems(array, 0), []);
@@ -19,8 +19,8 @@ describe('pickRandomItems', () => {
   });
 
   it('if n is greater than array length, returns all items', () => {
-    const picked = pickRandomItems(array, 4);
-    assertEquals(picked.length, 3);
+    const picked = pickRandomItems(array, 5);
+    assertEquals(picked.length, array.length);
   });
 
   it('given a seed, deterministically picks items', () => {
@@ -31,15 +31,30 @@ describe('pickRandomItems', () => {
   });
 
   it('given an offset, skips that number of items', () => {
-    const offset = 1;
-    const picked = pickRandomItems(array, 2, { seed: SEED });
+    const offset = 2;
 
-    const pickedWithOffset = pickRandomItems(array, 2, { offset: 1, seed: SEED });
+    // Get the first 4 items.
+    const picked = pickRandomItems(array, 4, { seed: SEED });
 
-    assertEquals(pickedWithOffset, picked.slice(offset));
+    // Skip the first 2 items and get the next 4.
+    const pickedWithOffset = pickRandomItems(array, 4, { offset, seed: SEED });
+
+    // The nth items of the offset array should line up with the (n + offset)th items of the un-offset array.
+    // Starting: [1, 2, 3, 4]
+    // Picked:   [_, _, 3, 4, ?, ?]
+    //                  ^- ^- overlap
+    assertEquals(pickedWithOffset.slice(0, offset), picked.slice(-offset));
   });
 
-  it('given an offset exceeds the length of the array, returns an empty array', () => {
+  it('given an offset that makes n exceed the length of the array, returns the remaining items', () => {
+    const offset = 2;
+
+    const pickedWithOffset = pickRandomItems(array, array.length, { offset });
+
+    assertEquals(pickedWithOffset.length, array.length - offset);
+  });
+
+  it('given an offset that exceeds the length of the array, returns an empty array', () => {
     const offset = 5;
 
     const pickedWithOffset = pickRandomItems(array, 2, { offset });
