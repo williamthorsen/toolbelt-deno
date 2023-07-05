@@ -1,5 +1,5 @@
-import { isPlainObject } from '../isPlainObject.ts';
 import { assert, describe, it } from '../../dev_deps.ts';
+import { isPlainObject } from '../isPlainObject.ts';
 
 describe('isPlainObject(value: any)', () => {
   it('should return false if the value is any primitive', () => {

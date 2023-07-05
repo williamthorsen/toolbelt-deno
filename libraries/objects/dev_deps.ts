@@ -1,1 +1,1 @@
-export { assert, describe, it } from '../../dev_deps.ts';
+export { assert, assertEquals, describe, it } from '../../dev_deps.ts';
