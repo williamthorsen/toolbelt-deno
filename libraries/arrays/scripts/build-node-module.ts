@@ -7,7 +7,7 @@ buildNodeModule({
   outDir: 'dist',
 
   description: 'Utilities for working with arrays',
-  issueLabel: 'numbers',
+  issueLabel: 'arrays',
   packageName: '@williamthorsen/toolbelt.arrays',
   repoDir: 'libraries/arrays',
 
