@@ -73,6 +73,7 @@ export async function buildNodeModule(options: Options): Promise<void> {
     shims: { // see JS docs for overview and more options
       deno: true,
     },
+    skipSourceOutput: true, // Don't include TypeScript source in the output
     package: { // package.json properties
       name: packageName,
       version: resolvedVersion,
