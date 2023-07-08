@@ -1,4 +1,4 @@
-import { assert, assertEquals, describe, it } from '../../dev_deps.ts';
+import { assertEquals, assertNotStrictEquals, describe, it } from '../../dev_deps.ts';
 import { omitUndefined } from '../omitUndefined.ts';
 
 describe('omitUndefined()', () => {
@@ -44,7 +44,7 @@ describe('omitUndefined()', () => {
 
     const actual = omitUndefined(obj);
 
-    assert(actual !== obj);
+    assertNotStrictEquals(actual, obj);
     assertEquals(actual, expected);
   });
 
