@@ -1,3 +1,5 @@
+import { createNumberGenerator } from '../../numbers/src/createNumberGenerator.ts';
+
 /**
  * Returns a new array with the items shuffled.
  */
@@ -19,18 +21,6 @@ export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
     const j = Math.floor(random() * (i + 1));
     [items[i], items[j]] = [items[j], items[i]];
   }
-}
-
-/**
- * These functions are copied from libraries/numbers/src/createNumberGenerator.ts
- * to avoid the need for an import from a different module when published as a Node.js package.
- */
-export function createNumberGenerator(seed: number) {
-  let base = seed;
-  return function seededRandom() {
-    const x = Math.sin(base++) * 10000;
-    return x - Math.floor(x);
-  };
 }
 
 interface Options {
