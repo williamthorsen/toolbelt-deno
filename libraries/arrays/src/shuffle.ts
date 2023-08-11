@@ -14,7 +14,7 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
  * Time complexity: O(n)
  */
 export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
-  const random = options.seed === undefined ? Math.random : createNumberGenerator(options.seed);
+  const random = createNumberGenerator(options.seed);
 
   // Fisher-Yates algorithm
   for (let i = items.length - 1; i > 0; i--) {

@@ -1,7 +1,7 @@
 import { build, emptyDir, join, resolve, z } from '../dev_deps.ts';
 import { isValidSemver } from '../../tooling/isValidSemver.ts';
 
-const REPO_URL = 'https://github.com/williamthorsen/toolbelt';
+const REPO_URL = 'https://github.com/williamthorsen/toolbelt-deno';
 
 const optionsSchema = z.object({
   inDir: z.string(),
