@@ -1,5 +1,4 @@
-import { assertEquals, assertThrows } from 'https://deno.land/std@0.190.0/testing/asserts.ts';
-import { describe, it } from 'https://deno.land/std@0.190.0/testing/bdd.ts';
+import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
 
 import { hasOwnProperty } from '../hasOwnProperty.ts';
 
@@ -10,7 +9,7 @@ describe('hasOwnProperty()', () => {
     assertEquals(hasOwnProperty(target, 'a'), true);
   });
 
-  it('returns false if the object does not have the property', () => {
+  it('if the object does not have the proprety, returns false', () => {
     const target = { a: 'a' };
 
     assertEquals(hasOwnProperty(target, 'b'), false);
