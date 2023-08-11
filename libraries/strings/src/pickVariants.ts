@@ -1,3 +1,5 @@
+import { random } from '../../numbers/mod.ts';
+
 /**
  * Given a string that contains delimited variants [variant1|variant2|variant3], replaces the variants with a
  * randomly selected one and returns the new string.
@@ -5,7 +7,7 @@
  * TODO: Allow the delimiter to be customized.
  * TODO: Accept an optional seed that makes the results deterministic.
  */
-export function pickVariants(text: string): string {
+export function pickVariants(text: string, options: Options = {}): string {
   // Check that the delimiters are correctly nested
   const stack = [];
   for (const char of text) {
@@ -24,7 +26,7 @@ export function pickVariants(text: string): string {
   const variantRegex = /\[([^\[\]]*?)]/g;
   const result = text.replace(variantRegex, (_delimitedVariants, variants: string): string => {
     const variantList = variants.split('|');
-    const randomIndex = Math.floor(Math.random() * variantList.length);
+    const randomIndex = Math.floor(random(options) * variantList.length);
     return variantList[randomIndex];
   });
 
@@ -34,4 +36,8 @@ export function pickVariants(text: string): string {
   }
 
   return result;
+}
+
+interface Options {
+  seed?: number;
 }
