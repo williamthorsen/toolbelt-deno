@@ -3,7 +3,7 @@ import { createNumberGenerator } from '../createNumberGenerator.ts';
 
 describe('createNumberGenerator', () => {
   it('returns a function', () => {
-    const generator = createNumberGenerator(1);
+    const generator = createNumberGenerator();
     assertEquals(typeof generator, 'function');
   });
 
