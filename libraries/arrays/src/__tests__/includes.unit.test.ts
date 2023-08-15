@@ -1,6 +1,5 @@
 import { assertEquals, describe, it } from '../../dev_deps.ts';
-
-import { includes } from '../includes.ts'; // Your includes function import path
+import { includes } from '../includes.ts';
 
 describe('includes()', () => {
   it('returns true if the array includes the item', () => {
