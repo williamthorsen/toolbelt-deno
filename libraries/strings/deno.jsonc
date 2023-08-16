@@ -28,5 +28,12 @@
       '**/cov_profile/',
       "**/dist/",
     ],
+    include: [
+      '../arrays/**/pickRandomItem.unit.test.ts',
+      '../numbers/src/**/createNumberGenerator.unit.test.ts',
+      '../numbers/src/**/getFakeMathRandom.unit.test.ts',
+      '../numbers/src/**/pickRandomInt.unit.test.ts',
+      '../strings/**/*.unit.test.ts'
+    ],
   },
 }
