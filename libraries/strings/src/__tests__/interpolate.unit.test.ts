@@ -86,6 +86,19 @@ describe('interpolate()', () => {
     assertEquals(output, expectedOutput);
   });
 
+  it('works with a typed object not having [key: string] index', () => {
+    interface Dictionary {
+      name: string;
+    }
+    const input = 'Hello, {name}!';
+    const dictionary: Dictionary = { name: 'World' };
+    const expectedOutput = 'Hello, World!';
+
+    const output = interpolate(input, dictionary);
+
+    assertEquals(output, expectedOutput);
+  });
+
   describe('adaptCase=true', () => {
     const adaptCase = true;
 

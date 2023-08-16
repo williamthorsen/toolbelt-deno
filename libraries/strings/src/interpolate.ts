@@ -7,7 +7,7 @@ import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
  */
 export function interpolate<K extends string>(
   text: string,
-  dictionary: Record<string, string>,
+  dictionary: Record<K, string>,
   options: Options = {},
 ): string {
   const { adaptCase, fallbackToKey } = options;
@@ -15,11 +15,11 @@ export function interpolate<K extends string>(
   return text.replace(placeholderRegex, (delimitedPlaceholder, placeholder: string): string => {
     const lcPlaceholder = placeholder.toLowerCase();
     // The simplest case is that the placeholder matches a key in the dictionary. No transformation is needed.
-    if (placeholder in dictionary) {
+    if (isKeyOf(placeholder, dictionary)) {
       return dictionary[placeholder];
     } // If the placeholder is not in the dictionary, check whether its lowercase version is in the dictionary.
     // We don't try to automate any other conversions.
-    else if (adaptCase && lcPlaceholder in dictionary) {
+    else if (adaptCase && isKeyOf(lcPlaceholder, dictionary)) {
       // Identify the transformation that transforms the dictionary key to have the same case as the placeholder.
       // We can then apply the same function to the dictionary value.
       const transform = deriveCaseTransformer(lcPlaceholder, placeholder);
@@ -30,6 +30,10 @@ export function interpolate<K extends string>(
     // The key wasn't found. Return the placeholder itself or the delimited placeholder, depending on the option.
     return fallbackToKey ? placeholder : delimitedPlaceholder;
   });
+}
+
+function isKeyOf<T extends PropertyKey>(key: PropertyKey, obj: Record<T, unknown>): key is T {
+  return key in obj;
 }
 
 interface Options {
