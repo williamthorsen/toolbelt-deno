@@ -1,11 +1,12 @@
-export { getDuplicates } from './src/getDuplicates.ts';
 export { getCumulativeWeights } from './src/getCumulativeWeights.ts';
+export { getDuplicates } from './src/getDuplicates.ts';
 export { getSetItems } from './src/getSetItems.ts';
 export { getWeightedIndex } from './src/getWeightedIndex.ts';
 export { includes } from './src/includes.ts';
+export { createNullishComparator, nullishCompare } from './src/nullishCompare.ts';
 export { pickRandomItem } from './src/pickRandomItem.ts';
 export { pickRandomItems } from './src/pickRandomItems.ts';
 export { pickRandomWeightedIndex } from './src/pickRandomWeightedIndex.ts';
-export { shuffle, shuffleInPlace } from './src/shuffle.ts';
-export { createNullishComparator, nullishCompare } from './src/nullishCompare.ts';
 export { reverseComparator } from './src/reverseComparator.ts';
+export { shuffle, shuffleInPlace } from './src/shuffle.ts';
+export { toPickRandomWeightedItem } from './src/toPickRandomWeightedItem.ts';
