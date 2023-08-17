@@ -1,5 +1,7 @@
 export { getDuplicates } from './src/getDuplicates.ts';
+export { getCumulativeWeights } from './src/getCumulativeWeights.ts';
 export { getSetItems } from './src/getSetItems.ts';
+export { getWeightedIndex } from './src/getWeightedIndex.ts';
 export { includes } from './src/includes.ts';
 export { pickRandomItem } from './src/pickRandomItem.ts';
 export { pickRandomItems } from './src/pickRandomItems.ts';
