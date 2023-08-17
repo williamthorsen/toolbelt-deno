@@ -5,9 +5,9 @@ import { getWeightedIndex } from './getWeightedIndex.ts';
  * Returns a pseudo-random item from the cumulative weights, with odds reflecting the cumulative weights.
  * If the array is empty, throws an error.
  */
-export function pickRandomWeightedIndex(
+export function pickWeightedIndex(
   cumulativeWeights: ReadonlyArray<number>,
-  options: Options = {},
+  options: PickRandomOptions = {},
 ): Integer {
   if (cumulativeWeights.length === 0) {
     throw new Error('Cannot pick an item from an empty array.');
@@ -20,7 +20,7 @@ export function pickRandomWeightedIndex(
   return getWeightedIndex(cumulativeWeights, targetWeight) as Integer;
 }
 
-interface Options {
+export interface PickRandomOptions {
   seed?: number | undefined;
 }
 

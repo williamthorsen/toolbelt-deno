@@ -24,7 +24,7 @@ describe('pickRandomItem()', () => {
     assertThrows(
       throwingFn,
       Error,
-      'Cannot pick an item from an empty array',
+      'Cannot pick an item from an empty array.',
     );
   });
 });

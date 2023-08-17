@@ -1,10 +1,10 @@
 import { assert, assertThrows, describe, it } from '../../dev_deps.ts';
-import { pickRandomWeightedIndex } from '../pickRandomWeightedIndex.ts';
+import { pickWeightedIndex } from '../pickWeightedIndex.ts';
 
-describe('pickRandomWeightedIndex()', () => {
+describe('pickWeightedIndex()', () => {
   it('returns an integer index from the cumulative weights array', () => {
     const cumulativeWeights = [1, 2, 3, 4];
-    const index = pickRandomWeightedIndex(cumulativeWeights);
+    const index = pickWeightedIndex(cumulativeWeights);
 
     assert(Number.isInteger(index));
     assert(index >= 0 && index < cumulativeWeights.length);
@@ -12,7 +12,7 @@ describe('pickRandomWeightedIndex()', () => {
 
   it('if the cumulative weights array has a single element, returns the index 0', () => {
     const cumulativeWeights = [1];
-    const index = pickRandomWeightedIndex(cumulativeWeights);
+    const index = pickWeightedIndex(cumulativeWeights);
 
     assert(Number.isInteger(index));
     assert(index === 0);
@@ -20,14 +20,14 @@ describe('pickRandomWeightedIndex()', () => {
 
   it('accepts a read-only cumulative weights array', () => {
     const cumulativeWeights = Object.freeze([1, 2, 3, 4]);
-    const index = pickRandomWeightedIndex(cumulativeWeights);
+    const index = pickWeightedIndex(cumulativeWeights);
 
     assert(Number.isInteger(index));
     assert(index >= 0 && index < cumulativeWeights.length);
   });
 
   it('if the cumulative weights array is empty, throws an error', () => {
-    const throwingFn = () => pickRandomWeightedIndex([]);
+    const throwingFn = () => pickWeightedIndex([]);
     assertThrows(
       throwingFn,
       Error,
@@ -39,15 +39,15 @@ describe('pickRandomWeightedIndex()', () => {
     const cumulativeWeights = [1, 2, 3, 4];
     const options = { seed: 12345 };
 
-    const index1 = pickRandomWeightedIndex(cumulativeWeights, options);
-    const index2 = pickRandomWeightedIndex(cumulativeWeights, options);
+    const index1 = pickWeightedIndex(cumulativeWeights, options);
+    const index2 = pickWeightedIndex(cumulativeWeights, options);
 
     assert(index1 === index2);
   });
 
   it('returns an index such that 0 <= index < cumulativeWeights.length', () => {
     const cumulativeWeights = [1, 2, 3, 4];
-    const index = pickRandomWeightedIndex(cumulativeWeights);
+    const index = pickWeightedIndex(cumulativeWeights);
 
     assert(index >= 0);
     assert(index < cumulativeWeights.length);
