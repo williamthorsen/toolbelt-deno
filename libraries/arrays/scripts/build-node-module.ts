@@ -3,7 +3,10 @@ import { buildNodeModule } from '../../interop/mod.ts';
 buildNodeModule({
   // TODO: Check whether these values can be omitted in the default case
   inDir: '.',
-  entryPoints: ['./mod.ts'],
+  entryPoints: [
+    './mod.ts',
+    './weighting.ts',
+  ],
   outDir: 'dist',
 
   description: 'Utilities for working with arrays',
