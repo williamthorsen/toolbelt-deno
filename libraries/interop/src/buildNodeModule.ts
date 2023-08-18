@@ -5,7 +5,12 @@ const REPO_URL = 'https://github.com/williamthorsen/toolbelt-deno';
 
 const optionsSchema = z.object({
   inDir: z.string(),
-  entryPoints: z.array(z.string()),
+  entryPoints: z.array(
+    z.string().or(z.object({
+      name: z.string(),
+      path: z.string(),
+    })),
+  ),
   filePaths: z.array(z.string()).default([]),
   outDir: z.string(),
 
@@ -66,7 +71,7 @@ export async function buildNodeModule(options: Options): Promise<void> {
 
   await build({
     packageManager: 'pnpm',
-    entryPoints: entryPoints.map((entryPoint) => join(inDirFullPath, entryPoint)),
+    entryPoints,
     declaration: 'separate',
     outDir,
     scriptModule: false, // Don't generate CommonJS/UMD output
