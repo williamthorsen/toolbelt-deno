@@ -6,7 +6,7 @@ import { random } from '../../numbers/src/random.ts';
  */
 export function pickRandomItem<T>(items: ReadonlyArray<T>, options: Options = {}): T {
   if (items.length === 0) {
-    throw new Error('Cannot pick an item from an empty array');
+    throw new Error('Cannot pick an item from an empty array.');
   }
   return items[Math.floor(random(options) * items.length)];
 }

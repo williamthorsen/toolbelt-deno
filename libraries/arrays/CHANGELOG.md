@@ -1,5 +1,24 @@
 # @williamthorsen/toolbelt.arrays
 
+## 1.3.0
+
+### Features
+
+Renamed
+
+- `pickRandomWeightedIndex` to `pickWeightedIndex`
+- `toPickRandomWeightedItem` to `toPickWeightedItem`
+
+Moved weighting-related functions to separate entrypoint `@williamthorsen/toolbelt.arrays/weighting`:
+
+- `getCumulativeWeights`
+- `getWeightedIndex`
+- `pickWeightedIndex`
+- `toPickWeightedItem`
+
+Add a function, `toPickWeightedItemFromDistribution`, to perform the same task as `toPickWeightedItem` but with a
+distribution object instead of an array of weights.
+
 ## 1.2.0
 
 ### Features
