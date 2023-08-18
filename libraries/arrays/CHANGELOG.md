@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 1.3.1
+
+### Refactoring
+
+Changed the entrypoint for weighting functions from `./weighting.js` to `./weighting`.
+
 ## 1.3.0
 
 ### Features
