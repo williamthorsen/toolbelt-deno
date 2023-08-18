@@ -1,23 +1,22 @@
-import type { PickRandomOptions } from './pickWeightedIndex.ts';
-import { pickWeightedIndex } from './pickWeightedIndex.ts';
 import { getCumulativeWeights } from './getCumulativeWeights.ts';
+import { toPickWeightedItem } from './toPickWeightedItem.ts';
 
 /**
  * Returns a function that pseudo-randomly picks an item from the array using weighted odds, which are derived
  * from the provided distribution.
  */
-export function toPickFromDistribution<T>(
-  items: T[],
+export function toPickWeightedItemFromDistribution<T>(
+  items: ReadonlyArray<T>,
   distribution: Distribution,
-  options: Options<T>
-): (pickRandomOptions?: PickRandomOptions) => T {
-  const { defaultWeight = 0, getName } = options;
+  params: Params<T>,
+): ReturnType<typeof toPickWeightedItem<T>> {
+  const { defaultWeight = 0, getName } = params;
 
   const filteredItems: T[] = [];
   const filteredWeights: number[] = [];
 
-  items.forEach(item => {
-    const weight = distribution[getName(item)] || defaultWeight;
+  items.forEach((item) => {
+    const weight = distribution[getName(item)] ?? defaultWeight;
     if (weight > 0) {
       filteredItems.push(item);
       filteredWeights.push(weight);
@@ -30,17 +29,14 @@ export function toPickFromDistribution<T>(
 
   const cumulativeWeights = getCumulativeWeights(filteredWeights);
 
-  return function pickFromDistribution(pickRandomOptions: PickRandomOptions = {}) {
-    const index = pickWeightedIndex(cumulativeWeights, pickRandomOptions);
-    return filteredItems[index];
-  }
+  return toPickWeightedItem(filteredItems, cumulativeWeights);
 }
 
 interface Distribution {
   [key: string]: number;
 }
 
-interface Options<T> {
+interface Params<T> {
   defaultWeight?: number;
   getName: (item: T) => string;
 }
