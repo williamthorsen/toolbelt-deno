@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 1.3.2
+
+### Fixes
+
+Changed entrypoint from erroneous `weighting` to `./weighting`.
+
 ## 1.3.1
 
 ### Refactoring
