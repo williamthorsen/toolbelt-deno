@@ -11,6 +11,15 @@ Renamed a property of the `options` object accepted by `toPickWeightedItemFromDi
 
 Added a type parameter to `toPickWeightedItemFromDistribution` describing the keys of the `Distribution` object.
 
+## 2.0.0
+
+### BREAKING CHANGES
+
+Renamed functions for concision:
+
+- `pickRandomItem` to `pickItem`.
+- `pickRandomItems` to `pickItems`
+
 ## 1.3.3
 
 ### Fixes
