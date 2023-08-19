@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.arrays
 
+## 1.3.3
+
+### Fixes
+
+As a workaround for the failure to resolve types imported from the `/weighting` entrypoint, moved its exports to the
+main entrypoint.
+
 ## 1.3.2
 
 ### Fixes
