@@ -1,5 +1,16 @@
 # @williamthorsen/toolbelt.arrays
 
+## 1.3.4
+
+### BREAKING CHANGES
+
+Renamed a property of the `options` object accepted by `toPickWeightedItemFromDistribution`: `getName` is now
+`getCategory`.
+
+### Refactoring
+
+Added a type parameter to `toPickWeightedItemFromDistribution` describing the keys of the `Distribution` object.
+
 ## 1.3.3
 
 ### Fixes
