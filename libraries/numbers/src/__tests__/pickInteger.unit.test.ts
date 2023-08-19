@@ -1,9 +1,9 @@
 import { assert, assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
-import { pickRandomInt } from '../pickRandomInt.ts';
+import { pickInteger } from '../pickInteger.ts';
 
-describe('pickRandomInt()', () => {
+describe('pickInteger()', () => {
   it('returns an integer', () => {
-    const randomInt = pickRandomInt({ max: 10 });
+    const randomInt = pickInteger({ max: 10 });
 
     assert(Number.isInteger(randomInt));
   });
@@ -12,7 +12,7 @@ describe('pickRandomInt()', () => {
     const min = 1;
     const max = 1000;
 
-    const randomInt = pickRandomInt({ min, max });
+    const randomInt = pickInteger({ min, max });
 
     assert(randomInt >= min, 'randomInt >= max');
     assert(randomInt <= max, 'randomInt <= max');
@@ -22,7 +22,7 @@ describe('pickRandomInt()', () => {
     const min = 1.1;
     const max = 2.1;
 
-    const randomInt = pickRandomInt({ min, max });
+    const randomInt = pickInteger({ min, max });
 
     assert(
       randomInt === Math.trunc(min) ||
@@ -34,7 +34,7 @@ describe('pickRandomInt()', () => {
     const min = 0;
     const max = -50;
 
-    const throwingFn = () => pickRandomInt({ min, max });
+    const throwingFn = () => pickInteger({ min, max });
 
     assertThrows(
       throwingFn,
@@ -48,7 +48,7 @@ describe('pickRandomInt()', () => {
     const max = 1.5;
     const expected = 1;
 
-    const actual = pickRandomInt({ min, max });
+    const actual = pickInteger({ min, max });
 
     assertEquals(actual, expected);
   });
@@ -56,7 +56,7 @@ describe('pickRandomInt()', () => {
   it('if only max argument is given, sets min=0', () => {
     const max = 10;
 
-    const randomInt = pickRandomInt({ max });
+    const randomInt = pickInteger({ max });
 
     assert(randomInt >= 0, 'value >= 0');
     assert(randomInt <= max, 'value <= max');
@@ -68,8 +68,8 @@ describe('pickRandomInt()', () => {
       seed: 1234,
     };
 
-    const randomInt1 = pickRandomInt(params);
-    const randomInt2 = pickRandomInt(params);
+    const randomInt1 = pickInteger(params);
+    const randomInt2 = pickInteger(params);
 
     assertEquals(randomInt1, randomInt2);
   });
@@ -78,7 +78,7 @@ describe('pickRandomInt()', () => {
     const min = -Infinity;
     const max = 10;
 
-    const throwingFn = () => pickRandomInt({ min, max });
+    const throwingFn = () => pickInteger({ min, max });
 
     assertThrows(
       throwingFn,
@@ -91,7 +91,7 @@ describe('pickRandomInt()', () => {
     const min = 0;
     const max = Infinity;
 
-    const throwingFn = () => pickRandomInt({ min, max });
+    const throwingFn = () => pickInteger({ min, max });
 
     assertThrows(
       throwingFn,

@@ -1,4 +1,4 @@
-import { pickRandomItem } from '../../arrays/src/pickRandomItem.ts';
+import { pickItem } from '../../arrays/src/pickItem.ts';
 
 /**
  * Given a string that contains delimited variants [variant1|variant2|variant3], replaces the variants with a
@@ -25,7 +25,7 @@ export function pickVariants(text: string, options: Options = {}): string {
 
   const variantRegex = /\[([^\[\]]*?)]/g;
   const result = text.replace(variantRegex, (_delimitedVariants, variants: string): string => {
-    return pickRandomItem(variants.split('|'), options);
+    return pickItem(variants.split('|'), options);
   });
 
   // If the result still contains variants, call pickVariants again

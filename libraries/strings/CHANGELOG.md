@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.5.3
+
+### Dependencies
+
+Updated `pickVariants` to replace obsolete `pickRandomItem` function with `pickItem`.
+
 ## 0.5.2
 
 ### Fixes

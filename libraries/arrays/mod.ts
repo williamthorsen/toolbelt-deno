@@ -2,8 +2,8 @@ export { getDuplicates } from './src/getDuplicates.ts';
 export { getSetItems } from './src/getSetItems.ts';
 export { includes } from './src/includes.ts';
 export { createNullishComparator, nullishCompare } from './src/nullishCompare.ts';
-export { pickRandomItem } from './src/pickRandomItem.ts';
-export { pickRandomItems } from './src/pickRandomItems.ts';
+export { pickItem } from './src/pickItem.ts';
+export { pickItems } from './src/pickItems.ts';
 export { reverseComparator } from './src/reverseComparator.ts';
 export { shuffle, shuffleInPlace } from './src/shuffle.ts';
 
