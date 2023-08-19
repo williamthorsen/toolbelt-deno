@@ -5,7 +5,7 @@ buildNodeModule({
   inDir: '.',
   entryPoints: [
     './mod.ts',
-    { name: 'weighting', path: './weighting.ts' },
+    { name: './weighting', path: './weighting.ts' },
   ],
   outDir: 'dist',
 
