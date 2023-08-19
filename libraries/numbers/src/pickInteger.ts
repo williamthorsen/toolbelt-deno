@@ -4,7 +4,7 @@ import { random } from './random.ts';
  * Returns a random integer between the bounds inclusive.
  * If the bounds are not integers, they are truncated to integers.
  */
-export function pickRandomInt(params: Params): number {
+export function pickInteger(params: Params): number {
   const { min = 0, max, seed } = params;
 
   if (!Number.isFinite(min) || !Number.isFinite(max)) {

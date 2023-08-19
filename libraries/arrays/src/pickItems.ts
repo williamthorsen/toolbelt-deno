@@ -7,7 +7,7 @@ import { shuffle } from './shuffle.ts';
  * (intended for use with a seed, but it does no harm if used alone).
  * TODO: Optionally throw an error if `n` is greater than the length of the array.
  */
-export function pickRandomItems<T>(items: ReadonlyArray<T>, n: number, options: Options = {}): T[] {
+export function pickItems<T>(items: ReadonlyArray<T>, n: number, options: Options = {}): T[] {
   const { offset = 0, seed } = options;
 
   const tempItems = shuffle(items, { seed });
