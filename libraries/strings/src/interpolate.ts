@@ -7,7 +7,7 @@ import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
  */
 export function interpolate<K extends string>(
   text: string,
-  dictionary: Record<K, string>,
+  dictionary: Map<K | RegExp, string> | Record<K, string>,
   options: Options = {},
 ): string {
   const { adaptCase, fallbackToKey } = options;
@@ -15,51 +15,71 @@ export function interpolate<K extends string>(
   assertHasNoNestedBraces(text);
   assertHasNoUnmatchedBraces(text);
 
+  const map = dictionary instanceof Map ? dictionary : new Map(Object.entries<string>(dictionary));
+
   let newText = text;
-  for (const [key, value] of Object.entries<string>(dictionary)) {
-    const matcher = encloseInBraces(key);
+  for (const [key, value] of map) {
+    const matcher = createDelimitedMatcher(key);
+    const insensitiveMatcher = createDelimitedMatcher(key, { caseInsensitive: true });
 
     // 1. Perform replacements
-    newText = newText.replace(matcher, (delimitedPlaceholder): string => {
+    newText = newText.replace(insensitiveMatcher, (delimitedPlaceholder): string => {
       const placeholder = delimitedPlaceholder.slice(1, -1);
-      const lcPlaceholder = placeholder.toLowerCase();
-      // The simplest case is that the placeholder matches a key in the dictionary. No transformation is needed.
-      if (placeholder === key) {
+
+      const isMatch = typeof key === 'string' ? placeholder === key : delimitedPlaceholder.match(matcher);
+      const isInsensitiveMatch = typeof key === 'string'
+        ? placeholder.toLowerCase() === key
+        : delimitedPlaceholder.match(insensitiveMatcher);
+
+      // The simplest case is that the placeholder is a case-sensitive match. No transformation is needed.
+      if (isMatch) {
         return value;
       } // If the placeholder is not the same as the key, check whether its lowercase version is.
       // We don't try to automate any other conversions.
-      else if (adaptCase && lcPlaceholder === key) {
+      else if (adaptCase && typeof key === 'string' && isInsensitiveMatch) {
         // Identify the transformation that transforms the dictionary key to have the same case as the placeholder.
         // We can then apply the same function to the dictionary value.
-        const transform = deriveCaseTransformer(lcPlaceholder, placeholder);
+        const transform = deriveCaseTransformer(key, placeholder);
         if (transform !== null) {
           return transform(value);
         }
       }
       return delimitedPlaceholder;
     });
-
-    // If fallbackToKey=true, replace any remaining occurrences of the placeholder with the placeholder itself.
-    if (fallbackToKey) {
-      const placeholderRegex = encloseInBraces(/(.+)/);
-      newText = newText.replace(
-        placeholderRegex,
-        (_, placeholder) => placeholder,
-      );
-    }
   }
+  // If fallbackToKey=true, replace any remaining occurrences of the placeholder with the placeholder itself.
+  if (fallbackToKey) {
+    const matcher = createDelimitedMatcher(/(.+)/);
+    newText = newText.replace(
+      matcher,
+      (_, placeholder) => placeholder,
+    );
+  }
+
   return newText;
 }
 
 /**
  * Encloses a matcher in braces, so that only delimited placeholders are matched.
  */
-function encloseInBraces(matcher: RegExp | string): RegExp {
+function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
+  const { caseInsensitive } = options;
+
   const matcherSource = typeof matcher === 'string' ? matcher : matcher.source;
   const matcherFlagsSet = new Set(typeof matcher === 'string' ? [] : matcher.flags.split(''));
-  matcherFlagsSet.add('g').add('i');
 
-  return new RegExp(`\\{${matcherSource}\\}`, Array.from(matcherFlagsSet).join(''));
+  matcherFlagsSet.add('g');
+
+  if (caseInsensitive) {
+    matcherFlagsSet.add('i');
+  }
+  const matcherFlags = Array.from(matcherFlagsSet).join('');
+
+  return new RegExp(`\\{${matcherSource}\\}`, matcherFlags);
+}
+
+interface DelimitedMatcherOptions {
+  caseInsensitive?: boolean | undefined;
 }
 
 function assertHasNoNestedBraces(input: string): void {

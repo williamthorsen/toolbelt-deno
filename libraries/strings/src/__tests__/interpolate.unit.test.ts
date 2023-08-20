@@ -136,6 +136,64 @@ describe('interpolate()', () => {
     });
   }
 
+  it('accepts a Map as dictionary', () => {
+    const input = '{greeting}, {planet}!';
+    const dictionary = new Map()
+      .set('greeting', 'Hello')
+      .set('planet', 'World');
+    const expectedOutput = 'Hello, World!';
+
+    const output = interpolate(input, dictionary);
+
+    assertEquals(output, expectedOutput);
+  });
+
+  it('accepts a regular expression', () => {
+    const input = '{hullo}, {hallo}!';
+    const dictionary = new Map()
+      .set(/h.llo/, 'hello');
+    const expectedOutput = 'hello, hello!';
+
+    const output = interpolate(input, dictionary);
+
+    assertEquals(output, expectedOutput);
+  });
+
+  it('does not partially match a regular expression', () => {
+    const input = '{key}, {key2}!';
+    const dictionary = new Map()
+      .set(/key/, 'value');
+    const expectedOutput = 'value, {key2}!';
+
+    const output = interpolate(input, dictionary);
+
+    assertEquals(output, expectedOutput);
+  });
+
+  it('if key is a regex, does not adapt the value to the placeholder\'s case', () => {
+    const input = '{key} {KEY} {Key}';
+    const dictionary = new Map()
+      .set(/key/i, 'value');
+    const expectedOutput = 'value value value';
+
+    const output = interpolate(input, dictionary);
+
+    assertEquals(output, expectedOutput);
+  });
+
+  it('can use a catch-all to replace unmatched delimiters', () => {
+    const input = '{Key1} {key2} {key3}';
+    const dictionary = new Map()
+      .set('key1', 'value1')
+      .set('key2', 'value2')
+      .set(/.*/, 'unmatched');
+    const expectedOutput = 'Value1 value2 unmatched';
+
+    const output = interpolate(input, dictionary, { adaptCase: true });
+
+    assertEquals(output, expectedOutput);
+  });
+
   describe('adaptCase=true', () => {
     const adaptCase = true;
 
@@ -157,18 +215,6 @@ describe('interpolate()', () => {
 
       assertEquals(output, expectedOutput);
     });
-
-    // it.todo('accepts a regular expression', () => {
-    //   const input = '{hullo}, {hallo}!';
-    //   const dictionary = new Map([
-    //     [/h.{1}llo/, 'hello'],
-    //   ]);
-    //   const expectedOutput = 'Hello, hello!';
-    //
-    //   const output = interpolate(input, dictionary, { adaptCase });
-    //
-    //   assertEquals(output, expectedOutput);
-    // });
 
     it('if the transform cannot be identified, leaves the placeholder unchanged', () => {
       const input = '{greeting}, {myPlanet}! This is a {grEeting}!';
