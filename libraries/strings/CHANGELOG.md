@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.6.0
+
+### Features
+
+Enhanced the `interpolate` function so that it now
+
+- checks that brace delimiters are matched and not nested
+- accepts a `Map` of substitutions as an alternative to an object literal
+- accepts regular expressions (in addition to strings) as match patterns
+
 ## 0.5.3
 
 ### Dependencies
