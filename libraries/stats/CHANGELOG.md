@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.numbers
 
+## 0.2.0
+
+### Features
+
+Modified `getNormalIntervalProbabilities` so that, if given a standard deviation of 0, it returns uniform probabilities.
+
 ## 0.1.0
 
 ### Features
