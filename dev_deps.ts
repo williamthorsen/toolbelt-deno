@@ -1,5 +1,6 @@
 export {
   assert,
+  assertAlmostEquals,
   assertArrayIncludes,
   assertEquals,
   assertMatch,
