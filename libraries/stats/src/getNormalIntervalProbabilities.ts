@@ -16,6 +16,13 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
     throw new Error('nIntervals must be greater than 0.');
   }
 
+  if (standardDeviation === 0) {
+    const uniformProbability = 1 / nIntervals;
+    const additive = Array.from({ length: nIntervals }, () => uniformProbability);
+    const cumulative = toCumulativeSumsFromAddends(additive);
+    return { additive, cumulative };
+  }
+
   // Define z-scores for the intervals
   const zRange = 3 * standardDeviation;
   const zScores: number[] = Array.from({ length: nIntervals + 1 }, (_, i) => -zRange + (2 * zRange * i / nIntervals));
