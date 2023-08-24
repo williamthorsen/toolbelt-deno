@@ -1,5 +1,23 @@
 # @williamthorsen/toolbelt.numbers
 
+## 0.3.0
+
+### Features
+
+Added functions:
+
+- `computeCdfInverse`: Computes the inverse of the cumulative distribution function of a normal distribution.
+- `findDistributionByIntervalProbability`: Given a desired probability, finds the distribution that has that probability
+  in the first and last intervals.
+
+### Dependencies
+
+Added `gaussian` module to dependencies for statistical functions.
+
+### Refactoring
+
+Removed custom computation of the cumulative distribution function and replaced it with a call to `gaussian` module.
+
 ## 0.2.0
 
 ### Features
