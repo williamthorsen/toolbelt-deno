@@ -1,68 +1,145 @@
 import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
 import { round } from '../../numbers/src/round.ts';
 
+const TOLERANCE = 0.0001; // probability will be accepted if within target by no more than this amount
+
 /**
+ * EXPERIMENTAL!
  * Given a probability and a number of intervals, find the set of interval probabilities following
  * the normal distribution that has the requested probability in the first and last intervals.
+ * Uses bisecting search to find the standard deviation that produces the requested probability.
+ *
+ * TODO: Possibly make the tolerance proportional to the interval
  */
 export function findDistributionByIntervalProbability(params: Params): NormalDistribution {
   const {
     nIntervals,
-    probability,
+    probability: target,
+    sdMin = 0.005,
+    sdMax = 3,
+    iteration = 1,
+    maxIterations = 50,
+    tolerance = TOLERANCE,
   } = params;
 
-  // Build a map of all distributions with the given number of intervals
-  const startSd = 0.5;
-  const endSd = 1.2;
-  const step = 0.0005;
-  const distributions: { standardDeviation: number; probability: number }[] = [];
-  let standardDeviation = startSd;
-  while (standardDeviation <= endSd) {
+  if (sdMin >= sdMax) {
+    throw new Error(
+      'Maximum standard deviation (sdMax) must be greater than minimum (sdMin).',
+    );
+  }
+
+  const maxProbability = round(1 / nIntervals, 4);
+  if (target > 1 / nIntervals) {
+    throw new Error(
+      `Probability cannot be greater than a uniform probability (${maxProbability}) across ${nIntervals} intervals`,
+    );
+  }
+
+  if (1 / nIntervals - target < tolerance) {
+    const uniformProbabilities = getNormalIntervalProbabilities({
+      nIntervals,
+      standardDeviation: 0,
+    });
+    return {
+      standardDeviation: 0,
+      intervalProbabilities: uniformProbabilities,
+      // Extra info for
+      divergenceFromTarget: uniformProbabilities.additive[0] / target - 1,
+      iterations: iteration,
+    };
+  }
+
+  const distributions = getDistributions(sdMin, sdMax, nIntervals);
+  const bestDistribution = getBestMatchDistribution(distributions, target);
+  if (
+    (iteration >= maxIterations) || isWithinTolerance(bestDistribution.probability, target, tolerance)
+  ) {
+    return {
+      standardDeviation: bestDistribution.standardDeviation,
+      intervalProbabilities: getNormalIntervalProbabilities({
+        nIntervals,
+        standardDeviation: bestDistribution.standardDeviation,
+      }),
+      // Extra info for
+      divergenceFromTarget: bestDistribution.probability / target - 1,
+      iterations: iteration,
+    };
+  }
+
+  // Find a new range of standard deviations to search:
+  // Start with a distribution whose probability is less than the target probability and
+  // end with a distribution whose probability is greater than the target probability.
+  const startIndex = distributions.findIndex((d) => d.probability < target);
+
+  if (startIndex === -1) {
+    throw new Error(`Cannot find requested probability with standard deviation in range [${sdMin}, ${sdMax}]`);
+  }
+  const lowerProbDistribution = distributions[startIndex - 1];
+  const higherProbDistribution = distributions[startIndex];
+
+  const newParams = {
+    ...params,
+    sdMin: lowerProbDistribution.standardDeviation,
+    sdMax: higherProbDistribution.standardDeviation,
+    iteration: iteration + 1,
+  };
+  return findDistributionByIntervalProbability(newParams);
+}
+
+/**
+ * Returns the distribution whose probability in the first and last intervals is closest to the target.
+ */
+function getBestMatchDistribution(
+  distributions: ReadonlyArray<DistributionSummary>,
+  targetProbability: number,
+): DistributionSummary {
+  const bestMatchDistributions = distributions
+    .slice()
+    .sort((a, b) => {
+      return Math.abs(targetProbability - a.probability) - Math.abs(targetProbability - b.probability);
+    });
+  return bestMatchDistributions[0];
+}
+
+/**
+ * Returns an array of probability distributions for the start, middle, and end of the standard-deviation range
+ */
+function getDistributions(sdMin: number, sdMax: number, nIntervals: number): DistributionSummary[] {
+  const distributions: DistributionSummary[] = [];
+  const step = (sdMax - sdMin) / 2;
+  for (let i = 0; i < 3; i++) {
+    const standardDeviation = sdMin + step * i;
     const probabilities = getNormalIntervalProbabilities({ nIntervals, standardDeviation }).additive;
     distributions.push({
       standardDeviation: round(standardDeviation, 6),
       probability: round(probabilities[0], 6),
     });
-    standardDeviation += step;
   }
-
-  // Find the distribution whose probability in the first interval is closest to the target
-  const sortedDistributions = distributions.sort((a, b) => {
-    return Math.abs(probability - a.probability) - Math.abs(probability - b.probability);
-  });
-
-  // Find the distribution with the closest probability in the first interval
-  const target = probability;
-  const tolerance = 0.01;
-  const matches = sortedDistributions
-    .filter((distribution) => isWithinTolerance(target, distribution.probability, tolerance));
-  if (!matches.length) {
-    console.log({
-      bestDistributions: sortedDistributions.slice(0, 5),
-    });
-    throw new Error(`No matches found for target probability ${target} within tolerance of ${tolerance * 100}%`);
-  }
-
-  return {
-    standardDeviation: matches[0].standardDeviation,
-    intervalProbabilities: getNormalIntervalProbabilities({
-      nIntervals,
-      standardDeviation: matches[0].standardDeviation,
-    }),
-  };
+  return distributions;
 }
 
 function isWithinTolerance(value: number, target: number, tolerance: number): boolean {
-  return Math.abs(1 - value / target) < tolerance;
+  return Math.abs(value - target) < tolerance;
+}
+
+interface DistributionSummary {
+  probability: number; // probability of the first interval
+  standardDeviation: number;
 }
 
 interface NormalDistribution {
   standardDeviation: number;
   intervalProbabilities: ReturnType<typeof getNormalIntervalProbabilities>;
+  divergenceFromTarget: number;
+  iterations: number;
 }
 
 interface Params {
   nIntervals: number;
   probability: number;
   tolerance?: number;
+  sdMin?: number;
+  sdMax?: number;
+  iteration?: number;
+  maxIterations?: number;
 }
