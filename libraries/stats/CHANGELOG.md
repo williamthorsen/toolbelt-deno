@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.numbers
 
+## 0.3.1
+
+### Features
+
+Export the new functions from v0.3.0.
+
 ## 0.3.0
 
 ### Features
