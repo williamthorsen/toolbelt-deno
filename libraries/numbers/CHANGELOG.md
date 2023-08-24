@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.numbers
 
+## 2.1.0
+
+### Features
+
+Added function:
+
+- `round`: rounds to a given number of decimal places
+
 ## 2.0.0
 
 ### BREAKING CHANGES
