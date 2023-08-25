@@ -30,7 +30,7 @@ const optionsSchema = z.object({
  * Creates a Node module from the entrypoints and saves the output to the specified directory.
  * Entrypoints are resolved relative to inDir. If version number is not passed in, it is read from the VERSION file.
  */
-export async function buildNodeModule(options: Options): Promise<void> {
+export async function buildNodeModule(options: BuildOptions): Promise<void> {
   const {
     inDir,
     entryPoints,
@@ -105,4 +105,4 @@ export async function buildNodeModule(options: Options): Promise<void> {
   });
 }
 
-type Options = z.input<typeof optionsSchema>;
+export type BuildOptions = z.input<typeof optionsSchema>;
