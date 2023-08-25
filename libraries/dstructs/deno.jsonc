@@ -1,0 +1,32 @@
+/* See the deno.jsonc file in the project root for comments. */
+{
+  fmt: {
+    exclude: [
+      '**/cov_profile/',
+      '**/dist/',
+      'deno.jsonc',
+    ],
+    lineWidth: 120,
+    singleQuote: true,
+  },
+  lint: {
+    exclude: [
+      '**/cov_profile/',
+      '**/dist/',
+    ],
+  },
+  tasks: {
+    build: 'deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build-node-module.ts',
+    check: 'deno task typecheck && deno fmt --check && deno lint && deno task test:coverage',
+    publish: 'deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist ../../scripts/publish-node-module.ts',
+    'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
+    typecheck: "../../scripts/typecheck.sh",
+    'view-coverage': 'deno coverage --lcov cov_profile > tracefile.lcov && genhtml --output-directory ./coverage tracefile.lcov && open coverage/index.html',
+  },
+  test: {
+    exclude: [
+      '**/cov_profile/',
+      "**/dist/",
+    ],
+  },
+}
