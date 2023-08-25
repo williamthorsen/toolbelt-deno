@@ -1,18 +1,12 @@
 import { buildNodeModule } from '../../interop/mod.ts';
+import { buildOptions } from './buildOptions.ts';
 
-buildNodeModule({
-  // TODO: Check whether these values can be omitted in the default case
-  inDir: '.',
-  entryPoints: ['./mod.ts'],
-  outDir: 'dist',
-
-  description: 'Utilities for working with ...',
-  issueLabel: '',
-  packageName: '@williamthorsen/toolbelt._template',
-  repoDir: 'libraries/_template',
-
+const options = {
+  ...buildOptions,
   version: Deno.args[0] || '',
-}).catch((error) => {
+};
+
+buildNodeModule(options).catch((error) => {
   console.error(error);
   Deno.exit(1);
 })
