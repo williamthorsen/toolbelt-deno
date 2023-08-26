@@ -1,5 +1,5 @@
 import { build, emptyDir, join, resolve, z } from '../dev_deps.ts';
-import { isValidSemver } from '../../tooling/isValidSemver.ts';
+import { isValidSemver } from '../../tooling/src/isValidSemver.ts';
 
 const REPO_URL = 'https://github.com/williamthorsen/toolbelt-deno';
 
@@ -102,6 +102,9 @@ export async function buildNodeModule(options: BuildOptions): Promise<void> {
         Deno.copyFileSync(filePath, resolve(outDir, filePath));
       });
     },
+    // Because code from other sources (such as scripts) is not bundled, shims needed for their
+    // transpiled tests to pass may be missing; we're only interested in the bundled source code.
+    rootTestDir: join(inDir, 'src'),
   });
 }
 
