@@ -17,9 +17,12 @@
     ],
   },
   tasks: {
+    build: './scripts/build.sh',
     check: 'deno task typecheck && deno fmt --check && deno lint && deno task test:coverage',
+    ci: 'deno task check && deno task build',
     'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
-    typecheck: "./scripts/typecheck.sh"
+    typecheck: './scripts/typecheck.sh',
+    'update-deps': './scripts/update-deps.sh',
   },
   test: {
     exclude: [
