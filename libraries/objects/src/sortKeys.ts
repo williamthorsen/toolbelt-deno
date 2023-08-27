@@ -1,4 +1,5 @@
-import { isPlainObject, type PlainObject } from './isPlainObject.ts';
+import type { PlainObject } from './checkIsPlainObject.ts';
+import { checkIsPlainObject } from './checkIsPlainObject.ts';
 import type { CompareKeys } from './objects.types.ts';
 
 /**
@@ -8,7 +9,7 @@ export function sortKeys<T extends PlainObject>(
   data: T,
   compare: CompareKeys = (keyA, keyB) => keyA < keyB ? -1 : 1,
 ): T {
-  if (!isPlainObject(data)) {
+  if (!checkIsPlainObject(data)) {
     return data;
   }
 

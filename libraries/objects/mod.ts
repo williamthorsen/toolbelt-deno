@@ -1,7 +1,10 @@
 export { hasOwnProperty } from './src/hasOwnProperty.ts';
-export { isPlainObject, type PlainObject } from './src/isPlainObject.ts';
-export { type NonNullishProperties, omitNullish } from './src/omitNullish.ts';
-export { type DefinedProperties, omitUndefined } from './src/omitUndefined.ts';
+export type { PlainObject } from './src/checkIsPlainObject.ts';
+export { checkIsPlainObject, isPlainObject } from './src/checkIsPlainObject.ts';
+export type { NonNullishProperties } from './src/omitNullish.ts';
+export { omitNullish } from './src/omitNullish.ts';
+export type { DefinedProperties } from './src/omitUndefined.ts';
+export { omitUndefined } from './src/omitUndefined.ts';
 export { preciseObjectTypeof } from './src/preciseObjectTypeof.ts';
 export { sortKeys } from './src/sortKeys.ts';
 export { sortObjectKeys } from './src/sortObjectKeys.ts';
