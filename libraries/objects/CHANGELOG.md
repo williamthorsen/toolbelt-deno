@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.7.1
+
+### Fixes
+
+Fixed an issue caused by the previous release, where `hasOwnProperty` accepted any type of input but no longer preserved
+the type of an object's key.
+
 ## 0.7.0
 
 ### Features
