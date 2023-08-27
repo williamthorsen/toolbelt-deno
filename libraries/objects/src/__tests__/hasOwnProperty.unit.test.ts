@@ -3,6 +3,10 @@ import { assertEquals, describe, it } from '../../dev_deps.ts';
 import { hasOwnProperty } from '../hasOwnProperty.ts';
 
 describe('hasOwnProperty()', () => {
+  // Functions to test that an inferred type is correct.
+  const numberFn = (_value: number): void => {};
+  const stringFn = (_value: string): void => {};
+
   it('returns true if the object has the property', () => {
     const target = { a: 'a' };
 
@@ -59,18 +63,21 @@ describe('hasOwnProperty()', () => {
     });
   }
 
+  it('accepts any non-object value as input', () => {
+    for (const value of [null, undefined, 1, true, Symbol('a')]) {
+      hasOwnProperty(value, 'key');
+    }
+  });
+
   it('correctly narrows the type', () => {
-    interface Target {
-      a: string;
-    }
-    const fn = (value: Target | unknown): void => {
-      if (value && hasOwnProperty(value, 'a')) {
-        // This code will not compile if the type of `value` is not narrowed to `Target`.
-        assertEquals(value.a, 'a');
-      }
+    const nDict = { n: 1 };
+    const sDict = { s: 's' };
+    const fn = (value: { n: number } | { s: string }): void => {
+      // These lines will not compile unless the type is correctly narrowed.
+      hasOwnProperty(value, 'n') && numberFn(value.n);
+      hasOwnProperty(value, 's') && stringFn(value.s);
     };
-    for (const value of [{ a: 'a' }, null, undefined, 1, true, Symbol('a')]) {
-      fn(value);
-    }
+    fn(nDict);
+    fn(sDict);
   });
 });

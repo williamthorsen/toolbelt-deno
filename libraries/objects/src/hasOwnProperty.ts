@@ -1,10 +1,10 @@
 /**
  * Type-safe replacement for `Object.prototype.hasOwnProperty.call(target, property)`
  */
-export function hasOwnProperty<T, P extends PropertyKey>(
+export function hasOwnProperty<T, K extends PropertyKey>(
   target: T,
-  property: P,
-): target is T & Record<P, unknown> {
+  key: K,
+): target is T & Record<K, T extends Record<K, infer U> ? U : never> {
   if (target === null) {
     return false;
   }
@@ -13,5 +13,5 @@ export function hasOwnProperty<T, P extends PropertyKey>(
     return false;
   }
 
-  return Object.prototype.hasOwnProperty.call(target, property);
+  return Object.prototype.hasOwnProperty.call(target, key);
 }
