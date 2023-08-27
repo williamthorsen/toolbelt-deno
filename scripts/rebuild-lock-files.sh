@@ -12,3 +12,5 @@ for library in "${LIBRARIES[@]}"; do
   deno task check && deno task build
   cd ../..
 done
+
+deno task check
