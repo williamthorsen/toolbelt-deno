@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { assertEquals, describe, it } from '../../dev_deps.ts';
 
 import { hasOwnProperty } from '../hasOwnProperty.ts';
 
@@ -9,7 +9,7 @@ describe('hasOwnProperty()', () => {
     assertEquals(hasOwnProperty(target, 'a'), true);
   });
 
-  it('if the object does not have the proprety, returns false', () => {
+  it('if the object does not have the property, returns false', () => {
     const target = { a: 'a' };
 
     assertEquals(hasOwnProperty(target, 'b'), false);
@@ -35,6 +35,13 @@ describe('hasOwnProperty()', () => {
     assertEquals(hasOwnProperty(target, 'a'), true);
   });
 
+  it('accepts an array as target', () => {
+    const target: Array<string> & { a?: string } = ['value'];
+    target.a = 'a';
+
+    assertEquals(hasOwnProperty(target, 'a'), true);
+  });
+
   it('if the property is inherited, returns false', () => {
     const targetsAndProperties = [
       [Object.create({ a: 'a' }), 'a'],
@@ -46,15 +53,24 @@ describe('hasOwnProperty()', () => {
     }
   });
 
-  it('if the target is null or undefined, throws a TypeError', () => {
-    const targets = [null, undefined];
+  for (const value of [null, undefined, 1, true, Symbol('a')]) {
+    it(`if the target is ${typeof value}, returns false`, () => {
+      assertEquals(hasOwnProperty(value, 'a'), false);
+    });
+  }
 
-    for (const target of targets) {
-      assertThrows(
-        // deno-lint-ignore no-explicit-any
-        () => hasOwnProperty(target as any, 'a'),
-        TypeError,
-      );
+  it('correctly narrows the type', () => {
+    interface Target {
+      a: string;
+    }
+    const fn = (value: Target | unknown): void => {
+      if (value && hasOwnProperty(value, 'a')) {
+        // This code will not compile if the type of `value` is not narrowed to `Target`.
+        assertEquals(value.a, 'a');
+      }
+    };
+    for (const value of [{ a: 'a' }, null, undefined, 1, true, Symbol('a')]) {
+      fn(value);
     }
   });
 });
