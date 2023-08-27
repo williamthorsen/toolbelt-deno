@@ -1,4 +1,4 @@
-import { isPlainObject } from './isPlainObject.ts';
+import { checkIsPlainObject } from './checkIsPlainObject.ts';
 import type { CompareKeys } from './objects.types.ts';
 
 /**
@@ -20,7 +20,7 @@ export function sortObjectKeys<T>(
     if (Array.isArray(data)) {
       return data.map((item) => sortObjectKeys(item, compare)) as T;
     }
-    if (isPlainObject(data)) {
+    if (checkIsPlainObject(data)) {
       const sortedEntries = Object.entries(data)
         .sort(([keyA], [keyB]) => compare(keyA, keyB))
         .map(([key, value]) => {

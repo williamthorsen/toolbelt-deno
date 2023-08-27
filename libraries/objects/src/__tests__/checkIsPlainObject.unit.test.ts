@@ -1,21 +1,21 @@
 import { assert, describe, it } from '../../dev_deps.ts';
-import { isPlainObject } from '../isPlainObject.ts';
+import { checkIsPlainObject } from '../checkIsPlainObject.ts';
 
-describe('isPlainObject(value: any)', () => {
+describe('checkIsPlainObject(value: any)', () => {
   it('should return false if the value is any primitive', () => {
     const primitives = [true, false, 0, 1, '', 'non-empty-string'];
     for (const primitive of primitives) {
-      assert(!isPlainObject(primitive));
+      assert(!checkIsPlainObject(primitive));
     }
   });
 
   it('should return false if the value is a function', () => {
     const fn = (): void => void 0;
-    assert(!isPlainObject(fn));
+    assert(!checkIsPlainObject(fn));
   });
 
   it('should return false if the value is an array', () => {
-    assert(!isPlainObject([]));
+    assert(!checkIsPlainObject([]));
   });
 
   it('should return false for an instance of any class other than Object', () => {
@@ -31,14 +31,14 @@ describe('isPlainObject(value: any)', () => {
       new WeakMap(),
     ];
     for (const instance of instances) {
-      assert(!isPlainObject(instance));
+      assert(!checkIsPlainObject(instance));
     }
   });
 
   it('should return true for any other object', () => {
     const plainObjects = [{}, { a: 1 }, new Object()];
     for (const plainObject of plainObjects) {
-      assert(isPlainObject(plainObject));
+      assert(checkIsPlainObject(plainObject));
     }
   });
 });

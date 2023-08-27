@@ -1,4 +1,4 @@
-import { isPlainObject } from './isPlainObject.ts';
+import { checkIsPlainObject } from './checkIsPlainObject.ts';
 
 /**
  * Returns `typeof value`, except that the "object" type is replaced by more precise types:
@@ -20,7 +20,7 @@ export function preciseObjectTypeof(value: unknown): string {
     return 'null';
   }
 
-  if (isPlainObject(value)) {
+  if (checkIsPlainObject(value)) {
     return 'plainobject';
   }
 
