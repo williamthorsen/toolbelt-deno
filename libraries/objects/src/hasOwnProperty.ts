@@ -4,7 +4,7 @@
 export function hasOwnProperty<T, K extends PropertyKey>(
   target: T,
   key: K,
-): target is T & Record<K, T extends Record<K, infer U> ? U : never> {
+): target is T & Record<K, K extends keyof T ? T[K] : never> {
   if (target === null) {
     return false;
   }
