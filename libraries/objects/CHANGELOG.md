@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.7.2
+
+### Fixes
+
+Fixed an issue caused by the previous release, where `hasOwnProperty` did not correctly infer the type of an object's
+key.
+
 ## 0.7.1
 
 ### Fixes
