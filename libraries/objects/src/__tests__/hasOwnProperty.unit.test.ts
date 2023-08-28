@@ -80,4 +80,15 @@ describe('hasOwnProperty()', () => {
     fn(nDict);
     fn(sDict);
   });
+
+  it('can infer type when the key type is a superset of the object keys', () => {
+    type Key = 'a' | 'b' | 'c';
+
+    const dict: Record<'a' | 'b', string> = { a: 'a', b: 'b' }; // keys are only a subset of `Key`
+
+    function getValueOrEmpty(key: Key): string {
+      return hasOwnProperty(dict, key) ? dict[key] : '';
+    }
+    getValueOrEmpty('a');
+  });
 });
