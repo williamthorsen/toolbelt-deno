@@ -5,5 +5,6 @@ export { assertEquals } from 'https://deno.land/std@0.200.0/assert/assert_equals
 export { assertMatch } from 'https://deno.land/std@0.200.0/assert/assert_match.ts';
 export { assertNotEquals } from 'https://deno.land/std@0.200.0/assert/assert_not_equals.ts';
 export { assertNotStrictEquals } from 'https://deno.land/std@0.200.0/assert/assert_not_strict_equals.ts';
+export { assertStrictEquals } from 'https://deno.land/std@0.200.0/assert/assert_strict_equals.ts';
 export { assertThrows } from 'https://deno.land/std@0.200.0/assert/assert_throws.ts';
 export { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.200.0/testing/bdd.ts';

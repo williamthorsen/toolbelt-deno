@@ -1,3 +1,4 @@
+export { arraify } from './src/arraify.ts';
 export { getDuplicates } from './src/getDuplicates.ts';
 export { getSetItems } from './src/getSetItems.ts';
 export { includes } from './src/includes.ts';
