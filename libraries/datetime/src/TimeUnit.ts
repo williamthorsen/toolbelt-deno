@@ -1,21 +1,28 @@
 export class TimeUnit {
-  static readonly Milliseconds = new TimeUnit('millis', 1);
-  static readonly Seconds = new TimeUnit('seconds', 1_000);
-  static readonly Minutes = new TimeUnit('minutes', 60_000);
-  static readonly Hours = new TimeUnit('hours', 3_600_000);
-  static readonly Days = new TimeUnit('days', 86_400_000);
+  static readonly Milliseconds = new TimeUnit(1, { singular: 'millisecond', abbrev: 'ms' });
+  static readonly Seconds = new TimeUnit(1_000, { singular: 'second', abbrev: 's' });
+  static readonly Minutes = new TimeUnit(60_000, { singular: 'minute', abbrev: 'm' });
+  static readonly Hours = new TimeUnit(3_600_000, { singular: 'hour', abbrev: 'h' });
+  static readonly Days = new TimeUnit(86_400_000, { singular: 'day', abbrev: 'd' });
 
-  private constructor(public readonly label: string, public readonly inMillis: number) {
+  readonly abbrev: string;
+  readonly plural: string;
+  readonly singular: string;
+
+  private constructor(public readonly inMillis: number, options: TimeUnitOptions) {
     // MAX_SAFE_INTEGER is 2^53, so by representing our duration in fromMilliseconds (the lowest
     // common unit) the highest duration we can represent is
     // 2^53 / 86*10^6 ~= 104 * 10^6 fromDays (about 100 million fromDays).
+    this.abbrev = options.abbrev;
+    this.singular = options.singular;
+    this.plural = `${options.singular}s`;
   }
 
-  public static convert(
+  static convert(
     amount: number,
     fromUnit: TimeUnit,
     toUnit: TimeUnit,
-    options: TimeConversionOptions = {},
+    options: TimeUnitConversionOptions = {},
   ): number {
     const { decimalPlaces, throwOnFractional } = options;
 
@@ -27,7 +34,9 @@ export class TimeUnit {
     const value = amount * multiplier;
 
     if (!Number.isInteger(value) && throwOnFractional) {
-      throw new Error(`${amount} ${fromUnit} cannot be converted into a whole number of ${toUnit}.`);
+      throw new Error(
+        `${fromUnit.getLabeledAmount(amount)} cannot be converted into a whole number of ${toUnit.plural}.`,
+      );
     }
 
     if (decimalPlaces !== undefined) {
@@ -44,17 +53,37 @@ export class TimeUnit {
     return a.inMillis < b.inMillis ? a : b;
   }
 
-  public toString(): string {
-    return this.label;
+  getInflectedLabel(amount: number): string {
+    return amount === 1 ? this.singular : this.plural;
+  }
+
+  getLabeledAmount(amount: number, options: TimeUnitLabelOptions = {}): string {
+    if (options.format === 'short') {
+      return `${amount}${this.abbrev}`;
+    }
+    return `${amount} ${this.getInflectedLabel(amount)}`;
+  }
+
+  toString(): string {
+    return this.plural;
   }
 }
 
 /**
  * Options for how to convert time to a different unit.
  */
-export interface TimeConversionOptions {
-  readonly throwOnFractional?: boolean;
-  readonly decimalPlaces?: Integer;
+export interface TimeUnitConversionOptions {
+  readonly throwOnFractional?: boolean | undefined;
+  readonly decimalPlaces?: Integer | undefined;
+}
+
+export interface TimeUnitLabelOptions {
+  format?: 'short' | 'long' | undefined;
+}
+
+interface TimeUnitOptions {
+  abbrev: string;
+  singular: string;
 }
 
 type Integer = number;
