@@ -1,5 +1,22 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.1.0
+
+### Features
+
+Added function:
+
+- `arraify`: Wraps a value in an array if it is not already an array.
+
+## 2.0.0
+
+### BREAKING CHANGES
+
+Renamed functions for concision:
+
+- `pickRandomItem` to `pickItem`.
+- `pickRandomItems` to `pickItems`
+
 ## 1.3.4
 
 ### BREAKING CHANGES
@@ -10,15 +27,6 @@ Renamed a property of the `options` object accepted by `toPickWeightedItemFromDi
 ### Refactoring
 
 Added a type parameter to `toPickWeightedItemFromDistribution` describing the keys of the `Distribution` object.
-
-## 2.0.0
-
-### BREAKING CHANGES
-
-Renamed functions for concision:
-
-- `pickRandomItem` to `pickItem`.
-- `pickRandomItems` to `pickItems`
 
 ## 1.3.3
 
