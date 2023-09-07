@@ -56,6 +56,28 @@ export class Timestamp {
   }
 
   /**
+   * Returns a timestamp in the format `YYYY-MM-DD HH:MM[:SS[.000]] UTC` (depending on the granularity).
+   * It is the same format as `Date.toISOString()` but with a space instead of a `T` and ` UTC` instead of `Z`.
+   * This date format is human-readable, sortable, and accepted by the Date constructor.
+   * TODO: Decide how to handle hours.
+   */
+  toHumaneUtcString(options: TimestampFormatOptions = {}): string {
+    const { granularity = this.timeUnit } = options;
+
+    if (granularity === TimeUnit.Hours) {
+      throw new Error('Method does not support TimeUnit.Hours granularity.');
+    }
+
+    const isoString = this.toIsoString({ granularity });
+    if (granularity.inMillis <= TimeUnit.Minutes.inMillis) {
+      return isoString
+        .replace(/T/, ' ')
+        .replace(/Z$/, ' UTC');
+    }
+    return `${isoString} UTC`;
+  }
+
+  /**
    * Returns a timestamp in the format `YYYY-MM-DDTHH:MM[:SS[.000]]Z` (depending on the granularity).
    */
   toIsoString(options: TimestampFormatOptions = {}): string {

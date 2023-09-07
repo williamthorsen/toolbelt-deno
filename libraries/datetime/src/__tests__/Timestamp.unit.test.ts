@@ -88,6 +88,30 @@ describe('Timestamp class', () => {
     });
   });
 
+  describe('toHumaneUtcString()', () => {
+    const timestamp = new Timestamp('2023-01-02T13:45:01.234Z');
+    const useCases = [
+      { granularity: TimeUnit.Millis, expectedUtc: '2023-01-02 13:45:01.234 UTC' },
+      { granularity: TimeUnit.Seconds, expectedUtc: '2023-01-02 13:45:01 UTC' },
+      { granularity: TimeUnit.Minutes, expectedUtc: '2023-01-02 13:45 UTC' },
+      { granularity: TimeUnit.Days, expectedUtc: '2023-01-02 UTC' },
+    ];
+
+    for (const { granularity, expectedUtc } of useCases) {
+      it(`when granularity=${granularity.plural}, returns ${expectedUtc}`, () => {
+        const humaneUtc = timestamp.toHumaneUtcString({ granularity });
+
+        assertEquals(humaneUtc, expectedUtc);
+      });
+    }
+
+    it('if granularity=hours, throws an error', () => {
+      const throwingFn = () => timestamp.toHumaneUtcString({ granularity: TimeUnit.Hours });
+
+      assertThrows(throwingFn, Error, 'Method does not support TimeUnit.Hours granularity.');
+    });
+  });
+
   describe('toIsoString()', () => {
     it('returns the ISO string representation for the given granularity', () => {
       const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
