@@ -1,5 +1,18 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.3.0
+
+### Breaking changes
+
+- Removed `TimeUnit.smallestUnit`; comparisons can be made using `TimeUnit.millis`.
+- Renamed `TimeUnit.Milliseconds` to `TimeUnit.Millis`.
+- Renamed `Timestamp.milliseconds` to `Timestamp.millis`.
+- Removed `Timestamp.ms`.
+
+### Features
+
+- Added `Timestamp.toHumaneUtcString`: Renders a human-friendly UTC date or date-time string.
+
 ## 0.2.0
 
 ### Features

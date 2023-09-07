@@ -10,7 +10,7 @@ describe('TimeUnit class', () => {
     });
 
     it('correctly converts seconds to milliseconds', () => {
-      const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Milliseconds);
+      const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Millis);
       assertEquals(result, 1_000);
     });
 
@@ -82,18 +82,6 @@ describe('TimeUnit class', () => {
       const result = TimeUnit.Minutes.getLabeledAmount(amount, { format: 'short' });
 
       assertEquals(result, expected);
-    });
-  });
-
-  describe('smallestUnit()', () => {
-    it('should return the smaller of the two units', () => {
-      const result = TimeUnit.smallestUnit(TimeUnit.Minutes, TimeUnit.Hours);
-      assertEquals(result, TimeUnit.Minutes);
-    });
-
-    it('should return the unit itself if compared with the same unit', () => {
-      const result = TimeUnit.smallestUnit(TimeUnit.Days, TimeUnit.Days);
-      assertEquals(result, TimeUnit.Days);
     });
   });
 
