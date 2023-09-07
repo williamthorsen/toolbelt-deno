@@ -10,7 +10,7 @@ describe('TimeUnit class', () => {
     });
 
     it('correctly converts seconds to milliseconds', () => {
-      const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Milliseconds);
+      const result = TimeUnit.convert(1, TimeUnit.Seconds, TimeUnit.Millis);
       assertEquals(result, 1_000);
     });
 

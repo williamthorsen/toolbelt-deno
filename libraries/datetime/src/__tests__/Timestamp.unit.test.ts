@@ -5,15 +5,15 @@ import { Timestamp } from '../Timestamp.ts';
 describe('Timestamp class', () => {
   describe('static fromMilliseconds()', () => {
     it('returns a Timestamp initialized with given milliseconds', () => {
-      const result = Timestamp.fromMilliseconds(1_000);
-      assertEquals(result.milliseconds, 1_000);
+      const result = Timestamp.fromMillis(1_000);
+      assertEquals(result.millis, 1_000);
     });
   });
 
   describe('static fromSeconds()', () => {
     it('returns a Timestamp initialized with given seconds', () => {
       const result = Timestamp.fromSeconds(1);
-      assertEquals(result.milliseconds, 1_000);
+      assertEquals(result.millis, 1_000);
     });
   });
 
@@ -21,7 +21,7 @@ describe('Timestamp class', () => {
     it('given no input, uses the current time as the timestamp', () => {
       const timestamp = new Timestamp();
 
-      assertAlmostEquals(timestamp.milliseconds, Date.now());
+      assertAlmostEquals(timestamp.millis, Date.now());
     });
 
     it('given a Timestamp as the input, returns a new Timestamp storing the same value', () => {
@@ -29,15 +29,14 @@ describe('Timestamp class', () => {
 
       const result = new Timestamp(timestamp);
 
-      assertEquals(result.milliseconds, 1_000);
+      assertEquals(result.millis, 1_000);
     });
   });
 
-  describe('milliseconds/ms properties', () => {
+  describe('milliseconds properties', () => {
     it('returns the timestamp value in milliseconds', () => {
       const timestamp = new Timestamp(new Date(1_000));
-      assertEquals(timestamp.milliseconds, 1_000);
-      assertEquals(timestamp.ms, 1_000);
+      assertEquals(timestamp.millis, 1_000);
     });
   });
 
@@ -53,29 +52,29 @@ describe('Timestamp class', () => {
       const original = new Timestamp(new Date(1_000));
       const clone = original.clone();
 
-      assertEquals(clone.milliseconds, 1_000);
+      assertEquals(clone.millis, 1_000);
       assertEquals(clone !== original, true);
     });
 
     it('given a timeUnit, returns a clone that uses that time unit', () => {
-      const original = new Timestamp(new Date(1_000), { timeUnit: TimeUnit.Milliseconds });
+      const original = new Timestamp(new Date(1_000), { timeUnit: TimeUnit.Millis });
 
       const clone = original.clone({ timeUnit: TimeUnit.Seconds });
 
       assertEquals(clone.timeUnit, TimeUnit.Seconds);
-      assertEquals(original.ms, clone.ms);
+      assertEquals(original.millis, clone.millis);
     });
   });
 
   describe('setTimeUnit()', () => {
     it('sets the time unit and without changing the stored point in time', () => {
       const timestamp = new Timestamp(new Date(1_000));
-      const millis = timestamp.ms;
+      const millis = timestamp.millis;
 
       timestamp.setTimeUnit(TimeUnit.Seconds);
 
       assertEquals(timestamp.timeUnit, TimeUnit.Seconds);
-      assertEquals(timestamp.ms, millis);
+      assertEquals(timestamp.millis, millis);
     });
   });
 
@@ -86,19 +85,6 @@ describe('Timestamp class', () => {
 
       assertEquals(result instanceof Date, true);
       assertEquals(result.getTime(), 1_000);
-    });
-  });
-
-  describe('toLocaleDateTimeString()', () => {
-    it('should return a formatted date-time string', () => {
-      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.000Z'));
-      const expectedDateString = timestamp.toDate().toLocaleDateString();
-      const expecteTimeString = timestamp.toDate().toLocaleTimeString();
-      const expectedDateTimeString = expectedDateString + ' ' + expecteTimeString;
-
-      const result = timestamp.toLocaleDateTimeString('en-US');
-
-      assertEquals(result, expectedDateTimeString);
     });
   });
 
@@ -120,6 +106,19 @@ describe('Timestamp class', () => {
         Error,
         'Unexpected time unit',
       );
+    });
+  });
+
+  describe('toLocaleDateTimeString()', () => {
+    it('should return a formatted date-time string', () => {
+      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.000Z'));
+      const expectedDateString = timestamp.toDate().toLocaleDateString();
+      const expecteTimeString = timestamp.toDate().toLocaleTimeString();
+      const expectedDateTimeString = expectedDateString + ' ' + expecteTimeString;
+
+      const result = timestamp.toLocaleDateTimeString('en-US');
+
+      assertEquals(result, expectedDateTimeString);
     });
   });
 
