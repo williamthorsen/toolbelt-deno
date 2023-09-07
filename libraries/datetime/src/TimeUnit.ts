@@ -46,13 +46,6 @@ export class TimeUnit {
     return value;
   }
 
-  /**
-   * Returns the time unit with highest granularity
-   */
-  static smallestUnit(a: TimeUnit, b: TimeUnit): TimeUnit {
-    return a.inMillis < b.inMillis ? a : b;
-  }
-
   getInflectedLabel(amount: number): string {
     return amount === 1 ? this.singular : this.plural;
   }

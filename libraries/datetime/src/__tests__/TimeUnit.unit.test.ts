@@ -85,18 +85,6 @@ describe('TimeUnit class', () => {
     });
   });
 
-  describe('smallestUnit()', () => {
-    it('should return the smaller of the two units', () => {
-      const result = TimeUnit.smallestUnit(TimeUnit.Minutes, TimeUnit.Hours);
-      assertEquals(result, TimeUnit.Minutes);
-    });
-
-    it('should return the unit itself if compared with the same unit', () => {
-      const result = TimeUnit.smallestUnit(TimeUnit.Days, TimeUnit.Days);
-      assertEquals(result, TimeUnit.Days);
-    });
-  });
-
   describe('toString()', () => {
     it('should return the label of the unit', () => {
       assertEquals(TimeUnit.Hours.toString(), 'hours');
