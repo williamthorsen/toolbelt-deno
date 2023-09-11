@@ -22,18 +22,6 @@ describe('interpolate()', () => {
     assertEquals(output, expectedOutput);
   });
 
-  it('when a placeholder does not match any key in the dictionary and fallbackToKey=true, treats unmatched placeholders as values', () => {
-    const input = 'Hello, {name}!';
-    const dictionary = { greeting: 'Hi' };
-    const expectedOutput = 'Hello, name!';
-
-    const output = interpolate(input, dictionary, {
-      fallbackToKey: true,
-    });
-
-    assertEquals(output, expectedOutput);
-  });
-
   it('when multiple occurrences of a placeholder match a key in the dictionary, replaces all occurrences with the corresponding value', () => {
     const input = '{delimiter}Hello, {name}!{delimiter}';
     const dictionary = { name: 'World', delimiter: '|' };
@@ -222,6 +210,62 @@ describe('interpolate()', () => {
       const expectedOutput = 'Hello, World! This is a {grEeting}!';
 
       const output = interpolate(input, dictionary, { adaptCase });
+
+      assertEquals(output, expectedOutput);
+    });
+  });
+
+  // TODO: Remove when deprecated `fallbackToKey` option is removed.
+  //  For now, this duplicates the test of the new `ifMissing=USE_KEY` option.
+  describe('fallbackToKey option', () => {
+    it('if fallbackToKey=true, gives same result as ifMissing=USE_KEY', () => {
+      const input = 'Hello, {name}!';
+      const dictionary = {};
+      const expectedOutput = interpolate(input, dictionary, {
+        ifMissing: 'USE_KEY',
+      });
+
+      const fallbackOutput = interpolate(input, dictionary, {
+        fallbackToKey: true,
+      });
+
+      assertEquals(fallbackOutput, expectedOutput);
+    });
+  });
+
+  describe('ifMissing options', () => {
+    it('if ifMissing=THROW and there are unmatched placeholders, throws  error listing the unused placeholders', () => {
+      const input = '{greeting}, {firstName} {lastName}!';
+      const dictionary = { greeting: 'Hi' };
+
+      const throwingFn = () =>
+        interpolate(input, dictionary, {
+          ifMissing: 'THROW',
+        });
+
+      // TODO: Inflect the error message to match the number of placeholders
+      assertThrows(throwingFn, Error, 'Text has unmatched placeholders: firstName, lastName');
+    });
+
+    it('if ifMissing=USE_KEY, replaces any unmatched placeholder with the placeholder itself', () => {
+      const input = 'Hello, {name}!';
+      const dictionary = {};
+      const expectedOutput = 'Hello, name!';
+
+      const output = interpolate(input, dictionary, {
+        ifMissing: 'USE_KEY',
+      });
+
+      assertEquals(output, expectedOutput);
+    });
+
+    it('if ifMissing is a function, replaces any unmatched placeholder with the result of the function', () => {
+      const input = 'Hello, {name}!';
+      const dictionary = {};
+      const expectedOutput = 'Hello, World!';
+      const output = interpolate(input, dictionary, {
+        ifMissing: () => 'World',
+      });
 
       assertEquals(output, expectedOutput);
     });
