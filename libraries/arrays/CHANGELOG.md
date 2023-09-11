@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.2.1
+
+### Fixes
+
+The `findOrThrow` function was added but not exported. Fixed by adding it to the exports in `mod.ts`.
+
 ## 2.2.0
 
 ### Features

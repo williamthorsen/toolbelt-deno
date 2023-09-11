@@ -1,4 +1,5 @@
 export { arraify } from './src/arraify.ts';
+export { findOrThrow } from './src/findOrThrow.ts';
 export { getDuplicates } from './src/getDuplicates.ts';
 export { getSetItems } from './src/getSetItems.ts';
 export { includes } from './src/includes.ts';
