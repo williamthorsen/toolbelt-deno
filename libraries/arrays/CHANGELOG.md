@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.2.2
+
+### Refactoring
+
+Centralized imports from siblings in a `sibling_deps.ts` file.
+
+### Tests
+
+Added tests for imports from siblings. (Without these, code coverage of this library is reported to be incomplete.)
+
 ## 2.2.1
 
 ### Fixes

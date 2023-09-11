@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.3.1
+
+### Tests
+
+Set the tolerance of the `Timestamp` constructor test to 5 milliseconds.
+
 ## 0.3.0
 
 ### Breaking changes

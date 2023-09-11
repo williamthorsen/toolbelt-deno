@@ -1,5 +1,13 @@
 # toolbelt-deno
 
+## 2.2.2
+
+### Dependencies
+
+Upgraded all runtimes to latest version:
+
+- pnpm: 8.7.4 -> 8.7.5
+
 ## 2.1.1
 
 ### Dependencies

@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.numbers
 
+## 0.3.2
+
+### Refactoring
+
+Centralized imports from siblings in a `sibling_deps.ts` file.
+
 ## 0.3.1
 
 ### Features
