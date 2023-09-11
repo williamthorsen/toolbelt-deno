@@ -1,5 +1,5 @@
+import { round } from '../sibling_deps.ts';
 import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
-import { round } from '../../numbers/src/round.ts';
 
 const TOLERANCE = 0.0001; // probability will be accepted if within target by no more than this amount
 
