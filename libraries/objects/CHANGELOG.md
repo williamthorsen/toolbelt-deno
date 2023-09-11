@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.objects
 
+## Features
+
+### 0.8.0
+
+Added function `mapToObject`: Converts a Map instance to an object while preserving the type of the entries.
+
 ## 0.7.2
 
 ### Fixes
