@@ -1,4 +1,4 @@
-import { random } from '../../numbers/src/random.ts';
+import { random } from '../sibling_deps.ts';
 import { getWeightedIndex } from './getWeightedIndex.ts';
 
 /**

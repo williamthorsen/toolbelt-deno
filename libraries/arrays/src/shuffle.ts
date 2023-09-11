@@ -1,4 +1,4 @@
-import { createNumberGenerator } from '../../numbers/src/createNumberGenerator.ts';
+import { createNumberGenerator } from '../sibling_deps.ts';
 
 /**
  * Returns a new array with the items shuffled.
