@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.2.0
+
+### Features
+
+Added function:
+
+- `findOrThrow`: Returns the first item in an array that satisfies a predicate, or throws an error if no item satisfies
+  the predicate.
+
 ## 2.1.0
 
 ### Features
