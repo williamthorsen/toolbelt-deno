@@ -4,9 +4,9 @@ import { TimeUnit } from './TimeUnit.ts';
  * Represents a point in time.
  */
 export class Timestamp {
-  _format: TimestampFormatEnum;
-  _millis: number;
-  _timeUnit: TimeUnit;
+  private _format: TimestampFormatEnum;
+  private readonly _millis: number;
+  private _timeUnit: TimeUnit;
 
   // region | Static methods
   static fromMillis(milliseconds: number): Timestamp {
@@ -32,6 +32,10 @@ export class Timestamp {
     this._timeUnit = timeUnit;
   }
 
+  get format(): TimestampFormatEnum {
+    return this._format;
+  }
+
   get millis(): number {
     return this._millis;
   }
@@ -48,7 +52,9 @@ export class Timestamp {
     return new Timestamp(this._millis, options);
   }
 
-  public setTimeUnit(timeUnit: TimeUnit): Timestamp {
+  setOptions(options: TimestampOptions = {}): Timestamp {
+    const { format = this._format, timeUnit = this._timeUnit } = options;
+    this._format = format;
     this._timeUnit = timeUnit;
     return this;
   }

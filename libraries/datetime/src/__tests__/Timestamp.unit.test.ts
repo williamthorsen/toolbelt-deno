@@ -67,12 +67,21 @@ describe('Timestamp class', () => {
     });
   });
 
-  describe('setTimeUnit()', () => {
-    it('sets the time unit and without changing the stored point in time', () => {
+  describe('setOptions()', () => {
+    it('optionally sets the default format', () => {
+      const timestamp = new Timestamp(new Date(1_000));
+      const format = 'humane';
+
+      timestamp.setOptions({ format });
+
+      assertEquals(timestamp.format, format);
+    });
+
+    it('optionally sets the instance\'s time unit; does not change the stored point in time', () => {
       const timestamp = new Timestamp(new Date(1_000));
       const millis = timestamp.millis;
 
-      timestamp.setTimeUnit(TimeUnit.Seconds);
+      timestamp.setOptions({ timeUnit: TimeUnit.Seconds });
 
       assertEquals(timestamp.timeUnit, TimeUnit.Seconds);
       assertEquals(timestamp.millis, millis);
