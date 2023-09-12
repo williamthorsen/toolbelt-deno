@@ -5,9 +5,22 @@ import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
  * If a placeholder does not match any key in the dictionary, it is left unchanged.
  * If a placeholder matches multiple keys in the dictionary, all occurrences are replaced.
  */
-export function interpolate<K extends string>(
+// Overload for Map
+export function interpolate(
   text: string,
-  dictionary: Map<K | RegExp, string> | Record<K, string>,
+  dictionary: Map<string, string>,
+  options?: InterpolateOptions,
+): string;
+// Overload for generic object types
+export function interpolate<T extends object, K extends string>(
+  text: string,
+  dictionary: StrictObject<T>, // exclude
+  options?: InterpolateOptions,
+): string;
+// FIXME: This signature has the desired effect but is not consistent with the overloads.
+export function interpolate<T extends Record<string, string>>(
+  text: string,
+  dictionary: T | Map<string, string>,
   options: InterpolateOptions = {},
 ): string {
   const { adaptCase, fallbackToKey, ifMissing = 'IGNORE' } = options;
@@ -15,7 +28,7 @@ export function interpolate<K extends string>(
   assertHasNoNestedBraces(text);
   assertHasNoUnmatchedBraces(text);
 
-  const map = dictionary instanceof Map ? dictionary : new Map(Object.entries<string>(dictionary));
+  const map = dictionary instanceof Map ? dictionary : new Map(Object.entries(dictionary));
 
   let newText = text;
   for (const [key, value] of map) {
@@ -134,3 +147,7 @@ interface InterpolateOptions {
   // what to do if a placeholder is not found in the dictionary
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
 }
+
+// Ignore the warning about `Function`: We do want to exclude all functions and classes!
+// deno-lint-ignore ban-types
+type StrictObject<T> = T extends (null | Function | ArrayLike<unknown>) ? never : (T extends object ? T : never);

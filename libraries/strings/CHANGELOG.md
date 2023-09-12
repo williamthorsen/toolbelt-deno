@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.7.1
+
+### Fixes
+
+Fixed an issue in `interpolate` where a dictionary would be rejected if its type defined optional keys that were missing
+from the dictionary.
+
 ## 0.7.0
 
 ### Deprecations
