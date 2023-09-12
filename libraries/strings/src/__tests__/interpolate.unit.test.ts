@@ -92,12 +92,26 @@ describe('interpolate()', () => {
     assertEquals(output, expectedOutput);
   });
 
-  it('works with a typed object not having [key: string] index', () => {
+  it('works with a typed object not having a string index', () => {
     interface Dictionary {
       name: string;
     }
     const input = 'Hello, {name}!';
     const dictionary: Dictionary = { name: 'World' };
+    const expectedOutput = 'Hello, World!';
+
+    const output = interpolate(input, dictionary);
+
+    assertEquals(output, expectedOutput);
+  });
+
+  it('works with a dictionary that is missing keys that are optional in its type', () => {
+    interface Dictionary {
+      required: string;
+      notRequired?: string;
+    }
+    const input = 'Hello, {required}!';
+    const dictionary: Dictionary = { required: 'World' };
     const expectedOutput = 'Hello, World!';
 
     const output = interpolate(input, dictionary);
