@@ -56,20 +56,20 @@ export class Timestamp {
   }
 
   /**
-   * Returns a timestamp in the format `YYYY-MM-DD HH:MM[:SS[.000]] UTC` (depending on the granularity).
+   * Returns a timestamp in the format `YYYY-MM-DD HH:MM[:SS[.000]] UTC` (depending on the time unit).
    * It is the same format as `Date.toISOString()` but with a space instead of a `T` and ` UTC` instead of `Z`.
    * This date format is human-readable, sortable, and accepted by the Date constructor.
    * TODO: Decide how to handle hours.
    */
   toHumaneUtcString(options: TimestampFormatOptions = {}): string {
-    const { granularity = this.timeUnit } = options;
+    const { timeUnit = this.timeUnit } = options;
 
-    if (granularity === TimeUnit.Hours) {
-      throw new Error('Method does not support TimeUnit.Hours granularity.');
+    if (timeUnit === TimeUnit.Hours) {
+      throw new Error('Method does not support TimeUnit.Hours time unit.');
     }
 
-    const isoString = this.toIsoString({ granularity });
-    if (granularity.inMillis <= TimeUnit.Minutes.inMillis) {
+    const isoString = this.toIsoString({ timeUnit });
+    if (timeUnit.inMillis <= TimeUnit.Minutes.inMillis) {
       return isoString
         .replace(/T/, ' ')
         .replace(/Z$/, ' UTC');
@@ -78,12 +78,12 @@ export class Timestamp {
   }
 
   /**
-   * Returns a timestamp in the format `YYYY-MM-DDTHH:MM[:SS[.000]]Z` (depending on the granularity).
+   * Returns a timestamp in the format `YYYY-MM-DDTHH:MM[:SS[.000]]Z` (depending on the time unit).
    */
   toIsoString(options: TimestampFormatOptions = {}): string {
-    const { granularity = this.timeUnit } = options;
+    const { timeUnit = this.timeUnit } = options;
     const isoDateTime = this.toDate().toISOString();
-    switch (granularity) {
+    switch (timeUnit) {
       case TimeUnit.Millis:
         return isoDateTime;
       case TimeUnit.Seconds:
@@ -95,7 +95,7 @@ export class Timestamp {
       case TimeUnit.Days:
         return isoDateTime.split('T')[0];
       default:
-        throw new Error(`Unexpected time unit: ${granularity}`);
+        throw new Error(`Unexpected time unit: ${timeUnit}`);
     }
   }
 
@@ -113,6 +113,6 @@ export class Timestamp {
 export type TimestampInput = Date | number | string | Timestamp;
 
 interface TimestampFormatOptions {
-  granularity?: TimeUnit | undefined;
+  timeUnit?: TimeUnit | undefined;
 }
 // endregion - Types

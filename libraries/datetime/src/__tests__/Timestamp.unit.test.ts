@@ -92,42 +92,42 @@ describe('Timestamp class', () => {
   describe('toHumaneUtcString()', () => {
     const timestamp = new Timestamp('2023-01-02T13:45:01.234Z');
     const useCases = [
-      { granularity: TimeUnit.Millis, expectedUtc: '2023-01-02 13:45:01.234 UTC' },
-      { granularity: TimeUnit.Seconds, expectedUtc: '2023-01-02 13:45:01 UTC' },
-      { granularity: TimeUnit.Minutes, expectedUtc: '2023-01-02 13:45 UTC' },
-      { granularity: TimeUnit.Days, expectedUtc: '2023-01-02 UTC' },
+      { timeUnit: TimeUnit.Millis, expectedUtc: '2023-01-02 13:45:01.234 UTC' },
+      { timeUnit: TimeUnit.Seconds, expectedUtc: '2023-01-02 13:45:01 UTC' },
+      { timeUnit: TimeUnit.Minutes, expectedUtc: '2023-01-02 13:45 UTC' },
+      { timeUnit: TimeUnit.Days, expectedUtc: '2023-01-02 UTC' },
     ];
 
-    for (const { granularity, expectedUtc } of useCases) {
-      it(`when granularity=${granularity.plural}, returns ${expectedUtc}`, () => {
-        const humaneUtc = timestamp.toHumaneUtcString({ granularity });
+    for (const { expectedUtc, timeUnit } of useCases) {
+      it(`when timeUnit=${timeUnit.plural}, returns ${expectedUtc}`, () => {
+        const humaneUtc = timestamp.toHumaneUtcString({ timeUnit });
 
         assertEquals(humaneUtc, expectedUtc);
       });
     }
 
-    it('if granularity=hours, throws an error', () => {
-      const throwingFn = () => timestamp.toHumaneUtcString({ granularity: TimeUnit.Hours });
+    it('if timeUnit=hours, throws an error', () => {
+      const throwingFn = () => timestamp.toHumaneUtcString({ timeUnit: TimeUnit.Hours });
 
-      assertThrows(throwingFn, Error, 'Method does not support TimeUnit.Hours granularity.');
+      assertThrows(throwingFn, Error, 'Method does not support TimeUnit.Hours time unit.');
     });
   });
 
   describe('toIsoString()', () => {
-    it('returns the ISO string representation for the given granularity', () => {
+    it('returns the ISO string representation for the given time unit', () => {
       const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
 
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Seconds }), '2023-01-01T10:10:10Z');
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Minutes }), '2023-01-01T10:10Z');
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Hours }), '2023-01-01T10Z');
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Days }), '2023-01-01');
+      assertEquals(timestamp.toIsoString({ timeUnit: TimeUnit.Seconds }), '2023-01-01T10:10:10Z');
+      assertEquals(timestamp.toIsoString({ timeUnit: TimeUnit.Minutes }), '2023-01-01T10:10Z');
+      assertEquals(timestamp.toIsoString({ timeUnit: TimeUnit.Hours }), '2023-01-01T10Z');
+      assertEquals(timestamp.toIsoString({ timeUnit: TimeUnit.Days }), '2023-01-01');
     });
 
     it('given an unknown time unit, throws an error', () => {
       const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
 
       assertThrows(
-        () => timestamp.toIsoString({ granularity: (999 as unknown) as TimeUnit }), // using an invalid time unit
+        () => timestamp.toIsoString({ timeUnit: (999 as unknown) as TimeUnit }), // using an invalid time unit
         Error,
         'Unexpected time unit',
       );
