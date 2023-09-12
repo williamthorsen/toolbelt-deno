@@ -4,6 +4,7 @@ import { TimeUnit } from './TimeUnit.ts';
  * Represents a point in time.
  */
 export class Timestamp {
+  _format: TimestampFormatEnum;
   _millis: number;
   _timeUnit: TimeUnit;
 
@@ -18,8 +19,8 @@ export class Timestamp {
   // endregion
 
   // region | Public methods
-  constructor(dateTime?: TimestampInput, options: { timeUnit?: TimeUnit } = {}) {
-    const { timeUnit = TimeUnit.Millis } = options;
+  constructor(dateTime?: TimestampInput, options: TimestampOptions = {}) {
+    const { format = 'iso', timeUnit = TimeUnit.Millis } = options;
     if (dateTime instanceof Timestamp) {
       this._millis = dateTime._millis;
     } else if (dateTime) {
@@ -27,6 +28,7 @@ export class Timestamp {
     } else {
       this._millis = Date.now();
     }
+    this._format = format;
     this._timeUnit = timeUnit;
   }
 
@@ -42,7 +44,7 @@ export class Timestamp {
     return this._timeUnit;
   }
 
-  clone(options: { timeUnit?: TimeUnit } = {}): Timestamp {
+  clone(options: TimestampOptions = {}): Timestamp {
     return new Timestamp(this._millis, options);
   }
 
@@ -61,7 +63,7 @@ export class Timestamp {
    * This date format is human-readable, sortable, and accepted by the Date constructor.
    * TODO: Decide how to handle hours.
    */
-  toHumaneUtcString(options: TimestampFormatOptions = {}): string {
+  toHumaneUtcString(options: TimestampOptions = {}): string {
     const { timeUnit = this.timeUnit } = options;
 
     if (timeUnit === TimeUnit.Hours) {
@@ -80,7 +82,7 @@ export class Timestamp {
   /**
    * Returns a timestamp in the format `YYYY-MM-DDTHH:MM[:SS[.000]]Z` (depending on the time unit).
    */
-  toIsoString(options: TimestampFormatOptions = {}): string {
+  toIsoString(options: Omit<TimestampOptions, 'format'> = {}): string {
     const { timeUnit = this.timeUnit } = options;
     const isoDateTime = this.toDate().toISOString();
     switch (timeUnit) {
@@ -104,15 +106,25 @@ export class Timestamp {
     return date.toLocaleDateString(locales, options) + ' ' + date.toLocaleTimeString(locales, options);
   }
 
-  toString(): string {
-    return this.toIsoString();
+  toString(options: TimestampOptions = {}): string {
+    const {
+      format = this._format,
+      timeUnit = this._timeUnit,
+    } = options;
+    if (format === 'humane') {
+      return this.toHumaneUtcString({ timeUnit });
+    }
+    return this.toIsoString({ timeUnit });
   }
 }
 
 // region --- Types ---
+type TimestampFormatEnum = 'humane' | 'iso';
+
 export type TimestampInput = Date | number | string | Timestamp;
 
-interface TimestampFormatOptions {
+interface TimestampOptions {
+  format?: TimestampFormatEnum;
   timeUnit?: TimeUnit | undefined;
 }
 // endregion - Types

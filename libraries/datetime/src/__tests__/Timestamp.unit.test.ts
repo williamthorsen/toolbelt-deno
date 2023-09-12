@@ -148,11 +148,42 @@ describe('Timestamp class', () => {
   });
 
   describe('toString()', () => {
-    it('returns the ISO string representation', () => {
+    it('returns the default string representation', () => {
       const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
       const result = timestamp.toString();
 
       assertEquals(result, '2023-01-01T10:10:10.123Z');
+    });
+
+    it('if timeUnit has been set, uses that granularity', () => {
+      const options = { timeUnit: TimeUnit.Seconds };
+      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'), options);
+      const expected = '2023-01-01T10:10:10Z';
+
+      const actual = timestamp.toString();
+
+      assertEquals(actual, expected);
+    });
+
+    it('if timeUnit is specified, uses that granularity', () => {
+      const instanceOptions = { timeUnit: TimeUnit.Seconds };
+      const callOptions = { timeUnit: TimeUnit.Minutes };
+      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'), instanceOptions);
+      const expected = '2023-01-01T10:10Z';
+
+      const actual = timestamp.toString(callOptions);
+
+      assertEquals(actual, expected);
+    });
+
+    it('if format=humane, uses the humane UTC format', () => {
+      const options = { format: 'humane' } as const;
+      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
+      const expected = '2023-01-01 10:10:10.123 UTC';
+
+      const actual = timestamp.toString(options);
+
+      assertEquals(actual, expected);
     });
   });
 });
