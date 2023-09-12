@@ -8,9 +8,9 @@ import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
 export function interpolate<K extends string>(
   text: string,
   dictionary: Map<K | RegExp, string> | Record<K, string>,
-  options: Options = {},
+  options: InterpolateOptions = {},
 ): string {
-  const { adaptCase, fallbackToKey } = options;
+  const { adaptCase, fallbackToKey, ifMissing = 'IGNORE' } = options;
 
   assertHasNoNestedBraces(text);
   assertHasNoUnmatchedBraces(text);
@@ -47,13 +47,23 @@ export function interpolate<K extends string>(
       return delimitedPlaceholder;
     });
   }
-  // If fallbackToKey=true, replace any remaining occurrences of the placeholder with the placeholder itself.
-  if (fallbackToKey) {
-    const matcher = createDelimitedMatcher(/(.+)/);
-    newText = newText.replace(
-      matcher,
-      (_, placeholder) => placeholder,
-    );
+  // If ifMissing is defined, handle any remaining occurrences of the placeholder.
+  if (ifMissing !== 'IGNORE' || fallbackToKey) {
+    const matcher = createDelimitedMatcher(/([^}]+)/);
+    if (fallbackToKey || ifMissing === 'USE_KEY') {
+      return newText.replace(matcher, (_, placeholder) => placeholder);
+    }
+    if (ifMissing === 'THROW') {
+      const unhandledPlaceholders = newText.matchAll(matcher);
+      if (unhandledPlaceholders !== null) {
+        const placeholders = Array.from(unhandledPlaceholders).map(([_, placeholder]) => placeholder);
+        // TODO: Inflect the error message to match the number of placeholders
+        throw new Error(`Text has unmatched placeholders: ${placeholders.join(', ')}`);
+      }
+    }
+    if (typeof ifMissing === 'function') {
+      return newText.replace(matcher, (_, placeholder) => ifMissing(placeholder));
+    }
   }
 
   return newText;
@@ -116,7 +126,11 @@ function assertHasNoUnmatchedBraces(input: string): void {
   }
 }
 
-interface Options {
-  adaptCase?: boolean; // if true, will try to adapt the case of the dictionary value to match the placeholder
-  fallbackToKey?: boolean; // if true, use the undelimited placeholder itself if it is not found in the dictionary
+interface InterpolateOptions {
+  // if true, will try to adapt the case of the dictionary value to match the placeholder
+  adaptCase?: boolean;
+  /** @deprecated Use `ifMissing` instead */
+  fallbackToKey?: boolean | undefined;
+  // what to do if a placeholder is not found in the dictionary
+  ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
 }

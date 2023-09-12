@@ -1,5 +1,29 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.7.0
+
+### Deprecations
+
+The `fallbackToKey` option of the `interpolate` function has been deprecated.
+
+- **Reason**: The option has been replaced by the more flexible `ifMissing` option.
+- **Migration**: Replace `fallbackToKey=true` with `ifMissing="USE_KEY"`.
+- **Removal**: The `fallbackToKey` option is expected to be removed in v1.0.0.
+
+### Features
+
+Enhanced the `interpolate` function so that it now accepts an `ifMissing` option to control how unmatched placeholders
+are handled:
+
+- `IGNORE`: The default behavior. Unmatched placeholders are left unchanged.
+- `THROW`: Throw an error if any placeholders are unmatched.
+- `USE_KEY`: Use the placeholder key as the replacement value (same as the now deprecated `fallbackToKey=true` option)
+- a predicate function that handles the replacement
+
+### Refactoring
+
+Centralized imports from siblings in a `sibling_deps.ts` file.
+
 ## 0.6.0
 
 ### Features

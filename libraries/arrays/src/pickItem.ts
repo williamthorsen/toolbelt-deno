@@ -1,4 +1,4 @@
-import { random } from '../../numbers/src/random.ts';
+import { random } from '../sibling_deps.ts';
 
 /**
  * Returns a random item from the array.

@@ -1,4 +1,4 @@
-import { pickItem } from '../../arrays/src/pickItem.ts';
+import { pickItem } from '../sibling_deps.ts';
 
 /**
  * Given a string that contains delimited variants [variant1|variant2|variant3], replaces the variants with a

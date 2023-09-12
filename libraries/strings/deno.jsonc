@@ -29,11 +29,13 @@
       "**/dist/",
     ],
     include: [
-      '../arrays/**/pickRandomItem.unit.test.ts',
+      // Coverage check will not be 100% unless sibling deps (and their transitive deps) are tested
+      '../arrays/**/pickItem.unit.test.ts',
       '../numbers/src/**/createNumberGenerator.unit.test.ts',
       '../numbers/src/**/getFakeMathRandom.unit.test.ts',
-      '../numbers/src/**/pickRandomInt.unit.test.ts',
-      '../strings/**/*.unit.test.ts'
+      '../numbers/src/**/random.unit.test.ts',
+      // Because `include` is defined, this library's tests must be explicitly included
+      '../strings/**/*.test.ts'
     ],
   },
 }

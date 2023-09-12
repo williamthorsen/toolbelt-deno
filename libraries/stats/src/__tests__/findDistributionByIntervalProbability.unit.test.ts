@@ -1,7 +1,7 @@
 import { assertAlmostEquals, assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { round } from '../../sibling_deps.ts';
 import { findDistributionByIntervalProbability } from '../findDistributionByIntervalProbability.ts';
 import { getNormalIntervalProbabilities } from '../getNormalIntervalProbabilities.ts';
-import { round } from '../../../numbers/src/round.ts';
 
 describe('findNormalDistribution()', () => {
   const tolerance = 0.001;
