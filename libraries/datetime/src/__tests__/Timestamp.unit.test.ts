@@ -20,8 +20,9 @@ describe('Timestamp class', () => {
   describe('constructor', () => {
     it('given no input, uses the current time as the timestamp', () => {
       const timestamp = new Timestamp();
+      const tolerance = 2; // 2 ms - accurate enough for a test
 
-      assertAlmostEquals(timestamp.millis, Date.now());
+      assertAlmostEquals(timestamp.millis, Date.now(), tolerance);
     });
 
     it('given a Timestamp as the input, returns a new Timestamp storing the same value', () => {
