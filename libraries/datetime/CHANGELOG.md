@@ -1,5 +1,26 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.4.0
+
+### BREAKING CHANGES
+
+Breaking changes in `Timestamp` class:
+
+- Renamed `granularity` option to `timeUnit` for consistency.
+- Replaced `setTimeUnit` with `setOptions`, which optionally sets `format` as well as `timeUnit`.
+
+### Features
+
+Added to `Timestamp` class:
+
+- `setOptions`: Sets the `timeUnit` and `format` options for the instance.
+- `toCompactString`: Renders a date-time string in `YYYYMMDD[-HHMM[SS[.sss]]]` format.
+- `toNumericString`: Renders a date-time string in `YYYYMMDD[HHMM[SS[sss]]]` format.
+
+The `Timestamp` constructor now accepts a `format` option.
+
+The `toString()` method now uses the `format` option if one was provided to the constructor or set with `setOptions()`
+
 ## 0.3.1
 
 ### Tests

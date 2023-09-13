@@ -2,6 +2,8 @@ import { assertAlmostEquals, assertEquals, assertThrows, describe, it } from '..
 import { TimeUnit } from '../TimeUnit.ts';
 import { Timestamp } from '../Timestamp.ts';
 
+const isoDateTime = '2023-01-02T13:45:01.234Z';
+
 describe('Timestamp class', () => {
   describe('static fromMilliseconds()', () => {
     it('returns a Timestamp initialized with given milliseconds', () => {
@@ -67,67 +69,98 @@ describe('Timestamp class', () => {
     });
   });
 
-  describe('setTimeUnit()', () => {
-    it('sets the time unit and without changing the stored point in time', () => {
+  describe('setOptions()', () => {
+    it('optionally sets the default format', () => {
+      const timestamp = new Timestamp(new Date(1_000));
+      const format = 'humane';
+
+      timestamp.setOptions({ format });
+
+      assertEquals(timestamp.format, format);
+    });
+
+    it('optionally sets the instance\'s time unit; does not change the stored point in time', () => {
       const timestamp = new Timestamp(new Date(1_000));
       const millis = timestamp.millis;
 
-      timestamp.setTimeUnit(TimeUnit.Seconds);
+      timestamp.setOptions({ timeUnit: TimeUnit.Seconds });
 
       assertEquals(timestamp.timeUnit, TimeUnit.Seconds);
       assertEquals(timestamp.millis, millis);
     });
   });
 
-  describe('toDate()', () => {
-    it('should convert the timestamp to a Date object', () => {
-      const timestamp = new Timestamp(new Date(1_000));
-      const result = timestamp.toDate();
+  describe('toCompactString()', () => {
+    const useCases = [
+      { timeUnit: TimeUnit.Minutes, expected: '20230102-1345' },
+      { timeUnit: TimeUnit.Seconds, expected: '20230102-134501' },
+      { timeUnit: TimeUnit.Millis, expected: '20230102-134501.234' },
+    ];
+    for (const { expected, timeUnit } of useCases) {
+      it(`when timeUnit=${timeUnit.plural}, returns a string like ${expected}`, () => {
+        const timestamp = new Timestamp('2023-01-02T13:45:01.234Z', { timeUnit });
 
-      assertEquals(result instanceof Date, true);
-      assertEquals(result.getTime(), 1_000);
+        const actual = timestamp.toCompactString();
+
+        assertEquals(actual, expected);
+      });
+    }
+  });
+
+  describe('toDate()', () => {
+    it('returns a Date object representing point in time stored in the Timestamp', () => {
+      const timestamp = new Timestamp(new Date(1_000));
+
+      const actual = timestamp.toDate();
+
+      assertEquals(actual instanceof Date, true);
+      assertEquals(actual.getTime(), 1_000);
     });
   });
 
   describe('toHumaneUtcString()', () => {
     const timestamp = new Timestamp('2023-01-02T13:45:01.234Z');
-    const useCases = [
-      { granularity: TimeUnit.Millis, expectedUtc: '2023-01-02 13:45:01.234 UTC' },
-      { granularity: TimeUnit.Seconds, expectedUtc: '2023-01-02 13:45:01 UTC' },
-      { granularity: TimeUnit.Minutes, expectedUtc: '2023-01-02 13:45 UTC' },
-      { granularity: TimeUnit.Days, expectedUtc: '2023-01-02 UTC' },
-    ];
-
-    for (const { granularity, expectedUtc } of useCases) {
-      it(`when granularity=${granularity.plural}, returns ${expectedUtc}`, () => {
-        const humaneUtc = timestamp.toHumaneUtcString({ granularity });
-
-        assertEquals(humaneUtc, expectedUtc);
+    for (
+      const { expected, timeUnit } of [
+        { timeUnit: TimeUnit.Millis, expected: '2023-01-02 13:45:01.234 UTC' },
+        { timeUnit: TimeUnit.Seconds, expected: '2023-01-02 13:45:01 UTC' },
+        { timeUnit: TimeUnit.Minutes, expected: '2023-01-02 13:45 UTC' },
+        { timeUnit: TimeUnit.Days, expected: '2023-01-02 UTC' },
+      ]
+    ) {
+      it(`when timeUnit=${timeUnit.plural}, returns a string like ${expected}`, () => {
+        const actual = timestamp.toHumaneUtcString({ timeUnit });
+        assertEquals(actual, expected);
       });
     }
 
-    it('if granularity=hours, throws an error', () => {
-      const throwingFn = () => timestamp.toHumaneUtcString({ granularity: TimeUnit.Hours });
-
-      assertThrows(throwingFn, Error, 'Method does not support TimeUnit.Hours granularity.');
+    it('if timeUnit=hours, throws an error', () => {
+      const throwingFn = () => timestamp.toHumaneUtcString({ timeUnit: TimeUnit.Hours });
+      assertThrows(throwingFn, Error, 'Method does not support TimeUnit.Hours time unit.');
     });
   });
 
   describe('toIsoString()', () => {
-    it('returns the ISO string representation for the given granularity', () => {
-      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
-
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Seconds }), '2023-01-01T10:10:10Z');
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Minutes }), '2023-01-01T10:10Z');
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Hours }), '2023-01-01T10Z');
-      assertEquals(timestamp.toIsoString({ granularity: TimeUnit.Days }), '2023-01-01');
-    });
+    const timestamp = new Timestamp(isoDateTime);
+    for (
+      const { expected, timeUnit } of [
+        { timeUnit: TimeUnit.Millis, expected: '2023-01-02T13:45:01.234Z' },
+        { timeUnit: TimeUnit.Seconds, expected: '2023-01-02T13:45:01Z' },
+        { timeUnit: TimeUnit.Minutes, expected: '2023-01-02T13:45Z' },
+        { timeUnit: TimeUnit.Days, expected: '2023-01-02Z' },
+      ]
+    ) {
+      it(`when timeUnit=${timeUnit.plural}, returns a string like ${expected}`, () => {
+        const actual = timestamp.toIsoString({ timeUnit });
+        assertEquals(actual, expected);
+      });
+    }
 
     it('given an unknown time unit, throws an error', () => {
       const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
 
       assertThrows(
-        () => timestamp.toIsoString({ granularity: (999 as unknown) as TimeUnit }), // using an invalid time unit
+        () => timestamp.toIsoString({ timeUnit: (999 as unknown) as TimeUnit }), // using an invalid time unit
         Error,
         'Unexpected time unit',
       );
@@ -136,10 +169,10 @@ describe('Timestamp class', () => {
 
   describe('toLocaleDateTimeString()', () => {
     it('should return a formatted date-time string', () => {
-      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.000Z'));
+      const timestamp = new Timestamp(isoDateTime);
       const expectedDateString = timestamp.toDate().toLocaleDateString();
-      const expecteTimeString = timestamp.toDate().toLocaleTimeString();
-      const expectedDateTimeString = expectedDateString + ' ' + expecteTimeString;
+      const expectedTimeString = timestamp.toDate().toLocaleTimeString();
+      const expectedDateTimeString = expectedDateString + ' ' + expectedTimeString;
 
       const result = timestamp.toLocaleDateTimeString('en-US');
 
@@ -147,12 +180,96 @@ describe('Timestamp class', () => {
     });
   });
 
-  describe('toString()', () => {
-    it('returns the ISO string representation', () => {
-      const timestamp = new Timestamp(new Date('2023-01-01T10:10:10.123Z'));
-      const result = timestamp.toString();
+  describe('toNumericString()', () => {
+    const timestamp = new Timestamp(isoDateTime);
+    for (
+      const { expected, timeUnit } of [
+        { timeUnit: TimeUnit.Millis, expected: '20230102134501234' },
+        { timeUnit: TimeUnit.Seconds, expected: '20230102134501' },
+        { timeUnit: TimeUnit.Minutes, expected: '202301021345' },
+        { timeUnit: TimeUnit.Days, expected: '20230102' },
+      ]
+    ) {
+      it(`when timeUnit=${timeUnit.plural}, returns a string like ${expected}`, () => {
+        const actual = timestamp.toNumericString({ timeUnit });
+        assertEquals(actual, expected);
+      });
+    }
+  });
 
-      assertEquals(result, '2023-01-01T10:10:10.123Z');
+  describe('toString()', () => {
+    const displayableTimeUnits = [TimeUnit.Millis, TimeUnit.Seconds, TimeUnit.Minutes, TimeUnit.Days];
+
+    it('returns the default string representation', () => {
+      const timestamp = new Timestamp(isoDateTime);
+      const expected = isoDateTime;
+
+      const actual = timestamp.toString();
+
+      assertEquals(actual, expected);
+    });
+
+    it('if timeUnit has been set, uses that granularity', () => {
+      const options = { timeUnit: TimeUnit.Seconds };
+      const timestamp = new Timestamp(isoDateTime, options);
+      const expected = '2023-01-02T13:45:01Z';
+
+      const actual = timestamp.toString();
+
+      assertEquals(actual, expected);
+    });
+
+    it('if timeUnit is specified, uses that granularity', () => {
+      const instanceOptions = { timeUnit: TimeUnit.Seconds };
+      const callOptions = { timeUnit: TimeUnit.Minutes };
+      const timestamp = new Timestamp(isoDateTime, instanceOptions);
+      const expected = '2023-01-02T13:45Z';
+
+      const actual = timestamp.toString(callOptions);
+
+      assertEquals(actual, expected);
+    });
+
+    it('if format=compact, returns the same result as toCompactString()', () => {
+      const format = 'compact';
+      const timestamp = new Timestamp(isoDateTime);
+      for (const timeUnit of displayableTimeUnits) {
+        const expected = timestamp.toCompactString({ timeUnit });
+
+        const explictActual = timestamp.toString({ format, timeUnit });
+        const preformattedActual = timestamp.setOptions({ format }).toString({ timeUnit });
+
+        assertEquals(explictActual, expected);
+        assertEquals(preformattedActual, expected);
+      }
+    });
+
+    it('if format=humane, returns the same result as toHumaneUtcString()', () => {
+      const format = 'humane';
+      const timestamp = new Timestamp(isoDateTime);
+      for (const timeUnit of displayableTimeUnits) {
+        const expected = timestamp.toHumaneUtcString({ timeUnit });
+
+        const explictActual = timestamp.toString({ format, timeUnit });
+        const preformattedActual = timestamp.setOptions({ format }).toString({ timeUnit });
+
+        assertEquals(explictActual, expected);
+        assertEquals(preformattedActual, expected);
+      }
+    });
+
+    it('if format=numeric, returns the same result as toNumericString()', () => {
+      const format = 'numeric';
+      const timestamp = new Timestamp(isoDateTime, { format: 'numeric' });
+      for (const timeUnit of displayableTimeUnits) {
+        const expected = timestamp.toNumericString({ timeUnit });
+
+        const explicitActual = timestamp.toString({ format, timeUnit });
+        const preformattedActual = timestamp.setOptions({ format }).toString({ timeUnit });
+
+        assertEquals(explicitActual, expected);
+        assertEquals(preformattedActual, expected);
+      }
     });
   });
 });

@@ -4,8 +4,9 @@ import { TimeUnit } from './TimeUnit.ts';
  * Represents a point in time.
  */
 export class Timestamp {
-  _millis: number;
-  _timeUnit: TimeUnit;
+  private _format: TimestampFormatEnum;
+  private readonly _millis: number;
+  private _timeUnit: TimeUnit;
 
   // region | Static methods
   static fromMillis(milliseconds: number): Timestamp {
@@ -18,8 +19,8 @@ export class Timestamp {
   // endregion
 
   // region | Public methods
-  constructor(dateTime?: TimestampInput, options: { timeUnit?: TimeUnit } = {}) {
-    const { timeUnit = TimeUnit.Millis } = options;
+  constructor(dateTime?: TimestampInput, options: TimestampOptions = {}) {
+    const { format = 'iso', timeUnit = TimeUnit.Millis } = options;
     if (dateTime instanceof Timestamp) {
       this._millis = dateTime._millis;
     } else if (dateTime) {
@@ -27,7 +28,12 @@ export class Timestamp {
     } else {
       this._millis = Date.now();
     }
+    this._format = format;
     this._timeUnit = timeUnit;
+  }
+
+  get format(): TimestampFormatEnum {
+    return this._format;
   }
 
   get millis(): number {
@@ -42,13 +48,26 @@ export class Timestamp {
     return this._timeUnit;
   }
 
-  clone(options: { timeUnit?: TimeUnit } = {}): Timestamp {
+  clone(options: TimestampOptions = {}): Timestamp {
     return new Timestamp(this._millis, options);
   }
 
-  public setTimeUnit(timeUnit: TimeUnit): Timestamp {
+  setOptions(options: TimestampOptions = {}): Timestamp {
+    const { format = this._format, timeUnit = this._timeUnit } = options;
+    this._format = format;
     this._timeUnit = timeUnit;
     return this;
+  }
+
+  /**
+   * Returns the date & time in the format `YYYYMMDD-HHMM[SS[.sss]]` (depending on the time unit). UTC is implied.
+   */
+  toCompactString(options: Options = {}): string {
+    const [datePart, timePart = ''] = this.toIsoString(options).split('T');
+    const formattedDatePart = datePart.replace(/-/g, '');
+    const formattedTimePart = timePart.replace(/[:Z]/g, '');
+
+    return timePart.length > 0 ? `${formattedDatePart}-${formattedTimePart}` : formattedDatePart;
   }
 
   toDate(): Date {
@@ -56,34 +75,29 @@ export class Timestamp {
   }
 
   /**
-   * Returns a timestamp in the format `YYYY-MM-DD HH:MM[:SS[.000]] UTC` (depending on the granularity).
+   * Returns the date & time in the format `YYYY-MM-DD HH:MM[:SS[.000]] UTC` (depending on the time unit).
    * It is the same format as `Date.toISOString()` but with a space instead of a `T` and ` UTC` instead of `Z`.
    * This date format is human-readable, sortable, and accepted by the Date constructor.
    * TODO: Decide how to handle hours.
    */
-  toHumaneUtcString(options: TimestampFormatOptions = {}): string {
-    const { granularity = this.timeUnit } = options;
+  toHumaneUtcString(options: Options = {}): string {
+    const { timeUnit = this.timeUnit } = options;
 
-    if (granularity === TimeUnit.Hours) {
-      throw new Error('Method does not support TimeUnit.Hours granularity.');
+    if (timeUnit === TimeUnit.Hours) {
+      throw new Error('Method does not support TimeUnit.Hours time unit.');
     }
 
-    const isoString = this.toIsoString({ granularity });
-    if (granularity.inMillis <= TimeUnit.Minutes.inMillis) {
-      return isoString
-        .replace(/T/, ' ')
-        .replace(/Z$/, ' UTC');
-    }
-    return `${isoString} UTC`;
+    const isoString = this.toIsoString({ timeUnit });
+    return isoString.replace(/T/, ' ').replace(/Z$/, ' UTC');
   }
 
   /**
-   * Returns a timestamp in the format `YYYY-MM-DDTHH:MM[:SS[.000]]Z` (depending on the granularity).
+   * Returns a timestamp in the format `YYYY-MM-DDT[HH:MM[:SS[.000]]Z]` (depending on the time unit).
    */
-  toIsoString(options: TimestampFormatOptions = {}): string {
-    const { granularity = this.timeUnit } = options;
+  toIsoString(options: Options): string {
+    const { timeUnit = this.timeUnit } = options;
     const isoDateTime = this.toDate().toISOString();
-    switch (granularity) {
+    switch (timeUnit) {
       case TimeUnit.Millis:
         return isoDateTime;
       case TimeUnit.Seconds:
@@ -93,9 +107,9 @@ export class Timestamp {
       case TimeUnit.Hours:
         return isoDateTime.replace(/:\d{2}:\d{2}\.\d{3}Z$/, 'Z');
       case TimeUnit.Days:
-        return isoDateTime.split('T')[0];
+        return isoDateTime.split('T')[0] + 'Z';
       default:
-        throw new Error(`Unexpected time unit: ${granularity}`);
+        throw new Error(`Unexpected time unit: ${timeUnit}`);
     }
   }
 
@@ -104,15 +118,36 @@ export class Timestamp {
     return date.toLocaleDateString(locales, options) + ' ' + date.toLocaleTimeString(locales, options);
   }
 
-  toString(): string {
-    return this.toIsoString();
+  /**
+   * Returns the date & time in the format `YYYYMMDD[HHMM[SS[sss]]` (depending on the time unit). UTC is implied.
+   */
+  toNumericString(options: Options = {}): string {
+    return this.toIsoString(options).replace(/[-T:Z.]/g, '');
+  }
+
+  toString(options: TimestampOptions = {}): string {
+    const {
+      format = this._format,
+      timeUnit = this._timeUnit,
+    } = options;
+    if (format === 'compact') return this.toCompactString({ timeUnit });
+    if (format === 'humane') return this.toHumaneUtcString({ timeUnit });
+    if (format === 'numeric') return this.toNumericString({ timeUnit });
+
+    return this.toIsoString({ timeUnit });
   }
 }
 
 // region --- Types ---
+interface Options {
+  timeUnit?: TimeUnit | undefined;
+}
+
+type TimestampFormatEnum = 'compact' | 'humane' | 'iso' | 'numeric';
+
 export type TimestampInput = Date | number | string | Timestamp;
 
-interface TimestampFormatOptions {
-  granularity?: TimeUnit | undefined;
+interface TimestampOptions extends Options {
+  format?: TimestampFormatEnum;
 }
 // endregion - Types
