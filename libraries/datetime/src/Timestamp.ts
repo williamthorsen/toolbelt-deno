@@ -64,7 +64,7 @@ export class Timestamp {
    */
   toCompactString(options: Options = {}): string {
     const [datePart, timePart = ''] = this.toIsoString(options).split('T');
-    const formattedDatePart = datePart.replace(/-/g, '');
+    const formattedDatePart = datePart.replace(/[-Z]/g, '');
     const formattedTimePart = timePart.replace(/[:Z]/g, '');
 
     return timePart.length > 0 ? `${formattedDatePart}-${formattedTimePart}` : formattedDatePart;
