@@ -1,5 +1,10 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.4.3
+
+Fixed the issue that the argument to the `Timestamp.toIsoString` method should have been optional but did not provide a
+default argument.
+
 ## 0.4.2
 
 ### Fixes
