@@ -16,6 +16,10 @@ export class Timestamp {
   static fromSeconds(seconds: number): Timestamp {
     return new Timestamp(new Date(seconds * 1000), { timeUnit: TimeUnit.Seconds });
   }
+
+  static now(options: TimestampOptions = {}): Timestamp {
+    return new Timestamp(undefined, options);
+  }
   // endregion
 
   // region | Public methods

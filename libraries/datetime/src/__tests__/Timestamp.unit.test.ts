@@ -19,6 +19,16 @@ describe('Timestamp class', () => {
     });
   });
 
+  describe('static now()', () => {
+    it('passes the options to the constructor without specifying a date-time', () => {
+      const expected = new Timestamp(undefined, { timeUnit: TimeUnit.Seconds });
+
+      const actual = Timestamp.now({ timeUnit: TimeUnit.Seconds });
+
+      assertAlmostEquals(actual.millis, expected.millis, 2); // 2 ms - accurate enough for a test
+    });
+  });
+
   describe('constructor', () => {
     it('given no input, uses the current time as the timestamp', () => {
       const timestamp = new Timestamp();
