@@ -94,7 +94,7 @@ export class Timestamp {
   /**
    * Returns a timestamp in the format `YYYY-MM-DDT[HH:MM[:SS[.000]]Z]` (depending on the time unit).
    */
-  toIsoString(options: Options): string {
+  toIsoString(options: Options = {}): string {
     const { timeUnit = this.timeUnit } = options;
     const isoDateTime = this.toDate().toISOString();
     switch (timeUnit) {
