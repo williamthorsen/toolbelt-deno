@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.4.1
+
+### Fixes
+
+The `TimestampOptions` interface was not exported. Fixed by adding it to `types.ts`.
+
+Fixed the issue that `toCompactString` returned an incorrect value when time unit was set to hours.
+
 ## 0.4.0
 
 ### BREAKING CHANGES

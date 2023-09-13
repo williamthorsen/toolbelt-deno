@@ -64,7 +64,7 @@ export class Timestamp {
    */
   toCompactString(options: Options = {}): string {
     const [datePart, timePart = ''] = this.toIsoString(options).split('T');
-    const formattedDatePart = datePart.replace(/-/g, '');
+    const formattedDatePart = datePart.replace(/[-Z]/g, '');
     const formattedTimePart = timePart.replace(/[:Z]/g, '');
 
     return timePart.length > 0 ? `${formattedDatePart}-${formattedTimePart}` : formattedDatePart;
@@ -147,7 +147,7 @@ type TimestampFormatEnum = 'compact' | 'humane' | 'iso' | 'numeric';
 
 export type TimestampInput = Date | number | string | Timestamp;
 
-interface TimestampOptions extends Options {
+export interface TimestampOptions extends Options {
   format?: TimestampFormatEnum;
 }
 // endregion - Types

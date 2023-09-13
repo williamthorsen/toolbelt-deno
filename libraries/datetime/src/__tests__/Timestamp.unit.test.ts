@@ -92,15 +92,17 @@ describe('Timestamp class', () => {
 
   describe('toCompactString()', () => {
     const useCases = [
-      { timeUnit: TimeUnit.Minutes, expected: '20230102-1345' },
-      { timeUnit: TimeUnit.Seconds, expected: '20230102-134501' },
       { timeUnit: TimeUnit.Millis, expected: '20230102-134501.234' },
+      { timeUnit: TimeUnit.Seconds, expected: '20230102-134501' },
+      { timeUnit: TimeUnit.Minutes, expected: '20230102-1345' },
+      { timeUnit: TimeUnit.Hours, expected: '20230102-13' },
+      { timeUnit: TimeUnit.Days, expected: '20230102' },
     ];
     for (const { expected, timeUnit } of useCases) {
       it(`when timeUnit=${timeUnit.plural}, returns a string like ${expected}`, () => {
-        const timestamp = new Timestamp('2023-01-02T13:45:01.234Z', { timeUnit });
+        const timestamp = new Timestamp(isoDateTime);
 
-        const actual = timestamp.toCompactString();
+        const actual = timestamp.toCompactString({ timeUnit });
 
         assertEquals(actual, expected);
       });
@@ -147,6 +149,7 @@ describe('Timestamp class', () => {
         { timeUnit: TimeUnit.Millis, expected: '2023-01-02T13:45:01.234Z' },
         { timeUnit: TimeUnit.Seconds, expected: '2023-01-02T13:45:01Z' },
         { timeUnit: TimeUnit.Minutes, expected: '2023-01-02T13:45Z' },
+        { timeUnit: TimeUnit.Hours, expected: '2023-01-02T13Z' },
         { timeUnit: TimeUnit.Days, expected: '2023-01-02Z' },
       ]
     ) {
@@ -187,6 +190,7 @@ describe('Timestamp class', () => {
         { timeUnit: TimeUnit.Millis, expected: '20230102134501234' },
         { timeUnit: TimeUnit.Seconds, expected: '20230102134501' },
         { timeUnit: TimeUnit.Minutes, expected: '202301021345' },
+        { timeUnit: TimeUnit.Hours, expected: '2023010213' },
         { timeUnit: TimeUnit.Days, expected: '20230102' },
       ]
     ) {
