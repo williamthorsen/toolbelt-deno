@@ -147,7 +147,7 @@ type TimestampFormatEnum = 'compact' | 'humane' | 'iso' | 'numeric';
 
 export type TimestampInput = Date | number | string | Timestamp;
 
-interface TimestampOptions extends Options {
+export interface TimestampOptions extends Options {
   format?: TimestampFormatEnum;
 }
 // endregion - Types
