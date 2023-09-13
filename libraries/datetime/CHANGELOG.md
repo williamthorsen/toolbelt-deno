@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.5.0
+
+### Features
+
+Added to the `Timestamp` class: a static `now` method that returns a `Timestamp` instance representing the current time.
+
 ## 0.4.3
 
 Fixed the issue that the argument to the `Timestamp.toIsoString` method should have been optional but did not provide a
