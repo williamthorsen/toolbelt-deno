@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.4.2
+
+### Fixes
+
+`TimestampOptions` was exported from `types.ts`, but that file was not exported from `mod.ts`. Fixed by exporting
+`types.ts` from `mod.ts`.
+
 ## 0.4.1
 
 ### Fixes
