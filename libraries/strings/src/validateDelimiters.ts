@@ -3,7 +3,7 @@
  * TODO: Add support for multicharacter delimiters.
  */
 export function validateDelimiters(text: string, params: Params): ValidationResult {
-  const { opening, closing } = params;
+  const { disallowNested, opening, closing } = params;
 
   if (opening === closing) {
     throw new Error('Opening and closing delimiters must be different.');
@@ -13,6 +13,15 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
   for (const char of text) {
     if (char === opening) {
       openedCount++;
+      if (openedCount > 1 && disallowNested) {
+        return {
+          isValid: false,
+          errors: [{
+            code: 'NESTED_DELIMITERS',
+            message: `Text has nested delimiters.`,
+          }],
+        };
+      }
     } else if (char === closing) {
       if (openedCount === 0) {
         return {
@@ -46,10 +55,11 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
 interface Params {
   opening: string;
   closing: string;
+  disallowNested?: boolean | undefined;
 }
 
 interface ValidationError {
-  code: 'UNMATCHED_OPENING_DELIMITER' | 'UNMATCHED_CLOSING_DELIMITER';
+  code: 'NESTED_DELIMITERS' | 'UNMATCHED_OPENING_DELIMITER' | 'UNMATCHED_CLOSING_DELIMITER';
   message: string;
 }
 
