@@ -1,4 +1,5 @@
 import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
+import { validateDelimiters } from './validateDelimiters.ts';
 
 /**
  * Replaces the placeholders in a string with the values passed in the dictionary object.
@@ -25,8 +26,7 @@ export function interpolate<T extends Record<string, string>>(
 ): string {
   const { adaptCase, fallbackToKey, ifMissing = 'IGNORE' } = options;
 
-  assertHasNoNestedBraces(text);
-  assertHasNoUnmatchedBraces(text);
+  assertHasValidDelimiters(text);
 
   const map = dictionary instanceof Map ? dictionary : new Map(Object.entries(dictionary));
 
@@ -105,37 +105,13 @@ interface DelimitedMatcherOptions {
   caseInsensitive?: boolean | undefined;
 }
 
-function assertHasNoNestedBraces(input: string): void {
-  let openBracesCount = 0;
-
-  for (const char of input) {
-    if (char === '{') {
-      openBracesCount++;
-      if (openBracesCount > 1) {
-        throw new Error('Text has nested delimiter braces.');
-      }
-    } else if (char === '}') {
-      openBracesCount--;
-    }
-  }
-}
-
-function assertHasNoUnmatchedBraces(input: string): void {
-  let openBracesCount = 0;
-
-  for (const char of input) {
-    if (char === '{') {
-      openBracesCount++;
-    } else if (char === '}') {
-      if (openBracesCount === 0) {
-        throw new Error('Text has unmatched closing brace.');
-      }
-      openBracesCount--;
-    }
-  }
-
-  if (openBracesCount !== 0) {
-    throw new Error('Text has unmatched opening brace.');
+function assertHasValidDelimiters(input: string): void {
+  const [validationError] = validateDelimiters(input, { opening: '{', closing: '}', disallowNested: true }).errors;
+  if (validationError) {
+    const braceMessage = validationError.message
+      .replace('opening delimiter "{"', 'opening brace')
+      .replace('closing delimiter "}"', 'closing brace');
+    throw new Error(braceMessage);
   }
 }
 
