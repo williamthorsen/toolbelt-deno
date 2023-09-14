@@ -69,7 +69,38 @@ describe('Interpolable class', () => {
         const interpolable = new Interpolable(template, options);
         const expected = interpolate(template, mapping, options);
 
-        const actual = interpolable.interpolate(mapping);
+        const actual = interpolable.interpolate({ mapping });
+
+        assertEquals(actual, expected);
+      });
+    }
+
+    it('if mapping is not given, uses the mapping stored in the instance', () => {
+      const template = 'Hello, {name}';
+      const mapping = { name: 'World' };
+      const interpolable = new Interpolable(template).setOptions({ mapping });
+      const expected = interpolate(template, mapping);
+
+      const actual = interpolable.interpolate();
+
+      assertEquals(actual, expected);
+    });
+  });
+
+  describe('setOptions()', () => {
+    const template = 'Hello, {name}';
+    const interpolable = new Interpolable(template);
+    for (
+      const mapping of [
+        new Map().set('0', 'World'),
+        { 0: 'World' },
+        ['World'],
+      ]
+    ) {
+      it('optionally stores the mapping in the instance', () => {
+        const expected = new Map().set('0', 'World');
+
+        const actual = interpolable.setOptions({ mapping }).mapping;
 
         assertEquals(actual, expected);
       });

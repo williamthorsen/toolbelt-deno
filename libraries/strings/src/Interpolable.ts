@@ -6,6 +6,7 @@ import { validateDelimiters } from './validateDelimiters.ts';
 
 export class Interpolable {
   adaptCase = false;
+  mapping: Map<string, string> = new Map<string, string>();
   ifMissing: InterpolateOptions['ifMissing'] = 'IGNORE';
   template: string;
 
@@ -37,18 +38,20 @@ export class Interpolable {
     return Array.from(placeholderSet);
   }
 
-  interpolate<T>(dictionary: StringMapping<T>, options: InterpolateOptions = {}): string {
+  interpolate<T>(options: InterpolableOptions<T> = {}): string {
     const mergedOptions = {
       adaptCase: this.adaptCase,
       ifMissing: this.ifMissing,
       ...options,
     };
-    return interpolate(this.template, dictionary, mergedOptions);
+    const mapping = options.mapping ?? this.mapping;
+    return interpolate(this.template, mapping, mergedOptions);
   }
 
-  setOptions(options: InterpolateOptions = {}): this {
-    const { adaptCase, ifMissing } = options;
+  setOptions<T>(options: InterpolableOptions<T> = {}): this {
+    const { adaptCase, mapping, ifMissing } = options;
     if (adaptCase !== undefined) this.adaptCase = adaptCase;
+    if (mapping !== undefined) this.mapping = stringMappingToMap(mapping);
     if (ifMissing !== undefined) this.ifMissing = ifMissing;
     return this;
   }
@@ -58,7 +61,15 @@ export class Interpolable {
   }
 }
 
+function stringMappingToMap<T>(mapping: StringMapping<T>): Map<string, string> {
+  return mapping instanceof Map ? mapping : new Map(Object.entries(mapping));
+}
+
 interface Classification {
   matched: string[];
   unmatched: string[];
+}
+
+interface InterpolableOptions<T> extends InterpolateOptions {
+  mapping?: StringMapping<T> | undefined;
 }
