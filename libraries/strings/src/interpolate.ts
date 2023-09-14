@@ -1,4 +1,5 @@
 import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
+import type { StrictObject } from './strings.types.ts';
 import { validateDelimiters } from './validateDelimiters.ts';
 
 /**
@@ -85,7 +86,7 @@ export function interpolate<T extends Record<string, string>>(
 /**
  * Encloses a matcher in braces, so that only delimited placeholders are matched.
  */
-function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
+export function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
   const { caseInsensitive } = options;
 
   const matcherSource = typeof matcher === 'string' ? matcher : matcher.source;
@@ -115,7 +116,7 @@ function assertHasValidDelimiters(input: string): void {
   }
 }
 
-interface InterpolateOptions {
+export interface InterpolateOptions {
   // if true, will try to adapt the case of the dictionary value to match the placeholder
   adaptCase?: boolean;
   /** @deprecated Use `ifMissing` instead */
@@ -123,7 +124,3 @@ interface InterpolateOptions {
   // what to do if a placeholder is not found in the dictionary
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
 }
-
-// Ignore the warning about `Function`: We do want to exclude all functions and classes!
-// deno-lint-ignore ban-types
-type StrictObject<T> = T extends (null | Function | ArrayLike<unknown>) ? never : (T extends object ? T : never);
