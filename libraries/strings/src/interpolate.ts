@@ -1,35 +1,22 @@
-import type { StrictObject } from './strings.types.ts';
+import type { StringMapping } from './strings.types.ts';
 import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
 import { validateDelimiters } from './validateDelimiters.ts';
 
 /**
- * Replaces the placeholders in a string with the values passed in the dictionary object.
- * If a placeholder does not match any key in the dictionary, it is left unchanged.
- * If a placeholder matches multiple keys in the dictionary, all occurrences are replaced.
+ * Replaces the placeholders in a string with the values passed in the mapping object.
+ * If a placeholder does not match any key in the mapping, it is left unchanged.
+ * If a placeholder matches multiple keys in the mapping, all occurrences are replaced.
  */
-// Overload for Map
-export function interpolate(
+export function interpolate<T>(
   text: string,
-  dictionary: Map<string, string>,
-  options?: InterpolateOptions,
-): string;
-// Overload for generic object types
-export function interpolate<T extends object, K extends string>(
-  text: string,
-  dictionary: StrictObject<T>, // exclude
-  options?: InterpolateOptions,
-): string;
-// FIXME: This signature has the desired effect but is not consistent with the overloads.
-export function interpolate<T extends Record<string, string>>(
-  text: string,
-  dictionary: T | Map<string, string>,
+  mapping: StringMapping<T>,
   options: InterpolateOptions = {},
 ): string {
   const { adaptCase, fallbackToKey, ifMissing = 'IGNORE' } = options;
 
   assertHasValidDelimiters(text);
 
-  const map = dictionary instanceof Map ? dictionary : new Map(Object.entries(dictionary));
+  const map = mapping instanceof Map ? mapping : new Map(Object.entries(mapping));
 
   let newText = text;
   for (const [key, value] of map) {
@@ -51,8 +38,8 @@ export function interpolate<T extends Record<string, string>>(
       } // If the placeholder is not the same as the key, check whether its lowercase version is.
       // We don't try to automate any other conversions.
       else if (adaptCase && typeof key === 'string' && isInsensitiveMatch) {
-        // Identify the transformation that transforms the dictionary key to have the same case as the placeholder.
-        // We can then apply the same function to the dictionary value.
+        // Identify the transformation that transforms the mapping key to have the same case as the placeholder.
+        // We can then apply the same function to the mapping value.
         const transform = deriveCaseTransformer(key, placeholder);
         if (transform !== null) {
           return transform(value);
@@ -117,10 +104,10 @@ function assertHasValidDelimiters(input: string): void {
 }
 
 export interface InterpolateOptions {
-  // if true, will try to adapt the case of the dictionary value to match the placeholder
+  // if true, will try to adapt the case of the mapping value to match the placeholder
   adaptCase?: boolean;
   /** @deprecated Use `ifMissing` instead */
   fallbackToKey?: boolean | undefined;
-  // what to do if a placeholder is not found in the dictionary
+  // what to do if a placeholder is not found in the mapping
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
 }
