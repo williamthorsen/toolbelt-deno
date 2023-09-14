@@ -34,6 +34,7 @@
       '../numbers/src/**/createNumberGenerator.unit.test.ts',
       '../numbers/src/**/getFakeMathRandom.unit.test.ts',
       '../numbers/src/**/random.unit.test.ts',
+      '../objects/src/**/hasOwnProperty.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included
       '../strings/**/*.test.ts'
     ],
