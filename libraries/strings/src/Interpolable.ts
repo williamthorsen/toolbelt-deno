@@ -15,10 +15,32 @@ export class Interpolable {
     this.setOptions(options);
   }
 
-  classifyPlaceholders<T>(mapping: StringMapping<T>): Classification {
+  // TODO: Use set operations for `classifyKeys` and `classifyPlaceholders`.
+  classifyKeys<T>(options: { adaptCase?: boolean | undefined; mapping?: StringMapping<T> } = {}): Classification {
+    const { adaptCase = this.adaptCase, mapping = this.mapping } = options;
+
+    const placeholders = this.getPlaceholders({ adaptCase });
+    const matched: string[] = [];
+    const unmatched: string[] = [];
+    for (const key of stringMappingToMap(mapping).keys()) {
+      const comparand = adaptCase ? key.toLowerCase() : key;
+      if (placeholders.includes(comparand)) {
+        matched.push(comparand);
+      } else {
+        unmatched.push(comparand);
+      }
+    }
+    return { matched, unmatched };
+  }
+
+  classifyPlaceholders<T>(
+    options: { adaptCase?: boolean | undefined; mapping?: StringMapping<T> } = {},
+  ): Classification {
+    const { adaptCase = this.adaptCase, mapping = this.mapping } = options;
+
     const matched = new Set<string>();
     const unmatched = new Set<string>();
-    for (const placeholder of this.getPlaceholders()) {
+    for (const placeholder of this.getPlaceholders({ adaptCase })) {
       if (hasOwnProperty(mapping, placeholder) && mapping[placeholder] !== undefined) {
         matched.add(placeholder);
       } else {
@@ -28,12 +50,14 @@ export class Interpolable {
     return { matched: Array.from(matched), unmatched: Array.from(unmatched) };
   }
 
-  getPlaceholders(): string[] {
-    const matcher = createDelimitedMatcher(/([^}]+)/);
+  getPlaceholders(options: { adaptCase?: boolean | undefined } = {}): string[] {
+    const { adaptCase = this.adaptCase } = options;
+
+    const matcher = createDelimitedMatcher(/([^}]+)/, { caseInsensitive: adaptCase });
     const placeholderMatches = this.template.matchAll(matcher);
     const placeholderSet = new Set<string>();
     for (const [_, placeholder] of placeholderMatches) {
-      placeholderSet.add(placeholder);
+      placeholderSet.add(adaptCase ? placeholder.toLowerCase() : placeholder);
     }
     return Array.from(placeholderSet);
   }
