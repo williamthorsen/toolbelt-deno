@@ -6,6 +6,7 @@ import { validateDelimiters } from './validateDelimiters.ts';
  * Replaces the placeholders in a string with the values passed in the mapping object.
  * If a placeholder does not match any key in the mapping, it is left unchanged.
  * If a placeholder matches multiple keys in the mapping, all occurrences are replaced.
+ * @deprecated Use `Interpolable.interpolate` instead
  */
 export function interpolate<T>(
   text: string,
