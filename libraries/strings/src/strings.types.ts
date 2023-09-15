@@ -1,8 +1,8 @@
-export type StringIndexedMapping = Map<string, string> | Record<string, string> | string[];
+export type StringIndexedMapping = Record<string, string> | string[];
 
 export type StringInterfaceMapping<O> = O extends { [K in keyof O]: string } ? O : never;
 
-export type StringMapping<T> = StringIndexedMapping | StringInterfaceMapping<T>;
+export type StringMapping<T> = Map<RegExp | string, string> | StringIndexedMapping | StringInterfaceMapping<T>;
 
 // Ignore the warning about `Function`: We do want to exclude all functions and classes!
 // deno-lint-ignore ban-types

@@ -1,41 +1,26 @@
-import { assertEquals, assertObjectMatch, describe, it } from '../../dev_deps.ts';
+import { assertEquals, assertObjectMatch, assertThrows, describe, it } from '../../dev_deps.ts';
 import { Interpolable } from '../Interpolable.ts';
-import { interpolate, InterpolateOptions } from '../interpolate.ts';
-import { StringIndexedMapping } from '../strings.types.ts';
 
 describe('Interpolable class', () => {
-  describe('classifyKeys()', () => {
-    it('correctly identifies which keys have matching placeholders', () => {
-      const template = '{templateOnly}{match}';
-      const interpolable = new Interpolable(template);
-      const mapping = { match: 'value', mappingOnly: 'value' };
-      const expected = { matched: ['match'], unmatched: ['mappingOnly'] };
+  describe('getKeys()', () => {
+    const template = 'not used in this test';
 
-      const actual = interpolable.classifyKeys({ mapping });
+    it('if the mapping contains no keys, returns an empty set', () => {
+      const mapping = {};
+      const interpolable = new Interpolable(template);
+      const expected = new Set();
+
+      const actual = interpolable.getKeys({ mapping });
 
       assertEquals(actual, expected);
     });
 
-    it('if adaptCase=true, ignores case when comparing keys to placeholders', () => {
-      const template = '{templateonly}{MATCH}';
-      const interpolable = new Interpolable(template, { adaptCase: true });
-      const mapping = { match: 'value', MAPPINGONLY: 'value' };
-      const expected = { matched: ['match'], unmatched: ['mappingonly'] };
+    it('if the mapping contains entries, returns a unique array of their keys in lower case', () => {
+      const mapping = { firstName: 'John', lastName: 'Doe' };
+      const interpolable = new Interpolable(template).setOptions({ mapping });
+      const expected = new Set(['firstname', 'lastname']);
 
-      const actual = interpolable.classifyKeys({ mapping });
-
-      assertEquals(actual, expected);
-    });
-  });
-
-  describe('classifyPlaceholders()', () => {
-    it('correctly identifies which placeholders have matching mapping entries', () => {
-      const template = 'Hello, {firstName} {lastName}!';
-      const interpolable = new Interpolable(template);
-      const mapping = { firstName: 'Joe' };
-      const expected = { matched: ['firstName'], unmatched: ['lastName'] };
-
-      const actual = interpolable.classifyPlaceholders({ mapping });
+      const actual = interpolable.getKeys();
 
       assertEquals(actual, expected);
     });
@@ -45,27 +30,17 @@ describe('Interpolable class', () => {
     it('if the template contains no placeholders, returns an empty array', () => {
       const template = 'Hello, World!';
       const interpolable = new Interpolable(template);
-      const expected: string[] = [];
+      const expected = new Set();
 
       const actual = interpolable.getPlaceholders();
 
       assertEquals(actual, expected);
     });
 
-    it('if the template contains placeholders, returns a unique array of them', () => {
+    it('if the template contains placeholders, returns a unique array of them in lower case', () => {
       const template = 'To {firstName} {lastName}! Hello, {firstName}!';
       const interpolable = new Interpolable(template);
-      const expected = ['firstName', 'lastName'];
-
-      const actual = interpolable.getPlaceholders();
-
-      assertEquals(actual, expected);
-    });
-
-    it('if adaptCase=true, returns all placeholders in lower case', () => {
-      const template = '{UPPERCASE}{PascalCase}{camelCase}';
-      const interpolable = new Interpolable(template, { adaptCase: true });
-      const expected = ['uppercase', 'pascalcase', 'camelcase'];
+      const expected = new Set(['firstname', 'lastname']);
 
       const actual = interpolable.getPlaceholders();
 
@@ -73,51 +48,290 @@ describe('Interpolable class', () => {
     });
   });
 
+  describe('getSets()', () => {
+    it('correctly identifies matched & unmatched keys and placeholders', () => {
+      const template = '{match1}{templateOnly}{match2}';
+      const interpolable = new Interpolable(template);
+      const mapping = { mappingOnly: 'value', match1: 'value', match2: 'value' };
+      const expected = {
+        matches: new Set(['match1', 'match2']),
+        unmatchedKeys: new Set(['mappingonly']),
+        unmatchedPlaceholders: new Set(['templateonly']),
+      };
+
+      const actual = interpolable.getSets({ mapping });
+
+      assertEquals(actual, expected);
+    });
+  });
+
   describe('interpolate()', () => {
-    const useCases: { template: string; mapping: StringIndexedMapping; options?: InterpolateOptions }[] = [
-      {
-        template: 'Hello, {name}',
-        mapping: { name: 'World' },
-      },
-      {
-        template: 'Hello, {name}',
-        mapping: new Map().set('name', 'World'),
-      },
-      {
-        template: '{bar}Hello{bar}',
-        mapping: { bar: '|' },
-      },
-      {
-        template: 'Hello, {name}',
-        mapping: {},
-        options: { ifMissing: 'USE_KEY' },
-      },
-      {
-        template: 'Hello, {Name}',
-        mapping: { name: 'world' },
-        options: { adaptCase: true },
-      },
-    ];
-    for (const { template, mapping, options = {} } of useCases) {
-      it('has the same result as the interpolate function', () => {
-        const interpolable = new Interpolable(template, options);
-        const expected = interpolate(template, mapping, options);
+    it('when a placeholder matches a key in the mapping, replaces the placeholder with the corresponding value', () => {
+      const template = 'Hello, {name}!';
+      const mapping = { name: 'World' };
+      const expected = 'Hello, World!';
 
-        const actual = interpolable.interpolate({ mapping });
+      const actual = new Interpolable(template).interpolate({ mapping });
 
-        assertEquals(actual, expected);
+      assertEquals(actual, expected);
+    });
+
+    it('when a placeholder does not match any key in the mapping, leaves the placeholder unchanged', () => {
+      const template = 'Hello, {name}!';
+      const mapping = { greeting: 'Hi' };
+      const expected = 'Hello, {name}!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('when multiple occurrences of a placeholder match a key in the mapping, replaces all occurrences with the corresponding value', () => {
+      const template = '{delimiter}Hello, {name}!{delimiter}';
+      const mapping = { name: 'World', delimiter: '|' };
+      const expected = '|Hello, World!|';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('when a placeholder is empty, leaves the placeholder unchanged', () => {
+      const template = 'Hello, {}!';
+      const mapping = { name: 'World' };
+      const expected = 'Hello, {}!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('when the template is an empty string, returns an empty string', () => {
+      const template = '';
+      const mapping = { name: 'World' };
+      const expected = '';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('when the mapping is empty, leaves all placeholders unchanged', () => {
+      const template = 'Hello, {name}!';
+      const mapping = {};
+      const expected = 'Hello, {name}!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('accepts placeholders containing underscores', () => {
+      const template = 'Hello, {name_1}!';
+      const mapping = { name_1: 'World' };
+      const expected = 'Hello, World!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('allows placeholders that start with a number', () => {
+      const template = 'Hello, {1name}!';
+      const mapping = { '1name': 'World' };
+      const expected = 'Hello, World!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('allows placeholders that include a space', () => {
+      const template = 'Hello, {name with space}!';
+      const mapping = { 'name with space': 'World' };
+      const expected = 'Hello, World!';
+
+      const actual = Interpolable.interpolate(template, mapping);
+
+      assertEquals(actual, expected);
+    });
+
+    it('works with a typed object not having a string index', () => {
+      interface Mapping {
+        name: string;
+      }
+      const template = 'Hello, {name}!';
+      const mapping: Mapping = { name: 'World' };
+      const expected = 'Hello, World!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('works with a mapping that is missing keys that are optional in its type', () => {
+      interface Mapping {
+        required: string;
+        notRequired?: string;
+      }
+      const template = 'Hello, {required}!';
+      const mapping: Mapping = { required: 'World' };
+      const expected = 'Hello, World!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    for (
+      const badTemplate of [
+        'Hello, {name!',
+        'Hello, name}!',
+        'Hello, {name{}}!',
+      ]
+    ) {
+      it('if delimiters are mismatched or nested, throws an error', () => {
+        const mapping = { name: 'World' };
+        const throwingFn = () => new Interpolable(badTemplate).interpolate({ mapping });
+
+        assertThrows(
+          throwingFn,
+          Error,
+          'Text has',
+        );
       });
     }
 
-    it('if mapping is not given, uses the mapping stored in the instance', () => {
-      const template = 'Hello, {name}';
-      const mapping = { name: 'World' };
-      const interpolable = new Interpolable(template).setOptions({ mapping });
-      const expected = interpolate(template, mapping);
+    it('accepts a Map as mapping', () => {
+      const template = '{greeting}, {planet}!';
+      const mapping = new Map()
+        .set('greeting', 'Hello')
+        .set('planet', 'World');
+      const expected = 'Hello, World!';
 
-      const actual = interpolable.interpolate();
+      const actual = new Interpolable(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
+    });
+
+    it('accepts a string array as mapping', () => {
+      const template = '{0}, {1}!';
+      const mapping = ['Hello', 'World'];
+      const expected = 'Hello, World!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('accepts a regular expression', () => {
+      const template = '{hullo}, {hallo}!';
+      const mapping = new Map()
+        .set(/h.llo/, 'hello');
+      const expected = 'hello, hello!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('does not partially match a regular expression', () => {
+      const template = '{key}, {key2}!';
+      const mapping = new Map()
+        .set(/key/, 'value');
+      const expected = 'value, {key2}!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('if key is a regex, does not adapt the value to the placeholder\'s case', () => {
+      const template = '{key} {KEY} {Key}';
+      const mapping = new Map()
+        .set(/key/i, 'value');
+      const expected = 'value value value';
+
+      const actual = Interpolable.interpolate(template, mapping);
+
+      assertEquals(actual, expected);
+    });
+
+    it('can use a catch-all to replace unmatched delimiters', () => {
+      const template = '{Key1} {key2} {key3}';
+      const mapping = new Map<RegExp | string, string>()
+        .set('key1', 'value1')
+        .set('key2', 'value2')
+        .set(/.*/, 'unmatched');
+      const expected = 'Value1 value2 unmatched';
+
+      const actual = new Interpolable(template).setMapping(mapping).interpolate();
+
+      assertEquals(actual, expected);
+    });
+
+    it('if the transform can be identified, applies the transform to the value', () => {
+      const template = 'Hello, {AUDIENCE}!';
+      const mapping = { 'audience': 'world' };
+      const expected = 'Hello, WORLD!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('applies case-transformation individually to each occurrence', () => {
+      const template =
+        'lowercase {key}, uppercase {KEY}, capitalized {Key}, mixed-case {mixedKey}, unmatched {otherKey}';
+      const mapping = { 'key': 'value', 'mixedKey': 'value' };
+      const expected = 'lowercase value, uppercase VALUE, capitalized Value, mixed-case value, unmatched {otherKey}';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('if the transform cannot be identified, leaves the placeholder unchanged', () => {
+      const template = '{greeting}, {myPlanet}! This is a {grEeting}!';
+      const mapping = { greeting: 'Hello', myPlanet: 'World' };
+      const expected = 'Hello, World! This is a {grEeting}!';
+
+      const actual = new Interpolable(template).interpolate({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    describe('ifMissing options', () => {
+      const template = '{matched} {unmatched1} {UNMATCHED2}';
+      const mapping = { matched: 'value' };
+      const interpolable = new Interpolable(template).setMapping(mapping);
+
+      it('if ifMissing=THROW and there are unmatched placeholders, throws  error listing the unused placeholders in lower case', () => {
+        const ifMissing = 'THROW';
+
+        const throwingFn = () => interpolable.interpolate({ ifMissing });
+
+        // TODO: Inflect the error message to match the number of placeholders
+        assertThrows(throwingFn, Error, 'Text has unmatched placeholders: unmatched1, unmatched2');
+      });
+
+      it('if ifMissing=USE_KEY, replaces any unmatched placeholder with the placeholder itself', () => {
+        const ifMissing = 'USE_KEY';
+        const expected = 'value unmatched1 UNMATCHED2';
+
+        const actual = interpolable.interpolate({ ifMissing });
+
+        assertEquals(actual, expected);
+      });
+
+      it('if ifMissing is a function, replaces any unmatched placeholder with the result of the function', () => {
+        const ifMissing = () => 'FnReturn';
+        const expected = 'value FnReturn FnReturn';
+
+        const actual = interpolable.interpolate({ ifMissing });
+
+        assertEquals(actual, expected);
+      });
     });
   });
 
@@ -131,39 +345,54 @@ describe('Interpolable class', () => {
         ['World'],
       ]
     ) {
-      it('optionally stores the mapping in the instance', () => {
-        const expected = new Map().set('0', 'World');
+      it('optionally stores ifMissing, mapping, and noAdaptCase in the instance', () => {
+        const options = {
+          ifMissing: 'THROW',
+          mapping,
+          noAdaptCase: true,
+        } as const;
+        const expected = {
+          ifMissing: 'THROW',
+          mapping: new Map().set('0', 'World'),
+          noAdaptCase: true,
+        };
 
-        const actual = interpolable.setOptions({ mapping }).mapping;
+        const actual = interpolable.setOptions(options);
 
-        assertEquals(actual, expected);
+        assertObjectMatch(actual, expected);
       });
     }
+
+    it('if mapping has duplicate keys when case is ignored, throws an error', () => {
+      const mapping = { KEY: 'value', key: 'value' };
+
+      const throwingFn = () => interpolable.setOptions({ mapping });
+
+      assertThrows(throwingFn, Error, 'Mapping keys must be unique, ignoring case.');
+    });
   });
 
   describe('validate()', () => {
     it('if the template contains nested braces, returns failure', () => {
       const template = 'Hello, {name{foo}}';
-      const interpolable = new Interpolable(template);
       const expected = {
         isValid: false,
         errors: [{ code: 'NESTED_DELIMITERS' }],
       };
 
-      const actual = interpolable.validate();
+      const actual = Interpolable.validateTemplate(template);
 
       assertObjectMatch(actual, expected);
     });
 
     it('if the template contains mismatched braces, returns failure', () => {
       const template = 'Hello, {name}{';
-      const interpolable = new Interpolable(template);
       const expected = {
         isValid: false,
         errors: [{ code: 'UNMATCHED_OPENING_DELIMITER' }],
       };
 
-      const actual = interpolable.validate();
+      const actual = Interpolable.validateTemplate(template);
 
       assertObjectMatch(actual, expected);
     });
