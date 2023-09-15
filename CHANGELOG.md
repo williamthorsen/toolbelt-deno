@@ -1,5 +1,11 @@
 # toolbelt-deno
 
+### 2.2.3
+
+### Tooling
+
+Modified `fmt` configuration to preserve long lines in prose files.
+
 ## 2.2.2
 
 ### Dependencies

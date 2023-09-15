@@ -1,34 +1,23 @@
 import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
+import type { StringMapping } from './strings.types.ts';
+import { validateDelimiters } from './validateDelimiters.ts';
 
 /**
- * Replaces the placeholders in a string with the values passed in the dictionary object.
- * If a placeholder does not match any key in the dictionary, it is left unchanged.
- * If a placeholder matches multiple keys in the dictionary, all occurrences are replaced.
+ * Replaces the placeholders in a string with the values passed in the mapping object.
+ * If a placeholder does not match any key in the mapping, it is left unchanged.
+ * If a placeholder matches multiple keys in the mapping, all occurrences are replaced.
+ * @deprecated Use `Interpolable.interpolate` instead
  */
-// Overload for Map
-export function interpolate(
+export function interpolate<T>(
   text: string,
-  dictionary: Map<string, string>,
-  options?: InterpolateOptions,
-): string;
-// Overload for generic object types
-export function interpolate<T extends object, K extends string>(
-  text: string,
-  dictionary: StrictObject<T>, // exclude
-  options?: InterpolateOptions,
-): string;
-// FIXME: This signature has the desired effect but is not consistent with the overloads.
-export function interpolate<T extends Record<string, string>>(
-  text: string,
-  dictionary: T | Map<string, string>,
+  mapping: StringMapping<T>,
   options: InterpolateOptions = {},
 ): string {
   const { adaptCase, fallbackToKey, ifMissing = 'IGNORE' } = options;
 
-  assertHasNoNestedBraces(text);
-  assertHasNoUnmatchedBraces(text);
+  assertHasValidDelimiters(text);
 
-  const map = dictionary instanceof Map ? dictionary : new Map(Object.entries(dictionary));
+  const map = mapping instanceof Map ? mapping : new Map(Object.entries(mapping));
 
   let newText = text;
   for (const [key, value] of map) {
@@ -50,8 +39,8 @@ export function interpolate<T extends Record<string, string>>(
       } // If the placeholder is not the same as the key, check whether its lowercase version is.
       // We don't try to automate any other conversions.
       else if (adaptCase && typeof key === 'string' && isInsensitiveMatch) {
-        // Identify the transformation that transforms the dictionary key to have the same case as the placeholder.
-        // We can then apply the same function to the dictionary value.
+        // Identify the transformation that transforms the mapping key to have the same case as the placeholder.
+        // We can then apply the same function to the mapping value.
         const transform = deriveCaseTransformer(key, placeholder);
         if (transform !== null) {
           return transform(value);
@@ -85,7 +74,7 @@ export function interpolate<T extends Record<string, string>>(
 /**
  * Encloses a matcher in braces, so that only delimited placeholders are matched.
  */
-function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
+export function createDelimitedMatcher(matcher: RegExp | string, options: DelimitedMatcherOptions = {}): RegExp {
   const { caseInsensitive } = options;
 
   const matcherSource = typeof matcher === 'string' ? matcher : matcher.source;
@@ -105,49 +94,21 @@ interface DelimitedMatcherOptions {
   caseInsensitive?: boolean | undefined;
 }
 
-function assertHasNoNestedBraces(input: string): void {
-  let openBracesCount = 0;
-
-  for (const char of input) {
-    if (char === '{') {
-      openBracesCount++;
-      if (openBracesCount > 1) {
-        throw new Error('Text has nested delimiter braces.');
-      }
-    } else if (char === '}') {
-      openBracesCount--;
-    }
+function assertHasValidDelimiters(input: string): void {
+  const [validationError] = validateDelimiters(input, { opening: '{', closing: '}', disallowNested: true }).errors;
+  if (validationError) {
+    const braceMessage = validationError.message
+      .replace('opening delimiter "{"', 'opening brace')
+      .replace('closing delimiter "}"', 'closing brace');
+    throw new Error(braceMessage);
   }
 }
 
-function assertHasNoUnmatchedBraces(input: string): void {
-  let openBracesCount = 0;
-
-  for (const char of input) {
-    if (char === '{') {
-      openBracesCount++;
-    } else if (char === '}') {
-      if (openBracesCount === 0) {
-        throw new Error('Text has unmatched closing brace.');
-      }
-      openBracesCount--;
-    }
-  }
-
-  if (openBracesCount !== 0) {
-    throw new Error('Text has unmatched opening brace.');
-  }
-}
-
-interface InterpolateOptions {
-  // if true, will try to adapt the case of the dictionary value to match the placeholder
+export interface InterpolateOptions {
+  // if true, will try to adapt the case of the mapping value to match the placeholder
   adaptCase?: boolean;
   /** @deprecated Use `ifMissing` instead */
   fallbackToKey?: boolean | undefined;
-  // what to do if a placeholder is not found in the dictionary
+  // what to do if a placeholder is not found in the mapping
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
 }
-
-// Ignore the warning about `Function`: We do want to exclude all functions and classes!
-// deno-lint-ignore ban-types
-type StrictObject<T> = T extends (null | Function | ArrayLike<unknown>) ? never : (T extends object ? T : never);

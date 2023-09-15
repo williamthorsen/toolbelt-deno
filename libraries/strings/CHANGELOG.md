@@ -1,17 +1,38 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.8.0
+
+### Deprecations
+
+The `interpolate` function has been deprecated:
+
+- **Reason**: The function has been replaced by the more capable and robust `Interpolable` class.
+- **Migration**: Replace `interpolate` with `Interpolable.interpolate` and replace `fallbackToKey` with `ifMissing='USE_KEY'`.
+- **Removal**: The `interpolate` function is expected to be removed in v1.0.0.
+
+### Features
+
+Added new `Interpolable` class as a more capable and robust replacement for the `interpolate` function.
+
+### Internal features
+
+Added `setDifference` and `setIntersection` functions to support the `Interpolable` class. These are not currently exported from the library but will eventually be moved to a new `sets` library and supplemented by other set functions.
+
+### Tooling
+
+Modified `fmt` configuration to preserve long lines in prose files.
+
 ## 0.7.1
 
 ### Fixes
 
-Fixed an issue in `interpolate` where a dictionary would be rejected if its type defined optional keys that were missing
-from the dictionary.
+Fixed an issue in `interpolate` where a dictionary would be rejected if its type defined optional keys that were missing from the dictionary.
 
 ## 0.7.0
 
 ### Deprecations
 
-The `fallbackToKey` option of the `interpolate` function has been deprecated.
+The `fallbackToKey` option of the `interpolate` function has been deprecated:
 
 - **Reason**: The option has been replaced by the more flexible `ifMissing` option.
 - **Migration**: Replace `fallbackToKey=true` with `ifMissing="USE_KEY"`.
@@ -19,8 +40,7 @@ The `fallbackToKey` option of the `interpolate` function has been deprecated.
 
 ### Features
 
-Enhanced the `interpolate` function so that it now accepts an `ifMissing` option to control how unmatched placeholders
-are handled:
+Enhanced the `interpolate` function so that it now accepts an `ifMissing` option to control how unmatched placeholders are handled:
 
 - `IGNORE`: The default behavior. Unmatched placeholders are left unchanged.
 - `THROW`: Throw an error if any placeholders are unmatched.
@@ -51,8 +71,7 @@ Updated `pickVariants` to replace obsolete `pickRandomItem` function with `pickI
 
 ### Fixes
 
-Fixed the signature of the `interpolate` function. The type of the `dictionary` argument was unrelated to the type
-parameter, leading to TS errors in calling code.
+Fixed the signature of the `interpolate` function. The type of the `dictionary` argument was unrelated to the type parameter, leading to TS errors in calling code.
 
 ### Refactoring
 
@@ -60,8 +79,7 @@ Replaced the randomization code in `pickVariants` with a simpler, more declarati
 
 ### Tooling
 
-Adjusted test paths to allow correct computation of test coverage, which otherwise reports incomplete coverage of
-functions imported from sibling libraries.
+Adjusted test paths to allow correct computation of test coverage, which otherwise reports incomplete coverage of functions imported from sibling libraries.
 
 ## 0.5.1
 
