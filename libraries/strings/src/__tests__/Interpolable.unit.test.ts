@@ -4,14 +4,38 @@ import { interpolate, InterpolateOptions } from '../interpolate.ts';
 import { StringIndexedMapping } from '../strings.types.ts';
 
 describe('Interpolable class', () => {
+  describe('classifyKeys()', () => {
+    it('correctly identifies which keys have matching placeholders', () => {
+      const template = '{templateOnly}{match}';
+      const interpolable = new Interpolable(template);
+      const mapping = { match: 'value', mappingOnly: 'value' };
+      const expected = { matched: ['match'], unmatched: ['mappingOnly'] };
+
+      const actual = interpolable.classifyKeys({ mapping });
+
+      assertEquals(actual, expected);
+    });
+
+    it('if adaptCase=true, ignores case when comparing keys to placeholders', () => {
+      const template = '{templateonly}{MATCH}';
+      const interpolable = new Interpolable(template, { adaptCase: true });
+      const mapping = { match: 'value', MAPPINGONLY: 'value' };
+      const expected = { matched: ['match'], unmatched: ['mappingonly'] };
+
+      const actual = interpolable.classifyKeys({ mapping });
+
+      assertEquals(actual, expected);
+    });
+  });
+
   describe('classifyPlaceholders()', () => {
-    it('correctly identifies which placeholders have matching dictionary entries', () => {
+    it('correctly identifies which placeholders have matching mapping entries', () => {
       const template = 'Hello, {firstName} {lastName}!';
       const interpolable = new Interpolable(template);
-      const dictionary = { firstName: 'Joe' };
+      const mapping = { firstName: 'Joe' };
       const expected = { matched: ['firstName'], unmatched: ['lastName'] };
 
-      const actual = interpolable.classifyPlaceholders(dictionary);
+      const actual = interpolable.classifyPlaceholders({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -32,6 +56,16 @@ describe('Interpolable class', () => {
       const template = 'To {firstName} {lastName}! Hello, {firstName}!';
       const interpolable = new Interpolable(template);
       const expected = ['firstName', 'lastName'];
+
+      const actual = interpolable.getPlaceholders();
+
+      assertEquals(actual, expected);
+    });
+
+    it('if adaptCase=true, returns all placeholders in lower case', () => {
+      const template = '{UPPERCASE}{PascalCase}{camelCase}';
+      const interpolable = new Interpolable(template, { adaptCase: true });
+      const expected = ['uppercase', 'pascalcase', 'camelcase'];
 
       const actual = interpolable.getPlaceholders();
 
