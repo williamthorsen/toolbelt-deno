@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.9.0
+
+### Features
+
+Added a `slugify` function to convert a string to a slug.
+
 ## 0.8.0
 
 ### Deprecations
