@@ -8,6 +8,7 @@
       '**/deno.jsonc' // excluded so that JSON5 formatting is preserved; otherwise, deno fmt would format as JSONC
     ],
     lineWidth: 120,
+    "proseWrap": "preserve",
     singleQuote: true,
   },
   lint: {
