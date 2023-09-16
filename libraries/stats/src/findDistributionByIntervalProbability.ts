@@ -22,6 +22,16 @@ export function findDistributionByIntervalProbability(params: Params): NormalDis
     tolerance = TOLERANCE,
   } = params;
 
+  // Special case: If there is only one interval, the standard deviation is 0 and the probability is 1
+  if (nIntervals === 1) {
+    return {
+      standardDeviation: 0,
+      intervalProbabilities: getNormalIntervalProbabilities({ nIntervals, standardDeviation: 0 }),
+      divergenceFromTarget: 1 / target - 1,
+      iterations: 1,
+    };
+  }
+
   if (sdMin >= sdMax) {
     throw new Error(
       'Maximum standard deviation (sdMax) must be greater than minimum (sdMin).',
