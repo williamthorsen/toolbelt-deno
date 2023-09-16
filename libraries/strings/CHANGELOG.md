@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.10.0
+
+### Features
+
+Added functions:
+
+- `obfuscate`: Replaces characters in a string with fill characters to obfuscate the string.
+- `toCamelCase`: Converts a string to camel case, treating spaces, hyphens, underscores, and periods as word separators.
+
 ## 0.9.0
 
 ### Features
