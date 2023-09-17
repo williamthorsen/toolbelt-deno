@@ -1,3 +1,4 @@
+export { capitalize } from './src/capitalize.ts';
 export { Interpolable } from './src/Interpolable.ts';
 export { interpolate } from './src/interpolate.ts';
 export { obfuscate } from './src/obfuscate.ts';

@@ -1,3 +1,5 @@
+import { capitalize } from './capitalize.ts';
+
 /**
  * Returns the camelCase version of the input string.
  * Spaces, hyphens, and underscores are treated as word boundaries.
@@ -14,10 +16,7 @@ export function toCamelCase(inputStr: string): string {
       const lowerCaseWord = word.toLowerCase();
 
       // Return the first word as is; capitalize every word thereafter
-      return index === 0 ? lowerCaseWord : capitalizeFirstLetter(lowerCaseWord);
+      return index === 0 ? lowerCaseWord : capitalize(lowerCaseWord);
     })
     .join('');
-}
-function capitalizeFirstLetter(input: string): string {
-  return input.charAt(0).toUpperCase() + input.slice(1);
 }
