@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.3.0
+
+### Features
+
+Enhanced functions to accept a seed function in place of a number:
+
+- `pickItem` and `pickItems`
+- `shuffle`
+- `toPickWeightedItem`
+
 ## 2.2.2
 
 ### Refactoring
