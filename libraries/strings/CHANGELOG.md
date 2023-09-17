@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.11.0
+
+### Features
+
+Added functions:
+
+- `concatenate`: Concatenates a list of strings with custom separators.
+- `capitalize`: Capitalizes the first letter of a string.
+
 ## 0.10.0
 
 ### Features
