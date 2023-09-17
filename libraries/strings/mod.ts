@@ -9,4 +9,5 @@ export { toCamelCase } from './src/toCamelCase.ts';
 export { unindent } from './src/unindent.ts';
 export { validateDelimiters } from './src/validateDelimiters.ts';
 
+export * from './src/String-prototype-wrappers.ts';
 export * from './src/whitespace-functions.ts';
