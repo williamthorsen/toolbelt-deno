@@ -13,6 +13,7 @@ describe('findNormalDistribution()', () => {
     { nIntervals: 5, probability: 0.05, expectedSd: 0.930 },
     { nIntervals: 5, probability: 0.1, expectedSd: 0.753 },
     // Test extreme minimums
+    { nIntervals: 1, probability: 1, expectedSd: 0 },
     { nIntervals: 5, probability: 0.0000001, expectedSd: 3 },
     { nIntervals: 10, probability: 0.000001, expectedSd: 3 },
   ];

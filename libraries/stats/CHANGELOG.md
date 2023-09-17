@@ -1,4 +1,11 @@
-# @williamthorsen/toolbelt.numbers
+# @williamthorsen/toolbelt.stats
+
+## 0.4.0
+
+### Featuress
+
+Modified `findDistributionByIntervalProbability` so that when there is a single interval, the function returns a
+probability of 1 and a standard deviation of 0.
 
 ## 0.3.2
 
