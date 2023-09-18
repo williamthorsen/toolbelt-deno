@@ -74,6 +74,16 @@ describe('pickInteger()', () => {
     assertEquals(randomInt1, randomInt2);
   });
 
+  it('accepts a function as a seed', () => {
+    const seed = 1234;
+    const seedFn = () => 1234;
+
+    const randomInt1 = pickInteger({ max: 10, seed });
+    const randomInt2 = pickInteger({ max: 10, seed: seedFn });
+
+    assertEquals(randomInt1, randomInt2);
+  });
+
   it('if min is infinite, throws an error', () => {
     const min = -Infinity;
     const max = 10;
