@@ -58,4 +58,14 @@ describe('pickVariants()', () => {
       'Variant delimiters [ ] are incorrectly nested.',
     );
   });
+
+  it('given the same seed, always returns the same output', () => {
+    const seed = 1234;
+    const input = '[1|2|3|4]';
+
+    const result1 = pickVariants(input, { seed });
+    const result2 = pickVariants(input, { seed });
+
+    assertEquals(result1, result2);
+  });
 });

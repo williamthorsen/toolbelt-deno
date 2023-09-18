@@ -1,3 +1,5 @@
+import { spawnSeedFunction } from '../../numbers/src/spawnSeedFunction.ts';
+import type { Seed } from '../../numbers/src/numbers.types.ts';
 import { pickItem } from '../sibling_deps.ts';
 
 /**
@@ -8,6 +10,10 @@ import { pickItem } from '../sibling_deps.ts';
  * TODO: Accept an optional seed that makes the results deterministic.
  */
 export function pickVariants(text: string, options: Options = {}): string {
+  const {
+    seed = spawnSeedFunction(options.seed), // the seed is being passed on, so we want to ensure that it's a function
+  } = options;
+
   // Check that the delimiters are correctly nested
   const stack = [];
   for (const char of text) {
@@ -25,17 +31,17 @@ export function pickVariants(text: string, options: Options = {}): string {
 
   const variantRegex = /\[([^\[\]]*?)]/g;
   const result = text.replace(variantRegex, (_delimitedVariants, variants: string): string => {
-    return pickItem(variants.split('|'), options);
+    return pickItem(variants.split('|'), { seed });
   });
 
   // If the result still contains variants, call pickVariants again
   if (variantRegex.test(result)) {
-    return pickVariants(result);
+    return pickVariants(result, { seed });
   }
 
   return result;
 }
 
 interface Options {
-  seed?: number;
+  seed?: Seed;
 }

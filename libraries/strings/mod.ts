@@ -11,3 +11,5 @@ export { validateDelimiters } from './src/validateDelimiters.ts';
 
 export * from './src/String-prototype-wrappers.ts';
 export * from './src/whitespace-functions.ts';
+
+export * from './types.ts';
