@@ -1,5 +1,5 @@
+import { makeSeedFn } from './makeSeedFn.ts';
 import type { Seed } from './numbers.types.ts';
-import { makeSeededRandom } from './makeSeededRandom.ts';
 
 /**
  * If given a number-generating function, returns the function.
@@ -17,10 +17,7 @@ import { makeSeededRandom } from './makeSeededRandom.ts';
  *
  * `undefined` is simply passed through, so that a function that accepts a seed can also accept `undefined` to mean
  * "don't use a seed".
- *
- * @deprecated Use `spawnSeedFn` instead.
  */
-export function spawnSeedFunction(seed: Seed | undefined): (() => number) | undefined {
-  if (seed === undefined) return undefined;
-  return makeSeededRandom(seed).random;
+export function spawnSeedFn(seed?: Seed): (() => number) | undefined {
+  return seed === undefined ? undefined : makeSeedFn(seed)[0];
 }
