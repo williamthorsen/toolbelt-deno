@@ -34,7 +34,9 @@
       '../arrays/**/pickItem.unit.test.ts',
       '../numbers/src/**/createNumberGenerator.unit.test.ts',
       '../numbers/src/**/getFakeMathRandom.unit.test.ts',
+      '../numbers/src/**/makeSeededRandom.unit.test.ts',
       '../numbers/src/**/random.unit.test.ts',
+      '../numbers/src/**/spawnSeedFunction.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included
       '../strings/**/*.test.ts'
     ],

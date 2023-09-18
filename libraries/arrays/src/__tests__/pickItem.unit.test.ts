@@ -2,9 +2,9 @@ import { assertArrayIncludes, assertEquals, assertThrows, describe, it } from '.
 import { pickItem } from '../pickItem.ts';
 
 describe('pickItem()', () => {
-  it('returns one item', () => {
-    const sourceArray = [1, 2, 3, 4];
+  const sourceArray = [1, 2, 3, 4];
 
+  it('returns one item', () => {
     const randomItem = pickItem(sourceArray);
 
     assertArrayIncludes(sourceArray, [randomItem]);
@@ -15,8 +15,8 @@ describe('pickItem()', () => {
   });
 
   it('accepts a read-only array', () => {
-    const sourceArray = Object.freeze([1, 2, 3, 4]);
-    pickItem(sourceArray);
+    const frozenArray = Object.freeze([1, 2, 3, 4]);
+    pickItem(frozenArray);
   });
 
   it('if the array is empty, throws an error', () => {
@@ -26,5 +26,24 @@ describe('pickItem()', () => {
       Error,
       'Cannot pick an item from an empty array.',
     );
+  });
+
+  it('given the same seed, returns the same item', () => {
+    const seed = 1234;
+
+    const randomItem1 = pickItem(sourceArray, { seed });
+    const randomItem2 = pickItem(sourceArray, { seed });
+
+    assertEquals(randomItem1, randomItem2);
+  });
+
+  it('accepts a function as a seed', () => {
+    const seed = 1234;
+    const seedFn = () => seed;
+
+    const randomItem1 = pickItem(sourceArray, { seed });
+    const randomItem2 = pickItem(sourceArray, { seed: seedFn });
+
+    assertEquals(randomItem1, randomItem2);
   });
 });

@@ -1,5 +1,20 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.12.0
+
+### Features
+
+Added functions:
+
+- `String.prototype` wrappers: `toLowerCase`, `toUpperCase`, `trim`, `trimEnd`, `trimStart`
+- `condenseWhitespace`: Removes extra whitespace from a string while preserving up to one leading and one trailing space
+- `removeWhitespace`: Removes all whitespace from a string
+- `trimWhitespace`: Same as `condenseWhitespace` but also removes leading and trailing whitespace
+
+Enhanced functions:
+
+- `pickVariants`: Now accepts both numeric and function seeds and, when given a seed, uses new (but deterministic) seeds for each subsequent call.
+
 ## 0.11.0
 
 ### Features

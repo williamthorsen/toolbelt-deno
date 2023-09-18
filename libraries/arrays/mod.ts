@@ -15,3 +15,5 @@ export { getWeightedIndex } from './src/getWeightedIndex.ts';
 export { pickWeightedIndex } from './src/pickWeightedIndex.ts';
 export { toPickWeightedItem } from './src/toPickWeightedItem.ts';
 export { toPickWeightedItemFromDistribution } from './src/toPickWeightedItemFromDistribution.ts';
+
+export * from './types.ts';

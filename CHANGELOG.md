@@ -1,5 +1,17 @@
 # toolbelt-deno
 
+### 2.3.0
+
+### Tooling
+
+Added `test-coverage.sh` script to run tests with coverage in all libraries and included it in the root `check` task.
+
+### Dependencies
+
+Upgraded all runtimes to latest version:
+
+- pnpm: 8.7.5 -> 8.7.6
+
 ### 2.2.3
 
 ### Tooling

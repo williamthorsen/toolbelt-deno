@@ -1,7 +1,27 @@
-import { afterEach, assert, beforeEach, describe, it } from '../../dev_deps.ts';
+import { afterEach, assert, assertEquals, beforeEach, describe, it } from '../../dev_deps.ts';
 import { random } from '../random.ts';
 
 describe('random()', () => {
+  it('given the same seed, returns the same output', () => {
+    const seed = 1234;
+    const random1 = random({ seed });
+    const random2 = random({ seed });
+
+    assertEquals(random1, random2);
+  });
+
+  it('accepts a function as a seed', () => {
+    const seed = 1234;
+    const seedFn = () => 1234;
+
+    const random1 = random({ seed });
+    const random2 = random({ seed: seedFn });
+
+    assertEquals(random1, random2);
+  });
+});
+
+describe('random() with mocked Math.random', () => {
   // Backup of the original Math.random
   const originalRandom = Math.random;
 
