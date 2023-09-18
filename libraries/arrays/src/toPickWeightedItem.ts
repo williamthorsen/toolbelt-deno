@@ -1,3 +1,4 @@
+import type { Seed } from '../../numbers/src/numbers.types.ts';
 import { pickWeightedIndex } from './pickWeightedIndex.ts';
 
 /**
@@ -24,5 +25,5 @@ export function toPickWeightedItem<T>(
 }
 
 export interface PickWeightedItemOptions {
-  seed?: number | undefined;
+  seed?: Seed;
 }

@@ -1,4 +1,5 @@
 import { random } from '../sibling_deps.ts';
+import { Seed } from '../../numbers/src/numbers.types.ts';
 
 /**
  * Returns a random item from the array.
@@ -12,5 +13,5 @@ export function pickItem<T>(items: ReadonlyArray<T>, options: Options = {}): T {
 }
 
 interface Options {
-  seed?: number | undefined;
+  seed?: Seed;
 }

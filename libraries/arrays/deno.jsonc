@@ -30,8 +30,10 @@
     ],
     include: [
       // Coverage check will not be 100% unless sibling deps are tested
-      '../numbers/**/createNumberGenerator.unit.test.ts',
+      '../numbers/**/makeSeededRandom.unit.test.ts',
+      '../numbers/**/pickInteger.unit.test.ts',
       '../numbers/**/random.unit.test.ts',
+      '../numbers/**/spawnSeedFunction.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included
       '../arrays/**/*.test.ts',
     ],
