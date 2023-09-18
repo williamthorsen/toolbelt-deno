@@ -1,5 +1,5 @@
 import { Seed } from './numbers.types.ts';
-import { makeRandom } from './makeRandom.ts';
+import { makeSeedFn } from './makeSeedFn.ts';
 
 /**
  * Returns a number generator whose output, when invoked successively, is a pseudo-random
@@ -7,5 +7,5 @@ import { makeRandom } from './makeRandom.ts';
  * This is not intended to be a cryptographically secure random number generator.
  */
 export function createNumberGenerator(seed?: Seed) {
-  return seed === undefined ? Math.random : makeRandom(seed)[0];
+  return seed === undefined ? Math.random : makeSeedFn(seed)[0];
 }

@@ -1,38 +1,37 @@
 import { evaluate } from './evaluate.ts';
-import { makeRandom } from './makeRandom.ts';
+import { getFakeMathRandom } from './getFakeMathRandom.ts';
 import type { Seed } from './numbers.types.ts';
-import { pickInteger } from './pickInteger.ts';
-
-// For reference:
-// const MAX_INT_32 = 4294967295; // 2^32 - 1
-// const MAX_INT_53 = 9007199254740991; // 2^53 - 1; aka Number.MAX_SAFE_INTEGER
 
 /**
- * Creates a function that, when successively invoked, produces a deterministic pseudo-random sequence of integers.
- * Also returns the seed that can be used to create a new generator that produces the same sequence.
- *
- * This function behaves identically to `makeRandom`, except for the range of the ouput:
- * - `makeRandom`: floating point numbers in the range [0, 1)
- * - `makeSeedFn`: integers in the range [1, MAX_SAFE_INTEGER)
- *
- * In short, use this function when user-friendly seeds are needed.
+ * Returns a number generator whose output, when invoked successively after being seeded,
+ * is a pseudo-random series of numbers.
+ * Similar to `createNumberGenerator()`, but always returns a determistic function and also returns a number
+ * that can be used to create a new generator that gives the same output.
  */
-export function makeSeedFn(seed?: Seed): [seedFn: () => number, baseSeed: number] {
-  return makeCustomSeedFn({ seed, min: 1, max: Number.MAX_SAFE_INTEGER });
+export function makeSeedFn(seed?: Seed): [random: () => number, seed: number] {
+  let base = evaluate(seed) ?? Math.random();
+  function random(): number {
+    return getFakeMathRandom(base++);
+  }
+  return [random, base];
 }
 
 /**
- * Creates an integer seed and a function that returns a pseudo-random number between min and max.
- * Not currently exposed in the public API, but retained here to allow for future use.
+ * If given a function, returns the function. If given a number, creates & returns a function using the number as seed.
+ * If the input is undefined, returns undefined.
+ *
+ * Intended for use in a function that accepts a seed but must make more than one pseudo-random invocation, such
+ * as a function that
+ * - uses a seed to get a pseudo-random result and also invokes another function that takes a seed
+ * - repeatedly gets pseudo-random results that accept a seed (as in a loop)
+ * - invokes multiple functions that take a seed
+ *
+ * Because the function must be invoked to get a seed from it, it can safely be consumed and passed to
+ * other functions, without the danger that a seed will be reused.
+ *
+ * `undefined` is simply passed through, so that a function that accepts a seed can also accept `undefined` to mean
+ * "don't use a seed".
  */
-function makeCustomSeedFn(options: Options): [seedFn: () => number, baseSeed: number] {
-  const base = evaluate(options.seed) ?? pickInteger(options);
-  const [pickNumber, baseSeed] = makeRandom(base);
-  return [() => pickInteger({ ...options, seed: pickNumber }), baseSeed];
-}
-
-interface Options {
-  seed?: Seed | undefined;
-  min: number;
-  max: number;
+export function spawnSeedFn(seed?: Seed): (() => number) | undefined {
+  return seed === undefined ? undefined : makeSeedFn(seed)[0];
 }
