@@ -60,6 +60,7 @@
     "https://deno.land/std@0.200.0/assert/assert_almost_equals.ts": "e15ca1f34d0d5e0afae63b3f5d975cbd18335a132e42b0c747d282f62ad2cd6c",
     "https://deno.land/std@0.200.0/assert/assert_array_includes.ts": "6856d7f2c3544bc6e62fb4646dfefa3d1df5ff14744d1bca19f0cbaf3b0d66c9",
     "https://deno.land/std@0.200.0/assert/assert_equals.ts": "d8ec8a22447fbaf2fc9d7c3ed2e66790fdb74beae3e482855d75782218d68227",
+    "https://deno.land/std@0.200.0/assert/assert_instance_of.ts": "09fd297352a5b5bbb16da2b5e1a0d8c6c44da5447772648622dcc7df7af1ddb8",
     "https://deno.land/std@0.200.0/assert/assert_is_error.ts": "b4eae4e5d182272efc172bf28e2e30b86bb1650cd88aea059e5d2586d4160fb9",
     "https://deno.land/std@0.200.0/assert/assert_match.ts": "c4083f80600bc190309903c95e397a7c9257ff8b5ae5c7ef91e834704e672e9b",
     "https://deno.land/std@0.200.0/assert/assert_not_equals.ts": "9f1acab95bd1f5fc9a1b17b8027d894509a745d91bac1718fdab51dc76831754",

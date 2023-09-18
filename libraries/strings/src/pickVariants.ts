@@ -1,18 +1,14 @@
-import { spawnSeedFunction } from '../../numbers/src/spawnSeedFunction.ts';
-import type { Seed } from '../../numbers/src/numbers.types.ts';
-import { pickItem } from '../sibling_deps.ts';
+import type { Seed } from '../sibling_deps.ts';
+import { pickItem, spawnSeedFn } from '../sibling_deps.ts';
 
 /**
  * Given a string that contains delimited variants [variant1|variant2|variant3], replaces the variants with a
  * randomly selected one and returns the new string.
  * TODO: Throw an error if the delimiters are mismatched.
  * TODO: Allow the delimiter to be customized.
- * TODO: Accept an optional seed that makes the results deterministic.
  */
 export function pickVariants(text: string, options: Options = {}): string {
-  const {
-    seed = spawnSeedFunction(options.seed), // the seed is being passed on, so we want to ensure that it's a function
-  } = options;
+  const seed = spawnSeedFn(options.seed);
 
   // Check that the delimiters are correctly nested
   const stack = [];
@@ -43,5 +39,5 @@ export function pickVariants(text: string, options: Options = {}): string {
 }
 
 interface Options {
-  seed?: Seed;
+  seed?: Seed | undefined;
 }

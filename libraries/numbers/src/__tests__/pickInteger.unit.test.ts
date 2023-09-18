@@ -3,7 +3,7 @@ import { pickInteger } from '../pickInteger.ts';
 
 describe('pickInteger()', () => {
   it('returns an integer', () => {
-    const randomInt = pickInteger({ max: 10 });
+    const randomInt = pickInteger();
 
     assert(Number.isInteger(randomInt));
   });

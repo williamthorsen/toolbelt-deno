@@ -5,8 +5,8 @@ import { Seed } from './numbers.types.ts';
  * Returns a random integer between the bounds inclusive.
  * If the bounds are not integers, they are truncated to integers.
  */
-export function pickInteger(params: Params): number {
-  const { min = 0, max, seed } = params;
+export function pickInteger(params: Params = {}): number {
+  const { min = 0, max = Number.MAX_SAFE_INTEGER, seed } = params;
 
   if (!Number.isFinite(min) || !Number.isFinite(max)) {
     throw new Error('Invalid range: min and max must be finite.');
@@ -28,7 +28,7 @@ export function pickInteger(params: Params): number {
 }
 
 interface Params {
-  max: number;
+  max?: number | undefined;
   min?: number | undefined;
   seed?: Seed;
 }

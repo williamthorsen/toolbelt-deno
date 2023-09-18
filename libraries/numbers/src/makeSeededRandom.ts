@@ -7,6 +7,8 @@ import type { Seed } from './numbers.types.ts';
  * is a pseudo-random series of numbers.
  * Similar to `createNumberGenerator()`, but always returns a determistic function and also returns the seed
  * that can be used to create a new generator that gives the same output.
+ *
+ * @deprecated Use `makeSeedFn()` instead.
  */
 export function makeSeededRandom(seed?: Seed) {
   let base = evaluate(seed) ?? Math.random();

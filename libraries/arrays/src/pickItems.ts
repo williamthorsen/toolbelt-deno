@@ -1,5 +1,5 @@
+import type { Seed } from '../sibling_deps.ts';
 import { shuffle } from './shuffle.ts';
-import { Seed } from '../../numbers/src/numbers.types.ts';
 
 /**
  * Returns an array with `n` items picked randomly from the given array.
@@ -18,5 +18,5 @@ export function pickItems<T>(items: ReadonlyArray<T>, n: number, options: Option
 
 type Options = {
   offset?: number | undefined;
-  seed?: Seed;
+  seed?: Seed | undefined;
 };
