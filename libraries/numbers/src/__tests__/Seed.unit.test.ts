@@ -112,6 +112,36 @@ describe('Seed class', () => {
       assertNotEquals(seed1?.next(), seed2?.next());
     });
   });
+
+  describe('get seedFn', () => {
+    it('returns a function that successively returns values from the instance', () => {
+      const seed1 = new Seed(1234);
+      const seed2 = new Seed(1234);
+
+      const generate1 = seed1.seedFn;
+      const generate2 = seed2.seedFn;
+
+      const result1 = generate1();
+      const result2 = generate2();
+
+      assertEquals(result1, result2);
+    });
+
+    it('the function shares state with its instance', () => {
+      const seed1 = new Seed(1234);
+      const seed2 = new Seed(1234);
+
+      // Gets a value from seed1, changing its next value relative to seed2.
+      const generate1 = seed1.seedFn;
+      generate1();
+
+      // These would be equal if `generate1()` had not been called.
+      const result1 = seed1.next();
+      const result2 = seed2.next();
+
+      assertNotEquals(result1, result2);
+    });
+  });
 });
 
 describe('Int32Seed class', () => {

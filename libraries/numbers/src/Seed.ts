@@ -1,6 +1,9 @@
 import { getFakeMathRandom } from './getFakeMathRandom.ts';
 import { pickInteger } from './pickInteger.ts';
 
+/**
+ * Number-generating class for use with functions that accept a `Seed` or `SeedLike` parameter.
+ */
 export class Seed {
   protected get maxBase() {
     return Number.MAX_SAFE_INTEGER;
@@ -35,6 +38,11 @@ export class Seed {
 
   get base(): number {
     return this._base;
+  }
+
+  // Returns a function that can be used as a seed to produce a deterministic series of numbers
+  get seedFn(): () => number {
+    return () => this.generateValue();
   }
 
   clone(nIncrements = 0): Seed {
