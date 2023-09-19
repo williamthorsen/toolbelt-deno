@@ -30,5 +30,5 @@ export function pickInteger(params: Params = {}): number {
 interface Params {
   max?: number | undefined;
   min?: number | undefined;
-  seed?: Seed;
+  seed?: Seed | undefined;
 }

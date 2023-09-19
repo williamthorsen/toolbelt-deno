@@ -16,7 +16,7 @@ export function computeCdf(params: Params): number {
 }
 
 interface Params {
-  mean?: number;
-  standardDeviation?: number;
+  mean?: number | undefined;
+  standardDeviation?: number | undefined;
   value: number;
 }

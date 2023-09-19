@@ -147,9 +147,9 @@ interface NormalDistribution {
 interface Params {
   nIntervals: number;
   probability: number;
-  tolerance?: number;
-  sdMin?: number;
-  sdMax?: number;
-  iteration?: number;
-  maxIterations?: number;
+  tolerance?: number | undefined;
+  sdMin?: number | undefined;
+  sdMax?: number | undefined;
+  iteration?: number | undefined;
+  maxIterations?: number | undefined;
 }

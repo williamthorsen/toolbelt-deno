@@ -15,7 +15,7 @@ export function random(options: Options = {}) {
 }
 
 interface Options {
-  max?: number;
-  min?: number;
-  seed?: Seed;
+  max?: number | undefined;
+  min?: number | undefined;
+  seed?: Seed | undefined;
 }
