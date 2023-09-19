@@ -1,5 +1,5 @@
-import type { Seed } from '../sibling_deps.ts';
-import { pickItem, spawnSeedFn } from '../sibling_deps.ts';
+import type { SeedLike } from '../sibling_deps.ts';
+import { pickItem, Seed } from '../sibling_deps.ts';
 
 /**
  * Given a string that contains delimited variants [variant1|variant2|variant3], replaces the variants with a
@@ -8,7 +8,7 @@ import { pickItem, spawnSeedFn } from '../sibling_deps.ts';
  * TODO: Allow the delimiter to be customized.
  */
 export function pickVariants(text: string, options: Options = {}): string {
-  const seed = spawnSeedFn(options.seed);
+  const seed = Seed.spawn(options.seed);
 
   // Check that the delimiters are correctly nested
   const stack = [];
@@ -39,5 +39,5 @@ export function pickVariants(text: string, options: Options = {}): string {
 }
 
 interface Options {
-  seed?: Seed | undefined;
+  seed?: SeedLike | undefined;
 }
