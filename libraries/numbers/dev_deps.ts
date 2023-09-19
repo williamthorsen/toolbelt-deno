@@ -2,6 +2,7 @@ export {
   afterEach,
   assert,
   assertEquals,
+  assertInstanceOf,
   assertNotEquals,
   assertThrows,
   beforeEach,

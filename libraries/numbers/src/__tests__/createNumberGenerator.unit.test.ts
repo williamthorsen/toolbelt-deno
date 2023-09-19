@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertNotEquals, describe, it } from '../../dev_deps.ts';
 import { createNumberGenerator } from '../createNumberGenerator.ts';
-import { makeSeededRandom } from '../makeSeededRandom.ts';
+import { makeSeedFn } from '../makeSeedFn.ts';
 
 describe('createNumberGenerator', () => {
   it('returns a function', () => {
@@ -28,8 +28,8 @@ describe('createNumberGenerator', () => {
   });
 
   it('given a number generator created with the same seed, returns the same series of number', () => {
-    const generator1 = createNumberGenerator(makeSeededRandom(1234).random);
-    const generator2 = createNumberGenerator(makeSeededRandom(1234).random);
+    const generator1 = createNumberGenerator(makeSeedFn(1234)[0]);
+    const generator2 = createNumberGenerator(makeSeedFn(1234)[0]);
 
     const values1 = [
       generator1(),

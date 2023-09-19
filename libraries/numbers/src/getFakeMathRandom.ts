@@ -1,5 +1,6 @@
 /**
  * Deterministically computes and returns a number in the range [0, 1) based on the input.
+ * Used internally in this library. Not part of the public API.
  */
 export function getFakeMathRandom(seed: number): number {
   const x = Math.sin(seed) * 10000;

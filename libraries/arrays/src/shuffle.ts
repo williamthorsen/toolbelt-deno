@@ -1,5 +1,5 @@
-import { Seed } from '../../numbers/src/numbers.types.ts';
-import { makeSeededRandom } from '../../numbers/mod.ts';
+import type { Seed } from '../sibling_deps.ts';
+import { makeSeedFn } from '../sibling_deps.ts';
 
 /**
  * Returns a new array with the items shuffled.
@@ -15,7 +15,7 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
  * Time complexity: O(n)
  */
 export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
-  const random = makeSeededRandom(options.seed).random;
+  const [random] = makeSeedFn(options.seed);
 
   // Fisher-Yates algorithm
   for (let i = items.length - 1; i > 0; i--) {
@@ -25,5 +25,5 @@ export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
 }
 
 interface Options {
-  seed?: Seed;
+  seed?: Seed | undefined;
 }

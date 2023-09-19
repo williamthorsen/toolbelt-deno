@@ -2,6 +2,7 @@ export { assert } from 'https://deno.land/std@0.200.0/assert/assert.ts';
 export { assertAlmostEquals } from 'https://deno.land/std@0.200.0/assert/assert_almost_equals.ts';
 export { assertArrayIncludes } from 'https://deno.land/std@0.200.0/assert/assert_array_includes.ts';
 export { assertEquals } from 'https://deno.land/std@0.200.0/assert/assert_equals.ts';
+export { assertInstanceOf } from 'https://deno.land/std@0.200.0/assert/assert_instance_of.ts';
 export { assertMatch } from 'https://deno.land/std@0.200.0/assert/assert_match.ts';
 export { assertNotEquals } from 'https://deno.land/std@0.200.0/assert/assert_not_equals.ts';
 export { assertNotStrictEquals } from 'https://deno.land/std@0.200.0/assert/assert_not_strict_equals.ts';
