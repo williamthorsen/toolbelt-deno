@@ -3,11 +3,9 @@ export { deriveMakeSeedFn, deriveSeedFns, deriveSpawnSeedFn } from './src/derive
 export { makeInt32SeedFn, spawnInt32SeedFn } from './src/makeInt32SeedFn.ts';
 export { makeIntSeedFn, spawnIntSeedFn } from './src/makeIntSeedFn.ts';
 export { makeSeedFn, spawnSeedFn } from './src/makeSeedFn.ts';
-export { makeSeededRandom } from './src/makeSeededRandom.ts';
 export { pickInteger } from './src/pickInteger.ts';
 export { random } from './src/random.ts';
 export { scale } from './src/scale.ts';
 export { Seed } from './src/Seed.ts';
-export { spawnSeedFunction } from './src/spawnSeedFunction.ts';
 export { withSeed } from './src/withSeed.ts';
 export * from './types.ts';
