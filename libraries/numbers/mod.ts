@@ -7,6 +7,7 @@ export { makeSeededRandom } from './src/makeSeededRandom.ts';
 export { pickInteger } from './src/pickInteger.ts';
 export { random } from './src/random.ts';
 export { scale } from './src/scale.ts';
+export { Seed } from './src/Seed.ts';
 export { spawnSeedFunction } from './src/spawnSeedFunction.ts';
 export { withSeed } from './src/withSeed.ts';
 export * from './types.ts';
