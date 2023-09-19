@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.12.1
+
+### Refactoring
+
+Improved the type signature of seed-accepting functions:
+The `seed` property is now typed as `seed?: Seed | undefined` to satisfy `exactOptionalPropertyTypes=true`.
+
+Adapted `shuffle` to the API change in `numbers`: Replaced deprecated `makeSeededRandom` with `makeSeedFn`.
+
 ## 0.12.0
 
 ### Features

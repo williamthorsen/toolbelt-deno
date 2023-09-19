@@ -1,5 +1,16 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.3.1
+
+### Refactoring
+
+Modified `pickVariants`:
+
+- The `seed` property is now typed as `seed?: Seed | undefined` to satisfy `exactOptionalPropertyTypes=true`.
+- Replaced deprecated `spawnSeedFunction` with `spawnSeedFn`.
+
+Adapted `shuffle` to the API change in `numbers`: Replaced deprecated `makeSeededRandom` with `makeSeedFn`.
+
 ## 2.3.0
 
 ### Features
