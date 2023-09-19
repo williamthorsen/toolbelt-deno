@@ -1,4 +1,4 @@
-import type { Seed } from '../sibling_deps.ts';
+import type { SeedLike } from '../sibling_deps.ts';
 import { random } from '../sibling_deps.ts';
 import { getWeightedIndex } from './getWeightedIndex.ts';
 
@@ -22,7 +22,7 @@ export function pickWeightedIndex(
 }
 
 export interface PickRandomOptions {
-  seed?: Seed | undefined;
+  seed?: SeedLike | undefined;
 }
 
 type Integer = number;

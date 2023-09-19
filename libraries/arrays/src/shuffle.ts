@@ -1,5 +1,5 @@
-import type { Seed } from '../sibling_deps.ts';
-import { makeSeedFn } from '../sibling_deps.ts';
+import type { SeedLike } from '../sibling_deps.ts';
+import { random, Seed } from '../sibling_deps.ts';
 
 /**
  * Returns a new array with the items shuffled.
@@ -15,15 +15,15 @@ export function shuffle<T>(items: ReadonlyArray<T>, options: Options = {}): T[] 
  * Time complexity: O(n)
  */
 export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
-  const [random] = makeSeedFn(options.seed);
+  const seed = Seed.spawn(options.seed);
 
   // Fisher-Yates algorithm
   for (let i = items.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
+    const j = Math.floor(random({ seed }) * (i + 1));
     [items[i], items[j]] = [items[j], items[i]];
   }
 }
 
 interface Options {
-  seed?: Seed | undefined;
+  seed?: SeedLike | undefined;
 }
