@@ -1,5 +1,3 @@
-import type { FunctionOrValue } from './evaluate.ts';
-
 export type EmptyObject = Record<string, never> | Record<number, never>;
 
 export type HasRequiredKeys<BaseType extends object> = RequiredKeysOf<BaseType> extends never ? false : true;
@@ -12,4 +10,4 @@ export type RequiredKeysOf<BaseType extends object> = Exclude<
   undefined
 >;
 
-export type Seed = FunctionOrValue<number>;
+export type Seed = number | (() => number);

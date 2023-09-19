@@ -1,7 +1,7 @@
-import { evaluate } from './evaluate.ts';
 import { getFakeMathRandom } from './getFakeMathRandom.ts';
 import type { SpawnedSeedFn, SpawnSeedFn } from './makeSeedFn.ts';
-import type { Seed } from './numbers.types.ts';
+import type { SeedLike } from './Seed.ts';
+import { Seed } from './Seed.ts';
 
 /**
  * Given a base function, returns a new function that accepts options to preconfigure the base function.
@@ -27,8 +27,8 @@ export function deriveMakeSeedFn<TOptions extends object>(fn: (options?: Options
     if (options?.seed) {
       throw new Error('Unexpected seed value. Omit the seed when deriving the function.');
     }
-    return function makeSeededFn(seed?: Seed): [seedFn: () => number, baseSeed: number] {
-      let base = evaluate(seed) ?? fn({ ...options, seed });
+    return function makeSeededFn(seed?: SeedLike): [seedFn: () => number, baseSeed: number] {
+      let base = Seed.evaluate(seed) ?? fn({ ...options, seed });
       function seedFn(cb?: (base: number) => void): number {
         const newValue = fn({ ...options, seed: getFakeMathRandom(base) });
         base = sumWithWrap(base, 1);
@@ -52,8 +52,8 @@ export function deriveSeedFns<TOptions extends object>(fn: (options?: OptionsWit
     if (options?.seed) {
       throw new Error('Unexpected seed value. Omit the seed when deriving the function.');
     }
-    function getSeedFnWithBase(seed?: Seed): [seedFn: () => number, baseSeed: number] {
-      let base = evaluate(seed) ?? fn({ ...options, seed });
+    function getSeedFnWithBase(seed?: SeedLike): [seedFn: () => number, baseSeed: number] {
+      let base = Seed.evaluate(seed) ?? fn({ ...options, seed });
       function seedFn(): number {
         const newValue = fn({ ...options, seed: getFakeMathRandom(base) });
         base = sumWithWrap(base, 1);
@@ -70,7 +70,7 @@ export function deriveSeedFns<TOptions extends object>(fn: (options?: OptionsWit
  * The function behaves identically to `spawnSeedFn`, but its seeds are generated using the custom `makeSeedFn`.
  */
 export function deriveSpawnSeedFn(fn: MakeSeedFn): SpawnSeedFn {
-  return function customSpawnSeedFn(seed?: Seed): SpawnedSeedFn {
+  return function customSpawnSeedFn(seed?: SeedLike): SpawnedSeedFn {
     return seed === undefined ? undefined : fn(seed)[0];
   };
 }
@@ -86,11 +86,11 @@ function sumWithWrap(a: number, b: number) {
 
 // region | Types
 // TODO: The callback is currently included for testing & debugging; remove if no longer useful.
-type MakeSeedFn = (seed?: Seed) => [seedFn: (cb?: (base: number) => void) => number, baseSeed: number];
+type MakeSeedFn = (seed?: SeedLike) => [seedFn: (cb?: (base: number) => void) => number, baseSeed: number];
 
 type OptionsWithSeed<TOptions extends object> = TOptions & SeedOptions;
 
 interface SeedOptions {
-  seed?: Seed | undefined;
+  seed?: SeedLike | undefined;
 }
 // endregion | Types

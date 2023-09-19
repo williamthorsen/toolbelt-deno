@@ -1,5 +1,5 @@
 import { random } from './random.ts';
-import { Seed } from './numbers.types.ts';
+import type { SeedLike } from './Seed.ts';
 
 /**
  * Returns a random integer between the bounds inclusive.
@@ -30,5 +30,5 @@ export function pickInteger(params: Params = {}): number {
 interface Params {
   max?: number | undefined;
   min?: number | undefined;
-  seed?: Seed | undefined;
+  seed?: SeedLike | undefined;
 }
