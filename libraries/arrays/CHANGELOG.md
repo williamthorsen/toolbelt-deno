@@ -1,5 +1,17 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.4.3
+
+### Refactoring
+
+Adapted to breaking changes introduced by `@williamthorsen/toolbelt.numbers@3.0.0`:
+
+## 2.4.2
+
+### Dependencies
+
+Build and publish to update dependencies from `@williamthorsen/toolbelt.numbers@2.5.1`.
+
 ## 2.4.1
 
 ### Dependencies

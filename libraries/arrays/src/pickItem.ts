@@ -1,4 +1,4 @@
-import type { SeedLike } from '../sibling_deps.ts';
+import type { Seed } from '../sibling_deps.ts';
 import { random } from '../sibling_deps.ts';
 
 /**
@@ -13,5 +13,5 @@ export function pickItem<T>(items: ReadonlyArray<T>, options: Options = {}): T {
 }
 
 interface Options {
-  seed?: SeedLike | undefined;
+  seed?: Seed | undefined;
 }

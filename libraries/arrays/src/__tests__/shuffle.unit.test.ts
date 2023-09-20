@@ -1,5 +1,5 @@
 import { assert, assertArrayIncludes, assertEquals, describe, it } from '../../dev_deps.ts';
-import { Seed } from '../../sibling_deps.ts';
+import { SeededRng } from '../../sibling_deps.ts';
 import { shuffle, shuffleInPlace } from '../shuffle.ts';
 
 describe('shuffle', () => {
@@ -56,18 +56,17 @@ describe('shuffleInPlace', () => {
     shuffleInPlace(original, { seed: 1234 });
     shuffleInPlace(duplicate, { seed: 1234 });
 
-    console.log({ original, duplicate });
-
     assertEquals(original, duplicate);
   });
 
-  it('given a Seed instance with a given seed, deterministically shuffles the ray', () => {
-    const seed = new Seed();
+  it('given a SeededRng instance with a given seed, deterministically shuffles the ray', () => {
+    const seedFn1 = new SeededRng(1234.5).rng;
+    const seedFn2 = new SeededRng(1234.5).rng;
     const original = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const duplicate = [...original];
 
-    shuffleInPlace(original, { seed: seed.clone() });
-    shuffleInPlace(duplicate, { seed: seed.clone() });
+    shuffleInPlace(original, { seed: seedFn1 });
+    shuffleInPlace(duplicate, { seed: seedFn2 });
 
     // console.log({ original, duplicate });
 

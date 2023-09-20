@@ -2,8 +2,6 @@
  * Converts all whitespace characters to a single space.
  */
 export function condenseWhitespace(str: string): string {
-  console.log({ lines: str.split('\n') });
-
   return str.split('\n')
     .map(condenseWhitespaceSingleLine)
     .join('\n');

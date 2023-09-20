@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.stats
 
+## 0.4.2
+
+### Dependencies
+
+Build and publish to update dependencies from `@williamthorsen/toolbelt.numbers@2.5.1`.
+
 ## 0.4.1
 
 ### Refactoring

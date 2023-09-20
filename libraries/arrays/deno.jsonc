@@ -31,7 +31,8 @@
     include: [
       // Coverage check will not be 100% unless sibling deps are tested
       '../numbers/**/pickInteger.unit.test.ts',
-      '../numbers/**/Seed.unit.test.ts',
+      '../numbers/**/SeededRng.unit.test.ts',
+      '../numbers/**/wrapSum.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included
       '../arrays/**/*.test.ts',
     ],

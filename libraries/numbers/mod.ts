@@ -1,11 +1,7 @@
 export { createNumberGenerator } from './src/createNumberGenerator.ts';
-export { deriveMakeSeedFn, deriveSeedFns, deriveSpawnSeedFn } from './src/deriveSeedFns.ts';
-export { makeInt32SeedFn, spawnInt32SeedFn } from './src/makeInt32SeedFn.ts';
-export { makeIntSeedFn, spawnIntSeedFn } from './src/makeIntSeedFn.ts';
-export { makeSeedFn, spawnSeedFn } from './src/makeSeedFn.ts';
+export { evaluateSeed } from './src/evaluateSeed.ts';
 export { pickInteger } from './src/pickInteger.ts';
 export { random } from './src/random.ts';
 export { scale } from './src/scale.ts';
-export { Seed } from './src/Seed.ts';
-export { withSeed } from './src/withSeed.ts';
+export { Int32SeededRng, IntSeededRng, SeededRng } from './src/SeededRng.ts';
 export * from './types.ts';
