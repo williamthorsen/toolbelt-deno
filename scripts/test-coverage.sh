@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-local LIBRARIES=("arrays" "dstructs" "numbers" "objects" "strings")
+local LIBRARIES=("arrays" "datetime" "dstructs" "numbers" "objects" "stats" "strings")
 
 for library in "${LIBRARIES[@]}"; do
   echo "Building $library"
