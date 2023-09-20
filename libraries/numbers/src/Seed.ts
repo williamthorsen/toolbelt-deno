@@ -6,12 +6,13 @@ import { pickInteger } from './pickInteger.ts';
  * Number-generating class for use with functions that accept a `Seed` or `SeedLike` parameter.
  */
 export class Seed {
-  private _base: number; // internally incremented value to provide deterministic behaviour
-  readonly preset: 'int' | 'int32' | 'standard' = 'standard';
-  private readonly maxBase = Number.MAX_SAFE_INTEGER;
+  preset: 'int' | 'int32' | 'standard' = 'standard'; // TODO: make this a private property
 
-  private readonly generateBase: () => number;
-  private readonly generateValue: () => number;
+  private _base: number; // internally incremented value to provide deterministic behaviour
+  private maxBase = Number.MAX_SAFE_INTEGER;
+
+  private generateBase: () => number = this.standardGenerateBase;
+  private generateValue: () => number = this.standardGenerateValue;
 
   static evaluate(seed: SeedLike | undefined): number | undefined {
     if (typeof seed === 'number') {
@@ -34,11 +35,11 @@ export class Seed {
     }
   }
 
-  static int(seed?: undefined): Seed {
+  static int(seed?: SeedLike): Seed {
     return Seed.create(seed, { preset: 'int' });
   }
 
-  static int32(seed?: undefined): Seed {
+  static int32(seed?: SeedLike): Seed {
     return Seed.create(seed, { preset: 'int32' });
   }
 
@@ -50,7 +51,7 @@ export class Seed {
       return undefined;
     }
     const preset = seed instanceof Seed ? seed.preset : undefined;
-    return new Seed(seed, { preset });
+    return Seed.create(seed, { preset });
   }
 
   /**
@@ -79,20 +80,7 @@ export class Seed {
   /**
    * Constructor
    */
-  constructor(seed?: SeedLike, options: SeedOptions = {}) {
-    const { preset = 'standard' } = options;
-    if (preset === 'int') {
-      this.generateBase = () => pickInteger({ min: 1 });
-      this.generateValue = () => pickInteger({ min: 0, seed: getFakeMathRandom(this.nextBase()) });
-    } else if (preset === 'int32') {
-      this.generateBase = () => pickInteger({ min: 1, max: this.maxBase });
-      this.generateValue = () => pickInteger({ min: 0, max: this.maxBase, seed: getFakeMathRandom(this.nextBase()) });
-      this.maxBase = 4294967295; // 2^32 - 1
-    } else {
-      this.generateBase = () => Math.random();
-      this.generateValue = () => getFakeMathRandom(this.nextBase());
-    }
-    this.preset = preset;
+  constructor(seed?: SeedLike) {
     this._base = (Seed.evaluate(seed) ?? this.generateBase()) % this.maxBase;
   }
 
@@ -118,8 +106,24 @@ export class Seed {
     return this.generateValue();
   }
 
-  protected static create(seed?: SeedLike, options: SeedOptions = {}): Seed {
-    return new Seed(seed, options);
+  protected static create(seedLike: SeedLike, options: SeedOptions): Seed {
+    const seed = new Seed(seedLike);
+
+    const { preset = 'standard' } = options;
+    if (preset === 'standard') return seed;
+
+    if (options.preset === 'int') {
+      seed.generateBase = seed.intGenerateBase;
+      seed.generateValue = seed.intGenerateValue;
+    } else if (options.preset === 'int32') {
+      seed.generateBase = seed.int32GenerateBase;
+      seed.generateValue = seed.int32GenerateValue;
+      seed.maxBase = 2 ** 32 - 1;
+    }
+    seed.preset = preset;
+    seed._base = (Seed.evaluate(seedLike) ?? seed.generateBase()) % seed.maxBase;
+
+    return seed;
   }
 
   // Returns the base value and then safely increments it (safe equivalent to _base++)
@@ -127,6 +131,30 @@ export class Seed {
     const base = this._base;
     this._base = (base + 1) % this.maxBase;
     return base;
+  }
+
+  private standardGenerateBase(): number {
+    return Math.random();
+  }
+
+  private standardGenerateValue(): number {
+    return getFakeMathRandom(this.nextBase());
+  }
+
+  private intGenerateBase(): number {
+    return pickInteger({ min: 1 });
+  }
+
+  private intGenerateValue(): number {
+    return pickInteger({ min: 0, seed: getFakeMathRandom(this.nextBase()) });
+  }
+
+  private int32GenerateBase(): number {
+    return pickInteger({ min: 1, max: this.maxBase });
+  }
+
+  private int32GenerateValue(): number {
+    return pickInteger({ min: 0, max: this.maxBase, seed: getFakeMathRandom(this.nextBase()) });
   }
 }
 

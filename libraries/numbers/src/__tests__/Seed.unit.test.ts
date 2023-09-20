@@ -4,8 +4,6 @@ import { Seed, SeedLike } from '../Seed.ts';
 import { pickInteger } from '../pickInteger.ts';
 import { withSeed as deprecatedWithSeed } from '../withSeed.ts';
 
-const MAX_INT_32 = 4294967295; // 2^32 - 1
-
 describe('Seed class', () => {
   describe('static clone()', () => {
     it('given a seed, returns a new seed that uses the same base seed', () => {
@@ -227,108 +225,91 @@ describe('Seed class', () => {
 });
 
 describe('Seed class - int preset', () => {
-  describe('static int()', () => {
-    it('returns a new seed using the "int" preset', () => {
-      const seed = Seed.int();
+  for (
+    const [preset, createIntSeed, max] of [
+      ['int', Seed.int, Number.MAX_SAFE_INTEGER],
+      ['int32', Seed.int32, 2 ** 32 - 1],
+    ] as const
+  ) {
+    describe('static clone()', () => {
+      it(`returns a new ${preset} seed`, () => {
+        const seed = createIntSeed(1234.5);
 
-      assertEquals(seed.preset, 'int');
-    });
-  });
+        const clone = Seed.clone(seed);
 
-  describe('constructor', () => {
-    it('generates an integer base', () => {
-      const seed = new Seed(undefined, { preset: 'int' });
-      assertEquals(Number.isInteger(seed.base), true);
-    });
-
-    it('generates integer values', () => {
-      const seed = new Seed(undefined, { preset: 'int' });
-      assertEquals(Number.isInteger(seed.next()), true);
-      assertEquals(Number.isInteger(seed.next()), true);
-    });
-  });
-
-  describe('next()', () => {
-    it('if the seed generator exceeds MAX_SAFE_INTEGER, safely wraps around from 0', () => {
-      const seed = new Seed(Number.MAX_SAFE_INTEGER);
-      const expectedNextBase = 1;
-
-      seed.next();
-
-      assertEquals(seed.base, expectedNextBase);
-    });
-  });
-});
-
-describe('Seed class - int32 preset', () => {
-  describe('static clone()', () => {
-    it('returns a new int32 seed', () => {
-      const seed = new Seed(undefined, { preset: 'int32' });
-
-      const clone = Seed.clone(seed);
-
-      assertInstanceOf(clone, Seed);
-      assertEquals(clone?.preset, 'int32');
-    });
-  });
-
-  describe('static int32()', () => {
-    it('returns a new seed using the "int32" preset', () => {
-      const seed = Seed.int32();
-
-      assertEquals(seed.preset, 'int32');
-    });
-  });
-
-  describe('static spawn()', () => {
-    it('returns a new int32 seed', () => {
-      const seed = new Seed();
-
-      const spawned = Seed.spawn(seed);
-
-      assertInstanceOf(spawned, Seed);
-    });
-  });
-
-  describe('constructor', () => {
-    it('generates an integer base', () => {
-      const seed = new Seed(undefined, { preset: 'int32' });
-      assertEquals(Number.isInteger(seed.base), true);
+        assertInstanceOf(clone, Seed);
+        assertEquals(clone?.preset, preset);
+      });
     });
 
-    it('generates integer values', () => {
-      const seed = new Seed(undefined, { preset: 'int32' });
-      assertEquals(Number.isInteger(seed.next()), true);
-      assertEquals(Number.isInteger(seed.next()), true);
+    describe(`static ${preset}()`, () => {
+      it(`returns a new seed using the "${preset}" preset`, () => {
+        const seed = createIntSeed();
+
+        assertEquals(seed.preset, preset);
+      });
+
+      it('generates an integer base', () => {
+        const seed = createIntSeed();
+        assertEquals(Number.isInteger(seed.base), true);
+      });
+
+      it('can start with a non-integer base if provided by the caller', () => {
+        const input = 1324.5;
+        const seed = createIntSeed(input);
+        assertEquals(seed.base, input);
+      });
+
+      it('always generates integer values', () => {
+        const seed = createIntSeed(1234.5);
+        assertEquals(Number.isInteger(seed.next()), true);
+        assertEquals(Number.isInteger(seed.next()), true);
+      });
+
+      it('if the input seed exceeds max, uses modula max', () => {
+        const expectedBase = 1;
+
+        const seed = createIntSeed(max + 1);
+
+        assertEquals(seed.base, expectedBase);
+      });
     });
 
-    it('if the input seed exceeds max, uses modula max', () => {
-      const expectedBase = 1;
+    describe('static spawn()', () => {
+      it(`returns a new ${preset} seed`, () => {
+        const seed = createIntSeed();
 
-      const seed = new Seed(MAX_INT_32 + 1, { preset: 'int32' });
+        const spawned = Seed.spawn(seed);
 
-      assertEquals(seed.base, expectedBase);
+        assertInstanceOf(spawned, Seed);
+      });
     });
-  });
 
-  describe('clone()', () => {
-    it('returns a new int32 seed', () => {
-      const seed = new Seed(undefined, { preset: 'int32' });
+    describe('clone()', () => {
+      it(`returns a new ${preset} seed`, () => {
+        const seed = createIntSeed();
 
-      const clone = seed.clone();
+        const clone = seed.clone();
 
-      assertEquals(clone.preset, 'int32');
+        assertEquals(clone.preset, preset);
+      });
     });
-  });
 
-  describe('next()', () => {
-    it('if the seed generator exceeds 2^32 - 1, safely wraps around from 0', () => {
-      const seed = new Seed(MAX_INT_32, { preset: 'int32' });
-      const expectedNextBase = 1;
+    describe('next()', () => {
+      it('generates integer values', () => {
+        const seed = createIntSeed(1234.5);
+        assertEquals(Number.isInteger(seed.next()), true);
+        assertEquals(Number.isInteger(seed.next()), true);
+      });
 
-      seed.next();
+      it(`if the seed generator exceeds ${max}, safely wraps around from 0`, () => {
+        const seed = createIntSeed(max);
+        const expectedNextBase = 1;
 
-      assertEquals(seed.base, expectedNextBase);
+        seed.next();
+
+        assertEquals(seed.base, expectedNextBase);
+      });
     });
-  });
+  }
 });
