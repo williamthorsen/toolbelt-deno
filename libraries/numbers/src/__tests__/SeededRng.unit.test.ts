@@ -2,7 +2,7 @@ import { assertAlmostEquals, assertEquals, assertInstanceOf, assertNotEquals, de
 
 import type { Seed } from '../evaluateSeed.ts';
 import { pickInteger } from '../pickInteger.ts';
-import { SeededRng } from '../SeededRng.ts';
+import { Int32SeededRng, IntSeededRng, SeededRng } from '../SeededRng.ts';
 
 describe('SeededRng class', () => {
   describe('static clone()', () => {
@@ -222,44 +222,44 @@ describe('SeededRng class', () => {
   });
 });
 
-describe('SeededRng class - int preset', () => {
-  for (
-    const [preset, createIntRng, max] of [
-      ['int', SeededRng.int, Number.MAX_SAFE_INTEGER],
-      ['int32', SeededRng.int32, 2 ** 32 - 1],
-    ] as const
-  ) {
+for (
+  const [preset, Rng, max] of [
+    ['Int', IntSeededRng, Number.MAX_SAFE_INTEGER],
+    ['Int32', Int32SeededRng, 2 ** 32 - 1],
+  ] as const
+) {
+  const className = `${preset}SeededRng`;
+  describe(`${className} class`, () => {
     describe('static clone()', () => {
-      it(`returns a new ${preset} seed`, () => {
-        const rng = createIntRng(1234.5);
+      it('returns a new instance of the same class', () => {
+        const rng = new Rng(1234.5);
 
-        const clone = SeededRng.clone(rng);
+        const clone = Rng.clone(rng);
 
-        assertInstanceOf(clone, SeededRng);
-        assertEquals(clone?.preset, preset);
+        assertInstanceOf(clone, Rng);
       });
     });
 
-    describe(`static ${preset}()`, () => {
-      it(`returns a new seed using the "${preset}" preset`, () => {
-        const rng = createIntRng();
+    describe('constructor', () => {
+      it(`returns an instance of ${className}`, () => {
+        const rng = new Rng();
 
-        assertEquals(rng.preset, preset);
+        assertInstanceOf(rng, Rng);
       });
 
       it('generates an integer seed', () => {
-        const rng = createIntRng();
+        const rng = new Rng();
         assertEquals(Number.isInteger(rng.seed), true);
       });
 
       it('can start with a non-integer seed if provided by the caller', () => {
         const input = 1324.5;
-        const rng = createIntRng(input);
+        const rng = new Rng(input);
         assertEquals(rng.seed, input);
       });
 
       it('always generates integer values', () => {
-        const seed = createIntRng(1234.5);
+        const seed = new Rng(1234.5);
         assertEquals(Number.isInteger(seed.next()), true);
         assertEquals(Number.isInteger(seed.next()), true);
       });
@@ -267,42 +267,41 @@ describe('SeededRng class - int preset', () => {
       it(`if the input seed exceeds max (${max}), uses modulo max`, () => {
         const expectedSeed = 1;
 
-        const rng = createIntRng(max + 1);
+        const rng = new Rng(max + 1);
 
-        assertEquals(rng.preset, preset);
         assertEquals(rng.seed, expectedSeed);
       });
     });
 
     describe('static spawn()', () => {
-      it(`returns a new ${preset} seed`, () => {
-        const rng = createIntRng();
+      it('returns a new instance of the same class', () => {
+        const rng = new Rng();
 
-        const spawned = SeededRng.spawn(rng);
+        const spawned = Rng.spawn(rng);
 
-        assertInstanceOf(spawned, SeededRng);
+        assertInstanceOf(spawned, Rng);
       });
     });
 
     describe('clone()', () => {
-      it(`returns a new ${preset} seed`, () => {
-        const rng = createIntRng();
+      it('returns a new instance of the same class', () => {
+        const rng = new Rng();
 
         const clone = rng.clone();
 
-        assertEquals(clone.preset, preset);
+        assertInstanceOf(clone, Rng);
       });
     });
 
     describe('next()', () => {
       it('generates integer values', () => {
-        const rng = createIntRng(1234.5);
+        const rng = new Rng(1234.5);
         assertEquals(Number.isInteger(rng.next()), true);
         assertEquals(Number.isInteger(rng.next()), true);
       });
 
       it(`if the seed generator exceeds ${max}, safely wraps around from 0`, () => {
-        const rng = createIntRng(max);
+        const rng = new Rng(max);
         const expectedNextBase = 1;
 
         rng.next();
@@ -310,5 +309,5 @@ describe('SeededRng class - int preset', () => {
         assertEquals(rng.seed, expectedNextBase);
       });
     });
-  }
-});
+  });
+}

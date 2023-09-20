@@ -9,15 +9,9 @@ import { evaluateSeed } from './evaluateSeed.ts';
  * Class that manages a pseudo-random number generator that behaves deterministically when given a seed.
  */
 export class SeededRng implements DeterministicRng {
-  preset: 'int' | 'int32' | 'standard' = 'standard'; // TODO: make this a private property
-
   private _seed = 0; // internally incremented value to provide deterministic behaviour
   private baseSeed = 0; // original value used to create the seed
-  private maxBase = Number.MAX_SAFE_INTEGER;
   private nIncrements = 0;
-
-  private generateBase: () => number = this.standardGenerateBase;
-  private generateValue: () => number = this.standardGenerateValue;
 
   // Resolves a seed-like value to a number
   static evaluateSeed(seed?: Seed | undefined) {
@@ -27,31 +21,23 @@ export class SeededRng implements DeterministicRng {
   // Creates a child; does not mutate the parent seed
   // By default, the child's base is incremented by 1 to produce a different output than the parent
   // while still being deterministic. Set nIncrements to 0 to produce the same output.
-  static clone(seed?: undefined, nIncrements?: number): undefined;
-  static clone(seed: Seed, nIncrements?: number): SeededRng;
-  static clone(seed: Seed | undefined, nIncrements = 1): SeededRng | undefined {
+  static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed?: undefined, nIncrements?: number): undefined;
+  static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed, nIncrements?: number): This<T>;
+  static clone<T extends ThisConstructor<typeof SeededRng>>(
+    this: T,
+    seed: Seed | undefined,
+    nIncrements = 1,
+  ): This<T> | undefined {
     if (seed instanceof SeededRng) {
-      return SeededRng.create(seed.seed, { preset: seed.preset }).increment(nIncrements);
+      return new this(seed.seed).increment(nIncrements);
     }
-  }
-
-  static int(seed?: Seed): SeededRng {
-    return SeededRng.create(seed, { preset: 'int' });
-  }
-
-  static int32(seed?: Seed): SeededRng {
-    return SeededRng.create(seed, { preset: 'int32' });
   }
 
   // Creates a child; mutates the input seed, if it is a Seed instance or generator
-  static spawn(seed?: undefined): undefined;
-  static spawn(seed: Seed): SeededRng;
-  static spawn(seed?: Seed): SeededRng | undefined {
-    if (seed === undefined) {
-      return undefined;
-    }
-    const preset = seed instanceof SeededRng ? seed.preset : undefined;
-    return SeededRng.create(seed, { preset });
+  static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed?: undefined): undefined;
+  static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed): This<T>;
+  static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed?: Seed): This<T> | undefined {
+    return seed === undefined ? undefined : new this(seed);
   }
 
   /**
@@ -74,6 +60,10 @@ export class SeededRng implements DeterministicRng {
     this.initializeSeeds(SeededRng.evaluateSeed(seed) ?? this.generateBase());
   }
 
+  get maxBase() {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
   // Returns a function that successively returns a deterministic sequence of numbers based on this instance's seed
   get rng(): () => number {
     return () => this.generateValue();
@@ -83,8 +73,8 @@ export class SeededRng implements DeterministicRng {
     return this._seed;
   }
 
-  clone(nIncrements = 1): SeededRng {
-    return SeededRng.clone(this, nIncrements);
+  clone<T extends SeededRng>(this: T, nIncrements = 1): T {
+    return new (this.constructor as Constructor<T>)(this._seed).increment(nIncrements);
   }
 
   /** Safely increments the seed by the given number of increments */
@@ -108,25 +98,6 @@ export class SeededRng implements DeterministicRng {
     return this.generateValue();
   }
 
-  protected static create(seedLike: Seed, options: SeedOptions): SeededRng {
-    const rng = new SeededRng(seedLike);
-
-    const { preset = 'standard' } = options;
-    if (preset === 'standard') return rng;
-
-    if (options.preset === 'int') {
-      rng.generateBase = rng.intGenerateBase;
-      rng.generateValue = rng.intGenerateValue;
-    } else if (options.preset === 'int32') {
-      rng.generateBase = rng.int32GenerateBase;
-      rng.generateValue = rng.int32GenerateValue;
-      rng.maxBase = 2 ** 32 - 1;
-    }
-    rng.preset = preset;
-    rng.initializeSeeds(SeededRng.evaluateSeed(seedLike) ?? rng.generateBase());
-    return rng;
-  }
-
   protected initializeSeeds(baseSeed: number) {
     this.baseSeed = wrapSum(this.maxBase, baseSeed);
     this._seed = this.baseSeed;
@@ -140,37 +111,47 @@ export class SeededRng implements DeterministicRng {
     return seed;
   }
 
-  private standardGenerateBase(): number {
+  protected generateBase(): number {
     return Math.random();
   }
 
-  private standardGenerateValue(): number {
+  protected generateValue(): number {
     return getFakeMathRandom(this.getSeedAndIncrement());
   }
+}
 
-  private intGenerateBase(): number {
+export class IntSeededRng extends SeededRng {
+  protected generateBase() {
     return pickInteger({ min: 1 });
   }
 
-  private intGenerateValue(): number {
+  protected generateValue(): number {
     return pickInteger({ min: 0, seed: getFakeMathRandom(this.getSeedAndIncrement()) });
   }
+}
 
-  private int32GenerateBase(): number {
+export class Int32SeededRng extends SeededRng {
+  get maxBase() {
+    return 2 ** 32 - 1;
+  }
+
+  protected generateBase() {
     return pickInteger({ min: 1, max: this.maxBase });
   }
 
-  private int32GenerateValue(): number {
+  protected generateValue(): number {
     return pickInteger({ min: 0, max: this.maxBase, seed: getFakeMathRandom(this.getSeedAndIncrement()) });
   }
 }
-
 // region | Types
+// deno-lint-ignore no-explicit-any
+type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T;
+
 type OptionsWithSeed<O> = O & { seed?: Seed };
 
-interface SeedOptions {
-  preset?: SeedPreset | undefined;
-}
+type ThisConstructor<
+  T extends { prototype: unknown } = { prototype: unknown },
+> = T;
 
-type SeedPreset = 'int' | 'int32' | 'standard';
+type This<T extends ThisConstructor> = T['prototype'];
 // endregion | Types
