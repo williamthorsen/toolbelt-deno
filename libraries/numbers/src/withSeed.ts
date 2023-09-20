@@ -4,6 +4,8 @@ import { Seed } from './Seed.ts';
 
 /**
  * Given a seed-acception function and an optional seed, returns a new function that passes the seed to the function.
+ *
+ * @deprecated Use `Seed.withSeed` instead.
  */
 export function withSeed<TOptions extends object, R>(
   fn: (options?: OptionsWithSeed<TOptions>) => R,
