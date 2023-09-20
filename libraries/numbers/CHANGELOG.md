@@ -1,5 +1,16 @@
 # @williamthorsen/toolbelt.numbers
 
+## 2.5.1
+
+### Fixes
+
+Fixed type issues arising from use of subclasses of `Seed` by replacing subclasses with presets of the single `Seed` class.
+
+### Refactoring
+
+- Added `Seed.int` and `Seed.int32` methods to replace `{ preset: 'int' }` and `{ preset: 'int32' }` options to the constructor.
+- Removed the option of passing the preset to the constructor.
+
 ## 2.5.0
 
 ### Deprecations
@@ -8,13 +19,11 @@
 
 ### Features
 
-Added an `nIncrements` option to `Seed.clone` and `Seed#clone` to differentiate cloned seeds from the parent seeds while
-keeping their behaviour deterministic.
+Added an `nIncrements` option to `Seed.clone` and `Seed#clone` to differentiate cloned seeds from the parent seeds while keeping their behaviour deterministic.
 
 ### Refactoring
 
-Fixed typings of `Seed.clone`, `Seed.spawn`, and `Seed#clone` to return the correct type with invoked on a subclass or
-subclass instance.
+Fixed typings of `Seed.clone`, `Seed.spawn`, and `Seed#clone` to return the correct type with invoked on a subclass or subclass instance.
 
 Migrated `withSeed` to `Seed#withSeed`.
 
@@ -65,8 +74,7 @@ To simplify the code structure (and avoid inadvertent cyclic dependencies),
 
 Added seed functions:
 
-- `deriveMakeSeedFn`: Creates a variant of `makeSeedFn` (whose seeds are in the range `[0, 1)`) that produces seeds in a
-  custom range.
+- `deriveMakeSeedFn`: Creates a variant of `makeSeedFn` (whose seeds are in the range `[0, 1)`) that produces seeds in a custom range.
 - `deriveSpawnSeedFn`: Creates a variant of `spawnSeedFn` for use with a variant `makeSeedFn`.
 
 Two premade variants are exported:
@@ -75,8 +83,7 @@ Two premade variants are exported:
 - `makeIntSeedFn` and `spawnIntSeedFn`: Produce integer seeds in the range `[1, 2^53 - 1]` (a.k.a.
   `Number.MAX_SAFE_INTEGER`)
 
-Added convenience function: `deriveSeedFns`, that returns the results of `deriveMakeSeedFn` and `deriveSpawnSeedFn` in a
-tuple.
+Added convenience function: `deriveSeedFns`, that returns the results of `deriveMakeSeedFn` and `deriveSpawnSeedFn` in a tuple.
 
 Added function `withSeed`: Creates a deterministic version of any function that accepts a `seed` number or
 number-returning function as a property of its first object.
