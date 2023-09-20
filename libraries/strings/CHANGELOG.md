@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.0.0
+
+### BREAKING CHANGES
+
+Removed `interpolate` function: Use `Interpolable.interpolate` instead.
+
+### Refactoring
+
+Adapted to breaking changes introduced by `@williamthorsen/toolbelt.numbers@3.0.0`:
+
 ## 0.13.2
 
 ### Dependencies

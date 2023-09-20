@@ -1,5 +1,32 @@
 # @williamthorsen/toolbelt.numbers
 
+## 3.0.0
+
+### BREAKING CHANGES
+
+Removed all existing seed-related classes & functions, replacing them with a new `SeededRng` class (similar to the old `Seed` class) and two subclasses: `IntSeededRng` and `Int32SeededRng`.
+
+- `deriveSeedFns` function: Use `Int32SeededRng` or `IntSeededRng` classes instead
+- `makeSeedFn`, `makeInt32SeedFn`, `makeIntSeedFn` functions: Use `SeededRng.rng` (or relevant subclass method)
+- `Seed`: Use `SeededRng`
+- `withSeed`: Use `withSeed` static method of `SeededRng`
+
+### Features
+
+Added classes to generate deterministic sequences of pseudo-random numbers:
+
+- `SeededRng`: generates real numbers in the range `[0, 1)`
+- `IntSeededRng`: generates integers in the range `[0, Number.MAX_SAFE_INTEGER)`
+- `Int32SeededRng`: generates integers in the range `[0, 2^32 - 1]`
+
+Made changes to avoid tight coupling of seed-using functions to the `SeededRng` class and its precursors:
+
+- Added an `Rng` interface to represent any object that stores a seed and can generate random numbers. This can more safely be used in place of the `SeededRng` type.
+- Added a `Seed` type to replace `SeedLike`: It represents the values that can be evaluated by `evaluateSeed`: a number, function, or object implementing the `Rng` interface.
+- Added `evaluateSeed` function: Resolves a `Seed` to a number. Should be used instead of `SeededRng#evaluateSeed` in code whose behaviour depends only on a number and does neet a generating function.
+
+### Refactoring
+
 ## 2.5.1
 
 ### Fixes

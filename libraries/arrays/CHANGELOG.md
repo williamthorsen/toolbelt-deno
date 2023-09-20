@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.4.3
+
+### Refactoring
+
+Adapted to breaking changes introduced by `@williamthorsen/toolbelt.numbers@3.0.0`:
+
 ## 2.4.2
 
 ### Dependencies
