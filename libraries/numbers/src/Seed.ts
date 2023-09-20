@@ -13,10 +13,6 @@ export class Seed {
   private readonly generateBase: () => number;
   private readonly generateValue: () => number;
 
-  static create(seed?: SeedLike, options: SeedOptions = {}): Seed {
-    return new Seed(seed, options);
-  }
-
   static evaluate(seed: SeedLike | undefined): number | undefined {
     if (typeof seed === 'number') {
       return seed;
@@ -36,6 +32,14 @@ export class Seed {
     if (seed instanceof Seed) {
       return Seed.create(seed.base, { preset: seed.preset }).increment(nIncrements);
     }
+  }
+
+  static int(seed?: undefined): Seed {
+    return Seed.create(seed, { preset: 'int' });
+  }
+
+  static int32(seed?: undefined): Seed {
+    return Seed.create(seed, { preset: 'int32' });
   }
 
   // Creates a child; mutates the input seed, if it is a Seed instance or generator
@@ -72,6 +76,9 @@ export class Seed {
     };
   }
 
+  /**
+   * Constructor
+   */
   constructor(seed?: SeedLike, options: SeedOptions = {}) {
     const { preset = 'standard' } = options;
     if (preset === 'int') {
@@ -111,6 +118,10 @@ export class Seed {
     return this.generateValue();
   }
 
+  protected static create(seed?: SeedLike, options: SeedOptions = {}): Seed {
+    return new Seed(seed, options);
+  }
+
   // Returns the base value and then safely increments it (safe equivalent to _base++)
   protected nextBase(): number {
     const base = this._base;
@@ -131,9 +142,4 @@ interface SeedOptions {
 }
 
 type SeedPreset = 'int' | 'int32' | 'standard';
-
-interface SpawnOptions {
-  preset?: SeedPreset | undefined;
-}
-
 // endregion | Types
