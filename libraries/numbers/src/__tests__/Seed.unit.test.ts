@@ -14,23 +14,23 @@ describe('Seed class', () => {
     });
 
     it('returns an object containing a function whose output, when invoked successively, is a deterministic pseudo-random series of numbers', () => {
-      const seed1 = new Seed();
-      const seed2 = seed1.clone();
+      const seed = new Seed();
+      const clone = seed.clone();
 
-      const values1 = [
-        seed1.next(),
-        seed1.next(),
-        seed1.next(),
+      const seedValues = [
+        seed.next(),
+        seed.next(),
+        seed.next(),
       ];
 
-      const values2 = [
-        seed2.next(),
-        seed2.next(),
-        seed2.next(),
+      const cloneValues = [
+        clone.next(),
+        clone.next(),
+        clone.next(),
       ];
 
-      assertEquals(values1, values2);
-      assertNotEquals(values1[0], values1[1]);
+      assertEquals(seedValues, cloneValues);
+      assertNotEquals(seedValues[0], seedValues[1]);
     });
 
     it('accepts as the base seed a function that returns a number', () => {
@@ -142,55 +142,141 @@ describe('Seed class', () => {
       assertNotEquals(result1, result2);
     });
   });
+  // `clone()` is tested in a subclass below
 });
 
 describe('Int32Seed class', () => {
-  it('generates an integer base', () => {
-    const seed = new Int32Seed();
-    assertEquals(Number.isInteger(seed.base), true);
+  describe('static clone()', () => {
+    it('returns an instance of Int32Seed', () => {
+      const seed = new Int32Seed();
+
+      const clone = Int32Seed.clone(seed);
+
+      assertInstanceOf(clone, Int32Seed);
+    });
+
+    it('by default, the clone\'s seed is advanced by 1 relative to the parent\'s', () => {
+      const seed = new Int32Seed();
+      const clone = Int32Seed.clone(seed);
+
+      seed.next();
+
+      assertEquals(clone?.base, seed.base);
+    });
+
+    it('if invoked with nIncrements=0, the clone has the same seed as the parent', () => {
+      const seed = new Int32Seed();
+      const clone = Int32Seed.clone(seed, 0);
+
+      assertEquals(clone?.base, seed.base);
+    });
+
+    it('if invoked with nIncrements=n, advances the seed by n relative to the parent\'s', () => {
+      const seed = new Int32Seed();
+      const clone = Int32Seed.clone(seed, 2);
+      seed.next() && seed.next();
+
+      assertEquals(clone?.base, seed.base);
+    });
+
+    it('if invoked with nIncrements<0, rewinds the seed by nIncrements', () => {
+      const seed = new Int32Seed();
+      const seedBase = seed.base;
+      seed.next() && seed.next();
+
+      const clone = Int32Seed.clone(seed, -2);
+
+      assertEquals(clone?.base, seedBase);
+    });
   });
 
-  it('generates integer values', () => {
-    const seed = new IntSeed();
-    assertEquals(Number.isInteger(seed.next()), true);
-    assertEquals(Number.isInteger(seed.next()), true);
+  describe('static spawn()', () => {
+    it('returns an instance of Int32Seed', () => {
+      const seed = new Int32Seed();
+
+      const spawned = Int32Seed.spawn(seed);
+
+      assertInstanceOf(spawned, Int32Seed);
+    });
   });
 
-  it('if the input seed exceeds max, uses modula max', () => {
-    const expectedBase = 1;
+  describe('constructor', () => {
+    it('generates an integer base', () => {
+      const seed = new Int32Seed();
+      assertEquals(Number.isInteger(seed.base), true);
+    });
 
-    const seed = new Int32Seed(MAX_INT_32 + 1);
+    it('generates integer values', () => {
+      const seed = new IntSeed();
+      assertEquals(Number.isInteger(seed.next()), true);
+      assertEquals(Number.isInteger(seed.next()), true);
+    });
 
-    assertEquals(seed.base, expectedBase);
+    it('if the input seed exceeds max, uses modula max', () => {
+      const expectedBase = 1;
+
+      const seed = new Int32Seed(MAX_INT_32 + 1);
+
+      assertEquals(seed.base, expectedBase);
+    });
   });
 
-  it('if the seed generator exceeds 2^32 - 1, safely wraps around from 0', () => {
-    const seed = new Int32Seed(MAX_INT_32);
-    const expectedBase = 1;
+  describe('clone()', () => {
+    it('returns an instance of IntSeed', () => {
+      const seed = new Int32Seed();
 
-    seed.next();
+      const clone = seed.clone();
 
-    assertEquals(seed.base, expectedBase);
+      assertInstanceOf(clone, Int32Seed);
+    });
+
+    it('if invoked with nIncrements, advances n values from the current value', () => {
+      const seed = new Int32Seed();
+      const clone = seed.clone(2);
+
+      seed.next() && seed.next();
+      const expected = seed.base;
+
+      const actual = clone.base;
+
+      assertEquals(actual, expected);
+    });
+  });
+
+  describe('next()', () => {
+    it('if the seed generator exceeds 2^32 - 1, safely wraps around from 0', () => {
+      const seed = new Int32Seed(MAX_INT_32);
+      const expectedBase = 1;
+
+      seed.next();
+
+      assertEquals(seed.base, expectedBase);
+    });
   });
 });
 
 describe('IntSeed class', () => {
-  it('generates an integer base', () => {
-    const seed = new IntSeed();
-    assertEquals(Number.isInteger(seed.base), true);
+  describe('constructor', () => {
+    it('generates an integer base', () => {
+      const seed = new IntSeed();
+      assertEquals(Number.isInteger(seed.base), true);
+    });
+
+    it('generates integer values', () => {
+      const seed = new IntSeed();
+      assertEquals(Number.isInteger(seed.next()), true);
+      assertEquals(Number.isInteger(seed.next()), true);
+    });
   });
 
-  it('generates integer values', () => {
-    const seed = new IntSeed();
-    assertEquals(Number.isInteger(seed.next()), true);
-    assertEquals(Number.isInteger(seed.next()), true);
-  });
+  describe('next()', () => {
+    it('if the seed generator exceeds MAX_SAFE_INTEGER, safely wraps around from 0', () => {
+      const seed = new IntSeed(Number.MAX_SAFE_INTEGER);
+      const expectedBase = 1;
 
-  it('if the seed generator exceeds MAX_SAFE_INTEGER, safely wraps around from 0', () => {
-    const seed = new IntSeed(Number.MAX_SAFE_INTEGER);
-    seed.next();
-    const expectedBase = 1;
+      seed.next();
 
-    assertEquals(seed.base, expectedBase);
+      assertEquals(seed.base, expectedBase);
+    });
   });
 });
