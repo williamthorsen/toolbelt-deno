@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.strings
 
+## 0.13.1
+
+### Dependencies
+
+Build and publish to update dependencies from `@williamthorsen/toolbelt.numbers@2.5.0`.
+
 ## 0.13.0
 
 ### Features

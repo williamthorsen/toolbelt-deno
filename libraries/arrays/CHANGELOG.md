@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.4.1
+
+### Dependencies
+
+Build and publish to update dependencies from `@williamthorsen/toolbelt.numbers@2.5.0`.
+
 ## 2.4.0
 
 ### Features
