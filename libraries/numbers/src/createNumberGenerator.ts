@@ -1,5 +1,5 @@
-import type { SeedLike } from './Seed.ts';
-import { Seed } from './Seed.ts';
+import type { Seed } from './evaluateSeed.ts';
+import { evaluateSeed } from './evaluateSeed.ts';
 import { getFakeMathRandom } from './getFakeMathRandom.ts';
 
 /**
@@ -7,8 +7,8 @@ import { getFakeMathRandom } from './getFakeMathRandom.ts';
  * series of numbers that deterministically depend on the initial seed (or pseudo-random if no seed is given).
  * This is not intended to be a cryptographically secure random number generator.
  */
-export function createNumberGenerator(seed?: SeedLike) {
-  const inputSeed = Seed.evaluate(seed);
+export function createNumberGenerator(seed?: Seed) {
+  const inputSeed = evaluateSeed(seed);
   if (inputSeed === undefined) {
     return Math.random;
   }

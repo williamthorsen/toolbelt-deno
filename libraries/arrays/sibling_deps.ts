@@ -1,4 +1,4 @@
 export { random } from '../numbers/src/random.ts';
-export { Seed } from '../numbers/src/Seed.ts';
+export { SeededRng } from '../numbers/src/SeededRng.ts';
 
-export type { SeedLike } from '../numbers/src/Seed.ts';
+export type { Seed } from '../numbers/types.ts';
