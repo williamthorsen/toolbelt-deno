@@ -9,8 +9,3 @@ export type RequiredKeysOf<BaseType extends object> = Exclude<
   }[keyof BaseType],
   undefined
 >;
-
-/**
- * @deprecated Use `SeedLike` instead.
- */
-export type Seed = number | (() => number);

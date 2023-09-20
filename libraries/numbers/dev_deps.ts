@@ -1,6 +1,7 @@
 export {
   afterEach,
   assert,
+  assertAlmostEquals,
   assertEquals,
   assertInstanceOf,
   assertNotEquals,
