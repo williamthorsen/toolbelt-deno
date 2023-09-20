@@ -1,4 +1,5 @@
 import { getFakeMathRandom } from './getFakeMathRandom.ts';
+import type { EmptyObject } from './numbers.types.ts';
 import { pickInteger } from './pickInteger.ts';
 
 /**
@@ -37,6 +38,29 @@ export class Seed {
   // Creates a child; mutates the input seed, if it is a Seed instance or generator
   static spawn<T extends ThisConstructor<typeof Seed>>(this: T, seed: SeedLike | undefined): This<T> | undefined {
     return seed === undefined ? undefined : new this(seed);
+  }
+
+  /**
+   * Given a seed-acception function and an optional seed, returns a new function that passes the seed to the function.
+   */
+  static withSeed<TOptions extends object, R>(
+    fn: (options?: OptionsWithSeed<TOptions>) => R,
+    seed: SeedLike | undefined,
+  ): (options?: TOptions) => R;
+  static withSeed<TOptions extends object, R>(
+    fn: (options: OptionsWithSeed<TOptions>) => R,
+    seed: SeedLike | undefined,
+  ): (options: TOptions) => R;
+
+  // Implementation
+  static withSeed<TOptions extends object, R>(
+    fn: (options?: OptionsWithSeed<TOptions> | OptionsWithSeed<EmptyObject>) => R,
+    seed: SeedLike | undefined,
+  ) {
+    const spawnedSeed = this.spawn(seed); // stored outside the function to create a closure
+    return function (options?: TOptions) {
+      return fn({ ...options, seed: spawnedSeed });
+    };
   }
 
   constructor(seed?: SeedLike) {

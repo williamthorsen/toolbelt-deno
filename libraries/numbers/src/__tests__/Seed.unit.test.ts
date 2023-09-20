@@ -1,6 +1,8 @@
 import { assertEquals, assertInstanceOf, assertNotEquals, describe, it } from '../../dev_deps.ts';
 
-import { Int32Seed, IntSeed, Seed } from '../Seed.ts';
+import { Int32Seed, IntSeed, Seed, SeedLike } from '../Seed.ts';
+import { pickInteger } from '../pickInteger.ts';
+import { withSeed as deprecatedWithSeed } from '../withSeed.ts';
 
 const MAX_INT_32 = 4294967295; // 2^32 - 1
 
@@ -143,6 +145,41 @@ describe('Seed class', () => {
     });
   });
   // `clone()` is tested in a subclass below
+
+  describe('withSeed()', () => {
+    function pickLetter(options?: { seed?: SeedLike }): string {
+      const letterIndex = pickInteger({ min: 0, max: 25, seed: options?.seed });
+
+      return String.fromCharCode(97 + letterIndex);
+    }
+
+    // TODO: Remove `deprecatedWithSeed` after `withSeed` is removed.
+    for (const withSeed of [deprecatedWithSeed, Seed.withSeed.bind(Seed)]) {
+      // Returns a random letter of the alphabet.
+      it('returns a function that produces pseudorandom outputs', () => {
+        const seededGetLetter = withSeed(pickLetter, 1234);
+
+        const letter1 = seededGetLetter();
+        const actual = [
+          letter1,
+          seededGetLetter(),
+          seededGetLetter(),
+        ];
+
+        assertNotEquals(actual, [letter1, letter1, letter1]);
+      });
+      it('returns a function that successively produces the same outputs when given the same seed', () => {
+        const seed = 1234;
+        const fn1 = withSeed(pickLetter, seed);
+        const fn2 = withSeed(pickLetter, seed);
+
+        const letters1 = [fn1(), fn1(), fn1()];
+        const letters2 = [fn2(), fn2(), fn2()];
+
+        assertEquals(letters1, letters2);
+      });
+    }
+  });
 });
 
 describe('Int32Seed class', () => {
