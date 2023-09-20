@@ -1,5 +1,23 @@
 # @williamthorsen/toolbelt.numbers
 
+## 2.5.0
+
+### Deprecations
+
+- `withSeed`: Use `Seed#withSeed` instead.
+
+### Features
+
+Added an `nIncrements` option to `Seed.clone` and `Seed#clone` to differentiate cloned seeds from the parent seeds while
+keeping their behaviour deterministic.
+
+### Refactoring
+
+Fixed typings of `Seed.clone`, `Seed.spawn`, and `Seed#clone` to return the correct type with invoked on a subclass or
+subclass instance.
+
+Migrated `withSeed` to `Seed#withSeed`.
+
 ## 2.4.0
 
 ### Deprecations
@@ -40,8 +58,8 @@ To simplify the code structure (and avoid inadvertent cyclic dependencies),
 
 ### Deprecations
 
-- `makeSeededRandom`: Use `makeSeedFn` instead
-- `spawnSeedFunction`: Use `spawnSeedFn` instead
+- `makeSeededRandom`: Use `makeSeedFn` instead.
+- `spawnSeedFunction`: Use `spawnSeedFn` instead.
 
 ### Features
 
