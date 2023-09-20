@@ -1,10 +1,23 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.4.0
+
+### Features
+
+Modified functions to accept `Seed` instances as well as numbers and number-generating functions:
+
+- `pickItem` and `pickItems`
+- `pickWeightedIndex`
+- `shuffle`
+- `toPickWeightedItem`
+
+Modified optional properties to explicitly allow `undefined` to satisfy `exactOptionalPropertyTypes=true`:
+
+- `toPickWeightedItemFromDistribution`
+
 ## 2.3.1
 
 ### Refactoring
-
-Modified `pickVariants`:
 
 - The `seed` property is now typed as `seed?: Seed | undefined` to satisfy `exactOptionalPropertyTypes=true`.
 - Replaced deprecated `spawnSeedFunction` with `spawnSeedFn`.
