@@ -1,1 +1,1 @@
-export type { Seed } from './src/numbers.types.ts';
+export type { SeedLike } from './src/Seed.ts';

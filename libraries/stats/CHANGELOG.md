@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.stats
 
+## 0.4.1
+
+### Refactoring
+
+Modified optional properties to explicitly allow `undefined` to satisfy `exactOptionalPropertyTypes=true`:
+
+- `findDistributionByIntervalProbability`
+- `getNormalIntervalProbabilities`
+
 ## 0.4.0
 
 ### Featuress

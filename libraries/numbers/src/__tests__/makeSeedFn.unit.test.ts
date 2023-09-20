@@ -3,7 +3,7 @@ import { assertEquals, assertNotEquals, describe, it } from '../../dev_deps.ts';
 import { makeSeedFn, spawnSeedFn } from '../makeSeedFn.ts';
 
 describe('makeSeedFn()', () => {
-  it.skip('returns an object containing a function whose output, when invoked successively, is a deterministic pseudo-random series of numbers', () => {
+  it('returns an object containing a function whose output, when invoked successively, is a deterministic pseudo-random series of numbers', () => {
     const [random1, seed] = makeSeedFn();
     const [random2] = makeSeedFn(seed);
 

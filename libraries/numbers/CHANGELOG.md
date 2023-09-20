@@ -1,5 +1,41 @@
 # @williamthorsen/toolbelt.numbers
 
+## 2.4.0
+
+### Deprecations
+
+- `deriveMakeSeedFn`, `deriveSpawnSeedFn` & `deriveSeedFns`: Subclass `Seed` instead
+- `makeSeedFn`: Use `Seed#seedFn` instead
+- `makeIntSeedFn`: Use `IntSeed#seedFn` instead
+- `makeInt32SeedFn`: Use `Int32Seed#seedFn` instead
+- `spawnSeedFn`: Use `Seed.spawn` instead
+- `spawnIntSeedFn`: Use `IntSeed.spawn` instead
+- `spawnInt32SeedFn`: Use `Int32Seed.spawn` instead
+- `Seed` type: Use `SeedLike` type instead
+
+### Features
+
+Added new `Seed` class, along with child classes `IntSeed` and `Int32Seed`, to simplify the API for creating
+deterministic seed functions.
+
+Modified functions to accept `Seed` instances as well as numbers and number-generating functions:
+
+- `createNumberGenerator`
+- `deriveSeedFns`
+- `makeSeedFn`
+- `pickInteger`
+- `random`
+- `withSeed`
+
+### Refactoring
+
+Eliminated all use of the deprecated seed functions in other functions.
+
+To simplify the code structure (and avoid inadvertent cyclic dependencies),
+
+- Modified `createNumberGenerator` to eliminate the dependence on externally created seed functions.
+- Modified `random` to avoid the dependence on `createNumberGenerator`.
+
 ## 2.3.0
 
 ### Deprecations

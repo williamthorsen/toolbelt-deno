@@ -58,9 +58,9 @@ function toProbabilitiesFromWeights(weights: number[]): number[] {
 }
 
 interface Params {
-  mean?: number;
+  mean?: number | undefined;
   nIntervals: number;
-  standardDeviation?: number;
+  standardDeviation?: number | undefined;
 }
 
 interface IntervalProbabilities {

@@ -1,12 +1,12 @@
 import { assertEquals, assertInstanceOf, assertThrows, describe, it } from '../../dev_deps.ts';
 
 import { deriveMakeSeedFn, deriveSeedFns, deriveSpawnSeedFn } from '../deriveSeedFns.ts';
-import { evaluate } from '../evaluate.ts';
-import type { Seed } from '../numbers.types.ts';
+import type { SeedLike } from '../Seed.ts';
+import { Seed } from '../Seed.ts';
 
 // Testable number generator: It returns a value in the range [0, 10] if given a seed, or 1 if no seed.
 function makeGenerateNumber() {
-  return (options?: { seed?: Seed }) => Math.floor(evaluate(options?.seed || 0) * 10) + 1;
+  return (options?: { seed?: SeedLike }) => Math.floor((Seed.evaluate(options?.seed) || 0) * 10) + 1;
 }
 
 describe('deriveMakeSeedFn() & deriveSeedFns()', () => {

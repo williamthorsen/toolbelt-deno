@@ -1,4 +1,4 @@
 export { pickItem } from '../arrays/src/pickItem.ts';
-export { spawnSeedFn } from '../numbers/src/makeSeedFn.ts';
+export { Seed } from '../numbers/src/Seed.ts';
 
-export type { Seed } from '../numbers/src/numbers.types.ts';
+export type { SeedLike } from '../numbers/src/Seed.ts';

@@ -1,15 +1,17 @@
-import { evaluate } from './evaluate.ts';
 import { getFakeMathRandom } from './getFakeMathRandom.ts';
-import type { Seed } from './numbers.types.ts';
+import type { SeedLike } from './Seed.ts';
+import { Seed } from './Seed.ts';
 
 /**
  * Returns a number generator whose output, when invoked successively after being seeded,
  * is a deterministic pseudo-random series of numbers in the range of [0, 1) (like `Math.random()`).
  * Similar to `createNumberGenerator()`, but always returns a determistic function and also returns a number
  * that can be used to create a new generator that gives the same output.
+ *
+ * @deprecated Use `Seed#seedFn` instead.
  */
-export function makeSeedFn(seed?: Seed): [seedFn: () => number, seed: number] {
-  let base = evaluate(seed) ?? Math.random();
+export function makeSeedFn(seed?: SeedLike): [seedFn: () => number, seed: number] {
+  let base = Seed.evaluate(seed) ?? Math.random();
   function seedFn(): number {
     return getFakeMathRandom(base++);
   }
@@ -31,11 +33,13 @@ export function makeSeedFn(seed?: Seed): [seedFn: () => number, seed: number] {
  *
  * `undefined` is simply passed through, so that a function that accepts a seed can also accept `undefined` to mean
  * "don't use a seed".
+ *
+ * @deprecated Use `Seed.spawn` instead.
  */
-export function spawnSeedFn(seed?: Seed): SpawnedSeedFn {
+export function spawnSeedFn(seed?: SeedLike): SpawnedSeedFn {
   return seed === undefined ? undefined : makeSeedFn(seed)[0];
 }
 
-export type SpawnSeedFn = (seed?: Seed) => SpawnedSeedFn;
+export type SpawnSeedFn = (seed?: SeedLike) => SpawnedSeedFn;
 
 export type SpawnedSeedFn = (() => number) | undefined;

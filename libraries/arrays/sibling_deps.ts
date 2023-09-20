@@ -1,5 +1,4 @@
-export { createNumberGenerator } from '../numbers/src/createNumberGenerator.ts';
-export { makeSeedFn } from '../numbers/src/makeSeedFn.ts';
 export { random } from '../numbers/src/random.ts';
+export { Seed } from '../numbers/src/Seed.ts';
 
-export type { Seed } from '../numbers/src/numbers.types.ts';
+export type { SeedLike } from '../numbers/src/Seed.ts';

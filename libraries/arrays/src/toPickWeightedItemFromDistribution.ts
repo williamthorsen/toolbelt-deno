@@ -35,6 +35,6 @@ export function toPickWeightedItemFromDistribution<TItem, TCategory extends stri
 type Distribution<TCategory extends string> = Record<TCategory, number>;
 
 interface Params<TItem, TCategory> {
-  defaultWeight?: number;
+  defaultWeight?: number | undefined;
   getCategory: (item: TItem) => TCategory;
 }

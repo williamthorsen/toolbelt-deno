@@ -1,4 +1,4 @@
-import type { Seed } from '../sibling_deps.ts';
+import type { SeedLike } from '../sibling_deps.ts';
 import { shuffle } from './shuffle.ts';
 
 /**
@@ -18,5 +18,5 @@ export function pickItems<T>(items: ReadonlyArray<T>, n: number, options: Option
 
 type Options = {
   offset?: number | undefined;
-  seed?: Seed | undefined;
+  seed?: SeedLike | undefined;
 };
