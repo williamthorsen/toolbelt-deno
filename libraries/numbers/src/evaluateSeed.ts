@@ -9,10 +9,13 @@ export function evaluateSeed(seed: Seed | undefined): number | undefined {
   return undefined;
 }
 
-function checkIsRngLike(seed: Seed): seed is DeterministicRng {
+export function checkIsRngLike(seed: Seed): seed is SeededGenerator {
   return (typeof seed === 'object' && 'next' in seed && 'seed' in seed);
 }
 
-export type DeterministicRng = { next(): number; seed: number };
+/**
+ * Interface describing an object that returns a sequence of numbers.
+ */
+export type SeededGenerator = { next(): number; seed: number };
 
-export type Seed = number | DeterministicRng | (() => number) | undefined;
+export type Seed = number | SeededGenerator | (() => number) | undefined;

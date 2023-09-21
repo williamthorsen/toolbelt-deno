@@ -2,13 +2,13 @@ import { getFakeMathRandom } from './getFakeMathRandom.ts';
 import type { EmptyObject } from './numbers.types.ts';
 import { pickInteger } from './pickInteger.ts';
 import { wrapSum } from './wrapSum.ts';
-import type { DeterministicRng, Seed } from './evaluateSeed.ts';
-import { evaluateSeed } from './evaluateSeed.ts';
+import type { Seed, SeededGenerator } from './evaluateSeed.ts';
+import { checkIsRngLike, evaluateSeed } from './evaluateSeed.ts';
 
 /**
  * Class that manages a pseudo-random number generator that behaves deterministically when given a seed.
  */
-export class SeededRng implements DeterministicRng {
+export class SeededRng implements SeededGenerator {
   private _seed = 0; // internally incremented value to provide deterministic behaviour
   private baseSeed = 0; // original value used to create the seed
   private nIncrements = 0;
@@ -28,9 +28,10 @@ export class SeededRng implements DeterministicRng {
     seed: Seed | undefined,
     nIncrements = 1,
   ): This<T> | undefined {
-    if (seed instanceof SeededRng) {
+    if (checkIsRngLike(seed)) {
       return new this(seed.seed).increment(nIncrements);
     }
+    return seed === undefined ? undefined : new this(seed).increment(nIncrements);
   }
 
   // Creates a child; mutates the input seed, if it is a Seed instance or generator

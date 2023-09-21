@@ -5,16 +5,24 @@ import { pickInteger } from '../pickInteger.ts';
 import { Int32SeededRng, IntSeededRng, SeededRng } from '../SeededRng.ts';
 
 describe('SeededRng class', () => {
+  const DEFAULT_INCREMENT = 1;
+
   describe('static clone()', () => {
-    it('given an RNG, returns a new RNG that uses the same seed', () => {
-      const input = new SeededRng();
+    it('given an RNG, returns a new RNG', () => {
+      const seedRng = new SeededRng();
 
-      const rng1 = SeededRng.clone(input);
-      const rng2 = SeededRng.clone(input);
+      const rng = SeededRng.clone(seedRng);
 
-      assertInstanceOf(rng1, SeededRng);
-      assertInstanceOf(rng2, SeededRng);
-      assertEquals(rng1.next(), rng2.next());
+      assertInstanceOf(rng, SeededRng);
+    });
+
+    it('given a number, returns an RNG that uses that number as the seed', () => {
+      const seed = 1;
+      const expected = seed + DEFAULT_INCREMENT;
+
+      const actual = SeededRng.clone(seed)?.seed;
+
+      assertEquals(actual, expected);
     });
 
     it('given undefined, returns undefined', () => {
@@ -22,6 +30,16 @@ describe('SeededRng class', () => {
       const expected = undefined;
 
       const actual = SeededRng.clone(input);
+
+      assertEquals(actual, expected);
+    });
+
+    it('given a function, invokes the function and returns an RNG that uses the result as the seed', () => {
+      const seed = 1234.5;
+      const seedFn = () => seed;
+      const expected = seed + DEFAULT_INCREMENT;
+
+      const actual = SeededRng.clone(seedFn)?.seed;
 
       assertEquals(actual, expected);
     });
@@ -81,7 +99,7 @@ describe('SeededRng class', () => {
       assertEquals(actual, expected);
     });
 
-    it('given a function, evaluates the function and uses the result as its seed', () => {
+    it('given a function, invokes the function and returns an RNG that uses the result as the seed', () => {
       const seedFn = () => 1;
 
       const rng1 = SeededRng.spawn(seedFn);
@@ -91,7 +109,7 @@ describe('SeededRng class', () => {
       assertEquals(rng1?.next(), rng2?.next());
     });
 
-    it('given a SeededRng instance, consumes a value in the instance', () => {
+    it('given a SeededRng object, consumes a value in the instance', () => {
       const seedRng = new SeededRng();
 
       const rng1 = SeededRng.spawn(seedRng);
