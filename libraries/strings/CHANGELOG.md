@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.0.1
+
+### Refactoring
+
+Updated internal dependency: @williamthorsen/toolbelt.numbers@3.1.1.
+
 ## 1.0.0
 
 ### BREAKING CHANGES
