@@ -1,20 +1,98 @@
 import { assertAlmostEquals, assertEquals, assertInstanceOf, assertNotEquals, describe, it } from '../../dev_deps.ts';
 
-import type { Seed } from '../evaluateSeed.ts';
+import type { Seed, SeededGenerator } from '../evaluateSeed.ts';
 import { pickInteger } from '../pickInteger.ts';
 import { Int32SeededRng, IntSeededRng, SeededRng } from '../SeededRng.ts';
 
 describe('SeededRng class', () => {
   describe('static clone()', () => {
-    it('given an RNG, returns a new RNG that uses the same seed', () => {
-      const input = new SeededRng();
+    const SEED_NUMBER = 1234.5;
+    const getRngLike = (): SeededGenerator & { peek(): number } => {
+      let base = SEED_NUMBER;
+      return {
+        next: (n = 1) => {
+          const value = 2 * base;
+          base += n;
+          return value;
+        },
+        peek: () => {
+          return 2 * base;
+        },
+        get seed() {
+          return base;
+        },
+      };
+    };
+    for (const seedInput of [SEED_NUMBER, () => SEED_NUMBER]) {
+      it(`given a seed of type ${typeof seedInput}, SeededRng.clone(seed) has the same result as new SeededRng(seed).clone()`, () => {
+        const staticRng = SeededRng.clone(seedInput);
+        const instanceRng = new SeededRng(seedInput).clone();
 
-      const rng1 = SeededRng.clone(input);
-      const rng2 = SeededRng.clone(input);
+        assertEquals(staticRng?.next(), instanceRng?.next());
+        assertEquals(staticRng?.next(), instanceRng?.next());
+      });
+    }
 
-      assertInstanceOf(rng1, SeededRng);
-      assertInstanceOf(rng2, SeededRng);
-      assertEquals(rng1.next(), rng2.next());
+    // But if `seed` is self-incrementing, then
+    // - the seed of `SeededRng.clone(seed)` is the same as its parent's seed, but
+    // - the seed of `new SeededRng(seed).clone()` is advanced by one relative to its parent's.
+    for (
+      const [label, seedInputFn] of [
+        ['SeededRng', () => new SeededRng(SEED_NUMBER)],
+        ['SeededGenerator', getRngLike],
+      ] as const
+    ) {
+      it('produces consistent results', () => {
+        assertEquals(seedInputFn().seed, SEED_NUMBER);
+        assertEquals(seedInputFn().seed, seedInputFn().seed);
+        assertEquals(seedInputFn().next(), seedInputFn().next());
+      });
+
+      it(`given an RNG seed of type ${label}, SeededRng.clone(seed) behaves differently from new SeededRng.clone(input)`, () => {
+        // Create identical inputs
+        const seedInput1 = seedInputFn();
+        const seedInput2 = seedInputFn();
+        assertEquals(seedInput1.seed, SEED_NUMBER);
+        assertEquals(seedInput2.seed, SEED_NUMBER);
+
+        // Using the first input: `static clone` creates an RNG without advancing the input seed.
+        // Result: The clone RNG's seed is the same as the input RNG's seed.
+        const staticRng = SeededRng.clone(seedInput1);
+        assertEquals(seedInput1.seed, SEED_NUMBER);
+        assertEquals(staticRng?.seed, SEED_NUMBER);
+
+        // Using the second input: `constructor` + `clone`
+        // - `constructor`: The input RNG is evaluated, yielding the 1st pseudorandom value.
+        //   Result: The input RGN's seed is incremented, and the intermediate RGN's seed is the 1st pseudorandom value.
+        // - `clone`: The intermediate RNG is cloned without yielding a value; is seed is inherited by the clone RNG.
+        //   Result: The clone RNG's seed is the same as 1st pseudorandom value.
+        const inputRngNextValue = seedInput2.peek();
+        const instanceRng = new SeededRng(seedInput2).clone(); // advances the input seed
+        assertNotEquals(seedInput2.seed, SEED_NUMBER); // the input seed is no longer the same as the input seed
+        assertNotEquals(instanceRng.seed, seedInput2.seed); // and the parent's seed has advanced
+        assertEquals(instanceRng.seed, inputRngNextValue);
+
+        // TL;DR: When the input passed to the constructor is an RNG, the created RNG's seed is always a value
+        // yielded by the input RNG, not the input RNG's own seed.
+        // To create an RNG whose seed is the same as its parent, use `static clone(seedRng)` or `seedRng.clone()`.
+      });
+    }
+
+    it('given an RNG, returns a new RNG', () => {
+      const seedRng = new SeededRng();
+
+      const rng = SeededRng.clone(seedRng);
+
+      assertInstanceOf(rng, SeededRng);
+    });
+
+    it('given a number, returns an RNG that uses that number as the seed', () => {
+      const seed = 1;
+      const expected = seed;
+
+      const actual = SeededRng.clone(seed)?.seed;
+
+      assertEquals(actual, expected);
     });
 
     it('given undefined, returns undefined', () => {
@@ -26,28 +104,30 @@ describe('SeededRng class', () => {
       assertEquals(actual, expected);
     });
 
-    it('by default, the clone\'s seed is advanced by 1 relative to the parent\'s', () => {
-      const rng = new SeededRng();
-      const clone = SeededRng.clone(rng);
+    it('given a function, invokes the function and returns an RNG that uses the result as the seed', () => {
+      const seed = 1234.5;
+      const seedFn = () => seed;
+      const expected = seed;
 
-      rng.next();
+      const actual = SeededRng.clone(seedFn)?.seed;
 
-      assertEquals(clone?.seed, rng.seed);
+      assertEquals(actual, expected);
     });
 
-    it('if invoked with nIncrements=0, the clone has the same seed as the parent', () => {
-      const rng = new SeededRng();
-      const clone = SeededRng.clone(rng, 0);
+    it('by default, the clone\'s seed is the same as the parent\'s', () => {
+      const parentRng = new SeededRng();
+      const cloneRng = SeededRng.clone(parentRng);
 
-      assertEquals(clone?.seed, rng.seed);
+      assertEquals(cloneRng?.seed, parentRng.seed);
     });
 
-    it('if invoked with nIncrements=n, advances the seed by n relative to the parent\'s', () => {
-      const rng = new SeededRng();
-      const clone = SeededRng.clone(rng, 2);
-      rng.next() && rng.next();
+    it('if invoked with nIncrements>0, advances the seed by n relative to the parent\'s', () => {
+      const N_INCREMENTS = 3;
+      const parentRng = new SeededRng();
+      const childRng = SeededRng.clone(parentRng, N_INCREMENTS);
+      parentRng.next(N_INCREMENTS);
 
-      assertEquals(clone?.seed, rng.seed);
+      assertEquals(childRng?.seed, parentRng.seed);
     });
 
     it('if invoked with nIncrements<0, rewinds the seed by nIncrements', () => {
@@ -81,7 +161,7 @@ describe('SeededRng class', () => {
       assertEquals(actual, expected);
     });
 
-    it('given a function, evaluates the function and uses the result as its seed', () => {
+    it('given a function, invokes the function and returns an RNG that uses the result as the seed', () => {
       const seedFn = () => 1;
 
       const rng1 = SeededRng.spawn(seedFn);
@@ -91,7 +171,7 @@ describe('SeededRng class', () => {
       assertEquals(rng1?.next(), rng2?.next());
     });
 
-    it('given a SeededRng instance, consumes a value in the instance', () => {
+    it('given a SeededRng object, consumes a value in the instance', () => {
       const seedRng = new SeededRng();
 
       const rng1 = SeededRng.spawn(seedRng);
@@ -185,6 +265,13 @@ describe('SeededRng class', () => {
       rng.next() && rng.next();
 
       assertEquals(clone.seed, rng.seed);
+    });
+
+    it('creates a child having the same seed as its parent', () => {
+      const parentRng = new SeededRng();
+      const childRng = parentRng.clone();
+
+      assertEquals(childRng.seed, parentRng.seed);
     });
   });
 
@@ -284,12 +371,13 @@ for (
     });
 
     describe('clone()', () => {
-      it('returns a new instance of the same class', () => {
-        const rng = new Rng();
+      it('returns a new instance of the same class with the same seed', () => {
+        const parentRng = new Rng();
 
-        const clone = rng.clone();
+        const childRng = parentRng.clone();
 
-        assertInstanceOf(clone, Rng);
+        assertInstanceOf(childRng, Rng);
+        assertEquals(childRng.seed, parentRng.seed);
       });
     });
 

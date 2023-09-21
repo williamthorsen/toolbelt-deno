@@ -2,13 +2,13 @@ import { getFakeMathRandom } from './getFakeMathRandom.ts';
 import type { EmptyObject } from './numbers.types.ts';
 import { pickInteger } from './pickInteger.ts';
 import { wrapSum } from './wrapSum.ts';
-import type { DeterministicRng, Seed } from './evaluateSeed.ts';
-import { evaluateSeed } from './evaluateSeed.ts';
+import type { Seed, SeededGenerator } from './evaluateSeed.ts';
+import { checkIsRngLike, evaluateSeed } from './evaluateSeed.ts';
 
 /**
  * Class that manages a pseudo-random number generator that behaves deterministically when given a seed.
  */
-export class SeededRng implements DeterministicRng {
+export class SeededRng implements SeededGenerator {
   private _seed = 0; // internally incremented value to provide deterministic behaviour
   private baseSeed = 0; // original value used to create the seed
   private nIncrements = 0;
@@ -26,11 +26,12 @@ export class SeededRng implements DeterministicRng {
   static clone<T extends ThisConstructor<typeof SeededRng>>(
     this: T,
     seed: Seed | undefined,
-    nIncrements = 1,
+    nIncrements = 0,
   ): This<T> | undefined {
-    if (seed instanceof SeededRng) {
+    if (checkIsRngLike(seed)) {
       return new this(seed.seed).increment(nIncrements);
     }
+    return seed === undefined ? undefined : new this(seed).increment(nIncrements);
   }
 
   // Creates a child; mutates the input seed, if it is a Seed instance or generator
@@ -73,7 +74,7 @@ export class SeededRng implements DeterministicRng {
     return this._seed;
   }
 
-  clone<T extends SeededRng>(this: T, nIncrements = 1): T {
+  clone<T extends SeededRng>(this: T, nIncrements = 0): T {
     return new (this.constructor as Constructor<T>)(this._seed).increment(nIncrements);
   }
 
@@ -94,8 +95,19 @@ export class SeededRng implements DeterministicRng {
    */
 
   // Returns the next value in the pseudo-random sequence
-  next(): number {
+  next(n = 1): number {
+    for (let i = 1; i < n; i++) {
+      this.increment();
+    }
     return this.generateValue();
+  }
+
+  /**
+   * Returns the next value in the pseudo-random sequence without incrementing the seed.
+   * For use in testing and debugging.
+   */
+  peek(): number {
+    return this.generateValue({ noIncrement: true });
   }
 
   protected initializeSeeds(baseSeed: number) {
@@ -115,8 +127,9 @@ export class SeededRng implements DeterministicRng {
     return Math.random();
   }
 
-  protected generateValue(): number {
-    return getFakeMathRandom(this.getSeedAndIncrement());
+  protected generateValue({ noIncrement }: { noIncrement?: boolean } = {}): number {
+    const seed = noIncrement ? this._seed : this.getSeedAndIncrement();
+    return getFakeMathRandom(seed);
   }
 }
 
