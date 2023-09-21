@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.numbers
 
+## 3.1.1
+
+### Fixes
+
+Fixed the issue that overloads of the static `clone` & `spawn` methods of the `SeededRng` class did not cover the situation where the seed's type was neither `Seed` nor `undefined` but the unnarrowed `Seed | undefined`. Added the missing overload.
+
+Fixed the definition of the `Seed` union type, which erroneously allowed `undefined`.
+
 ## 3.1.0
 
 ### Features

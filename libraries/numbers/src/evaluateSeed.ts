@@ -9,7 +9,7 @@ export function evaluateSeed(seed: Seed | undefined): number | undefined {
   return undefined;
 }
 
-export function checkIsRngLike(seed: Seed): seed is SeededGenerator {
+export function checkIsRngLike(seed: Seed | undefined): seed is SeededGenerator {
   return (typeof seed === 'object' && 'next' in seed && 'seed' in seed);
 }
 
@@ -18,4 +18,4 @@ export function checkIsRngLike(seed: Seed): seed is SeededGenerator {
  */
 export type SeededGenerator = { next(): number; seed: number };
 
-export type Seed = number | SeededGenerator | (() => number) | undefined;
+export type Seed = number | SeededGenerator | (() => number);

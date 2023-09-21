@@ -21,11 +21,16 @@ export class SeededRng implements SeededGenerator {
   // Creates a child; does not mutate the parent seed
   // By default, the child's base is incremented by 1 to produce a different output than the parent
   // while still being deterministic. Set nIncrements to 0 to produce the same output.
-  static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed?: undefined, nIncrements?: number): undefined;
+  static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: undefined, nIncrements?: number): undefined;
   static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed, nIncrements?: number): This<T>;
   static clone<T extends ThisConstructor<typeof SeededRng>>(
     this: T,
     seed: Seed | undefined,
+    nIncrements?: number,
+  ): This<T> | undefined;
+  static clone<T extends ThisConstructor<typeof SeededRng>>(
+    this: T,
+    seed?: Seed | undefined,
     nIncrements = 0,
   ): This<T> | undefined {
     if (checkIsRngLike(seed)) {
@@ -35,8 +40,9 @@ export class SeededRng implements SeededGenerator {
   }
 
   // Creates a child; mutates the input seed, if it is a Seed instance or generator
-  static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed?: undefined): undefined;
+  static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: undefined): undefined;
   static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed): This<T>;
+  static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed | undefined): This<T> | undefined;
   static spawn<T extends ThisConstructor<typeof SeededRng>>(this: T, seed?: Seed): This<T> | undefined {
     return seed === undefined ? undefined : new this(seed);
   }
