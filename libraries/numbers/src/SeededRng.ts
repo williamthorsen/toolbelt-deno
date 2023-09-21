@@ -26,7 +26,7 @@ export class SeededRng implements SeededGenerator {
   static clone<T extends ThisConstructor<typeof SeededRng>>(
     this: T,
     seed: Seed | undefined,
-    nIncrements = 1,
+    nIncrements = 0,
   ): This<T> | undefined {
     if (checkIsRngLike(seed)) {
       return new this(seed.seed).increment(nIncrements);
@@ -74,7 +74,7 @@ export class SeededRng implements SeededGenerator {
     return this._seed;
   }
 
-  clone<T extends SeededRng>(this: T, nIncrements = 1): T {
+  clone<T extends SeededRng>(this: T, nIncrements = 0): T {
     return new (this.constructor as Constructor<T>)(this._seed).increment(nIncrements);
   }
 
@@ -95,8 +95,19 @@ export class SeededRng implements SeededGenerator {
    */
 
   // Returns the next value in the pseudo-random sequence
-  next(): number {
+  next(n = 1): number {
+    for (let i = 1; i < n; i++) {
+      this.increment();
+    }
     return this.generateValue();
+  }
+
+  /**
+   * Returns the next value in the pseudo-random sequence without incrementing the seed.
+   * For use in testing and debugging.
+   */
+  peek(): number {
+    return this.generateValue({ noIncrement: true });
   }
 
   protected initializeSeeds(baseSeed: number) {
@@ -116,8 +127,9 @@ export class SeededRng implements SeededGenerator {
     return Math.random();
   }
 
-  protected generateValue(): number {
-    return getFakeMathRandom(this.getSeedAndIncrement());
+  protected generateValue({ noIncrement }: { noIncrement?: boolean } = {}): number {
+    const seed = noIncrement ? this._seed : this.getSeedAndIncrement();
+    return getFakeMathRandom(seed);
   }
 }
 
