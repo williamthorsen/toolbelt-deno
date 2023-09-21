@@ -1,5 +1,19 @@
 # @williamthorsen/toolbelt.numbers
 
+## 3.1.0
+
+### Features
+
+Added to `SeededRng` class:
+
+- `peek` method: Returns the next pseudo-random value without incrementing the seed.
+
+Changes:
+
+- `clone` methods (class & instance): These methods no longer auto-increment the seed of the clone, because that behaviour (although useful) is unlikely to be expected.
+
+Renamed the `DeterministicRng` interface to `SeededGenerator`.
+
 ## 3.0.0
 
 ### BREAKING CHANGES
