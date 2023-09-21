@@ -5,6 +5,7 @@ import { pickInteger } from '../pickInteger.ts';
 import { Int32SeededRng, IntSeededRng, SeededRng } from '../SeededRng.ts';
 
 describe('SeededRng class', () => {
+  // Argument for clone is that it always leaves the seed of the parent unchanged.
   describe('static clone()', () => {
     const SEED_NUMBER = 1234.5;
     const getRngLike = (): SeededGenerator & { peek(): number } => {
