@@ -1,5 +1,19 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.9.0
+
+### Features
+
+Added functions:
+
+- `isNonNullObject`: Checks whether a value is an object but not `null`
+- `isScalar`: Checks whether a value is a scalar
+- `preciseTypeOf`: Drop-in replacement for `preciseObjectTypeOf` with better structure and typings
+
+### Refactoring
+
+Deprecated `checkIsPlainObject` in favor of `isPlainObject`.
+
 ## Features
 
 ### 0.8.0

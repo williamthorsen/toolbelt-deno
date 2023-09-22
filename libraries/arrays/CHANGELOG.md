@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.5.0
+
+### Features
+
+Enhanced `arraify` function: It now accepts read-only arrays and always returns a new array.
+
 ## 2.4.4
 
 ### Refactoring
