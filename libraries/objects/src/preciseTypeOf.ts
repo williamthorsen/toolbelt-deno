@@ -1,4 +1,4 @@
-import { checkIsPlainObject } from './checkIsPlainObject.ts';
+import { isPlainObject } from './isPlainObject.ts';
 
 /**
  * Returns `typeof value`, except that the "object" type is replaced by more the precise types defined in
@@ -22,7 +22,7 @@ export const preciseObjectTypeof = preciseTypeOf;
 export function preciseObjectTypeOf(value: object | null): ObjectSubtype {
   if (value === null) return 'null';
   if (Array.isArray(value)) return 'array';
-  if (checkIsPlainObject(value)) return 'plainobject';
+  if (isPlainObject(value)) return 'plainobject';
   return 'instance';
 }
 
