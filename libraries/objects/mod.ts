@@ -1,6 +1,7 @@
 export { hasOwnProperty } from './src/hasOwnProperty.ts';
 export type { PlainObject } from './src/checkIsPlainObject.ts';
 export { checkIsPlainObject, isPlainObject } from './src/checkIsPlainObject.ts';
+export { isNonNullObject } from './src/isNonNullObject.ts';
 export { isScalar } from './src/isScalar.ts';
 export { mapToObject } from './src/mapToObject.ts';
 export type { NonNullishProperties } from './src/omitNullish.ts';
