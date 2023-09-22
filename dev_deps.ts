@@ -9,4 +9,5 @@ export { assertNotStrictEquals } from 'https://deno.land/std@0.200.0/assert/asse
 export { assertObjectMatch } from 'https://deno.land/std@0.200.0/assert/assert_object_match.ts';
 export { assertStrictEquals } from 'https://deno.land/std@0.200.0/assert/assert_strict_equals.ts';
 export { assertThrows } from 'https://deno.land/std@0.200.0/assert/assert_throws.ts';
+// export { equal } from 'https://deno.land/std@0.200.0/assert/mod.ts';
 export { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.200.0/testing/bdd.ts';

@@ -1,15 +1,16 @@
-import { assertEquals, assertStrictEquals, describe, it } from '../../dev_deps.ts';
+import { assertEquals, assertNotStrictEquals, describe, it } from '../../dev_deps.ts';
 
 import { arraify } from '../arraify.ts';
 
 describe('arraify()', () => {
-  it('if input is an array, returns the same array', () => {
+  it('if input is an array, returns a copy of the array', () => {
     const input = [1, 2, 3];
-    const expectedOutput = input;
+    const expectedOutput = [...input];
 
     const output = arraify(input);
 
-    assertStrictEquals(output, expectedOutput);
+    assertEquals(output, expectedOutput);
+    assertNotStrictEquals(output, input);
   });
 
   it('if input is not an array, returns that value in an array', () => {
