@@ -1,12 +1,12 @@
 import { assertEquals, describe, it } from '../../dev_deps.ts';
-import { preciseObjectTypeof } from '../preciseObjectTypeof.ts';
+import { preciseTypeOf } from '../preciseTypeOf.ts';
 
-describe('preciseObjectTypeof()', () => {
+describe('preciseTypeOf()', () => {
   it('returns "null" for null', () => {
     const input = null;
     const expectedOutput = 'null';
 
-    const actualOutput = preciseObjectTypeof(input);
+    const actualOutput = preciseTypeOf(input);
 
     assertEquals(actualOutput, expectedOutput);
   });
@@ -15,7 +15,7 @@ describe('preciseObjectTypeof()', () => {
     const input = [1, 2, 3];
     const expectedOutput = 'array';
 
-    const actualOutput = preciseObjectTypeof(input);
+    const actualOutput = preciseTypeOf(input);
 
     assertEquals(actualOutput, expectedOutput);
   });
@@ -24,7 +24,7 @@ describe('preciseObjectTypeof()', () => {
     const input = { a: 1, b: 2, c: 3 };
     const expectedOutput = 'plainobject';
 
-    const actualOutput = preciseObjectTypeof(input);
+    const actualOutput = preciseTypeOf(input);
 
     assertEquals(actualOutput, expectedOutput);
   });
@@ -34,7 +34,7 @@ describe('preciseObjectTypeof()', () => {
     const input = new TestClass();
     const expectedOutput = 'instance';
 
-    const actualOutput = preciseObjectTypeof(input);
+    const actualOutput = preciseTypeOf(input);
 
     assertEquals(actualOutput, expectedOutput);
   });
@@ -44,7 +44,7 @@ describe('preciseObjectTypeof()', () => {
     const input = new TestClass();
     const expectedOutput = 'instance';
 
-    const actualOutput = preciseObjectTypeof(input);
+    const actualOutput = preciseTypeOf(input);
 
     assertEquals(actualOutput, expectedOutput);
   });
@@ -62,7 +62,7 @@ describe('preciseObjectTypeof()', () => {
   ) {
     const displayableValue = typeof input === 'string' ? `"${input}"` : String(input);
     it(`for non-objects, returns the usual typeof value; e.g.: "${expected}" for ${displayableValue}`, () => {
-      const actual = preciseObjectTypeof(input);
+      const actual = preciseTypeOf(input);
       assertEquals(actual, expected);
     });
   }
