@@ -4,6 +4,7 @@ export type { PlainObject } from './src/isPlainObject.ts';
 export { checkIsPlainObject, isPlainObject } from './src/isPlainObject.ts';
 export { isScalar } from './src/isScalar.ts';
 export { mapToObject } from './src/mapToObject.ts';
+export { objectSize } from './src/objectSize.ts';
 export type { NonNullishProperties } from './src/omitNullish.ts';
 export { omitNullish } from './src/omitNullish.ts';
 export type { DefinedProperties } from './src/omitUndefined.ts';
