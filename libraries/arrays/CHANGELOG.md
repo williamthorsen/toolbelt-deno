@@ -1,5 +1,14 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.6.0
+
+### Features
+
+Added functions:
+
+- `asNonEmptyArray`: If the input array has at least one item, returns an immutable copy; otherwise, throws an error. Narrows the array type to immutable and non-empty.
+- `assertNonEmptyArray`: Asserts that the input array has at least one item. Narrows the array type to non-empty.
+
 ## 2.5.0
 
 ### Features
