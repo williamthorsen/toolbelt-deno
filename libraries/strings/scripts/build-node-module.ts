@@ -1,9 +1,13 @@
 import { buildNodeModule } from '../../interop/mod.ts';
+import { toEntryPoint } from '../../interop/src/toEntryPoint.ts';
 
 buildNodeModule({
   // TODO: Check whether these values can be omitted in the default case
   inDir: '.',
-  entryPoints: ['./mod.ts'],
+  entryPoints: [
+    './mod.ts',
+    toEntryPoint('./experimental.ts'),
+  ],
   outDir: 'dist',
 
   description: 'String manipulation utilities',
