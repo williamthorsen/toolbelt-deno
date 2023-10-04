@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.10.1
+
+### Formatting
+
+Simplified the syntax of `hasOwnProperty`.
+
+### Tooling
+
+Changed line-wrapping behavior of `fmt` to match other libraries.
+
 ## 0.10.0
 
 ### Features
