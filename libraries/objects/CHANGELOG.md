@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.10.0
+
+### Features
+
+Added function:
+
+- `objectSize`: Returns the number of keys in an object.
+
 ## 0.9.0
 
 ### Features
