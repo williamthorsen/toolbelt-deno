@@ -1,0 +1,18 @@
+# libraries/hof
+
+## 0.2.0
+
+### Features
+
+Added functions:
+
+- `curry`: Creates a function that accepts arguments of `fn` and either invokes `fn` returning its result, if at least `arity` number of arguments have been provided, or returns a function that accepts the remaining `arity` number of arguments, and so on.
+- `evaluate`: Resolves a value or function to a value.
+- `identity`: Returns the first argument passed to it.
+- `noop`: A function that does nothing.
+
+## 0.1.0
+
+### Tooling
+
+Scaffolded the HOF (higher-order functions) library.
