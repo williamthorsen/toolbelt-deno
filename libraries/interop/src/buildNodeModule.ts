@@ -7,6 +7,7 @@ const optionsSchema = z.object({
   inDir: z.string(),
   entryPoints: z.array(
     z.string().or(z.object({
+      kind: z.enum(['bin', 'export']).optional(),
       name: z.string(),
       path: z.string(),
     })),

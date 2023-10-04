@@ -5,6 +5,7 @@
       'deno.jsonc',
     ],
     lineWidth: 120,
+    "proseWrap": "preserve",
     singleQuote: true,
   },
 }
