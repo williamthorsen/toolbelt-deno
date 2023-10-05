@@ -1,5 +1,19 @@
 # libraries/hof
 
+## 0.3.0
+
+### Features
+
+Added function:
+
+- `pipe`: Creates a function that successively invokes a list of functions, passing the result of each invocation to the next function in the list.
+
+### Internal features
+
+Added functions:
+
+- `isPromise` & `isNotPromise`: Checks whether a value looks like a promise.
+
 ## 0.2.0
 
 ### Features
