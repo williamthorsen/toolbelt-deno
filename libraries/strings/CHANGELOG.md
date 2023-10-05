@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.1.0
+
+### Features
+
+Added experimental function:
+
+- `isPatternMatch`: Checks a target string against one or strings, regular expressions, or predicate functions.
+
 ## 1.0.1
 
 ### Refactoring
