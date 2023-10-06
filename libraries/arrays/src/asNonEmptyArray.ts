@@ -1,9 +1,12 @@
+import type { AnyArray, ImmutableArray, NonEmptyArray } from './arrays.types.ts';
+
 /**
  * Returns an immutable version of the array if the array is non-empty; otherwise, throws an error.
+ * The output is guaranteed to be both immutable and non-empty.
  */
-export function asNonEmptyArray<TItem>(items: Readonly<TItem[]>): Immutable<NonEmptyArray<TItem>> {
+export function asNonEmptyArray<TItem>(items: AnyArray<TItem>): NonEmptyArray<TItem> {
   // Make a new copy only if the array is mutable.
-  const frozenItems = Object.isFrozen(items) ? items : Object.freeze([...items]);
+  const frozenItems: readonly TItem[] = Object.isFrozen(items) ? items : Object.freeze([...items]);
 
   // Narrow the type and return
   assertNonEmptyArray(frozenItems);
@@ -11,14 +14,34 @@ export function asNonEmptyArray<TItem>(items: Readonly<TItem[]>): Immutable<NonE
 }
 
 /**
- * Narrows the type of the array to a mutable non-empty array or throws an error.
+ * Narrows the array's type to `ImmutableArray` or throws an error.
+ * @params array An immutable array.
  */
-export function assertNonEmptyArray<TArray extends ReadonlyArray<unknown>>(
-  items: Immutable<TArray>,
-): asserts items is Immutable<NonEmptyArray<TArray[0]>> {
-  if (items.length === 0) throw new Error('Invalid input. Array cannot be empty.');
+/*
+export function assertImmutableArray<TItem>(array: ReadonlyArray<TItem>): asserts array is ImmutableArray<TItem>  {
+  if ('push' in array) throw new Error('Invalid input. Array cannot be mutable.');
+}
+ */
+
+/**
+ * Narrows the array's type to `ImmutableArray` or throws an error.
+ * Cannot catch all cases at compile-time: Performs a runtime check to ensure that the array is frozen.
+ * @params array A frozen array.
+ */
+export function assertFrozenArray<TItem>(
+  array: ImmutableArray<TItem>,
+): asserts array is ImmutableArray<TItem> {
+  if (!Object.isFrozen(array)) throw new Error('Invalid input. Array cannot be mutable.');
 }
 
-type Immutable<TArray extends ReadonlyArray<unknown>> = TArray extends unknown[] ? never : Readonly<TArray>;
-
-type NonEmptyArray<TItem> = [TItem, ...TItem[]];
+/**
+ * Narrows the array's type to `NonEmptyArray` or throws an error.
+ * Because the input must be read-only, the output array is guaranteed to be both non-empty and
+ * (within the scope of the calling program) read-only.
+ * @params array A read-only array.
+ */
+export function assertNonEmptyArray<TItem>(
+  array: ImmutableArray<TItem>,
+): asserts array is NonEmptyArray<TItem> {
+  if (array.length === 0) throw new Error('Invalid input. Array cannot be empty.');
+}

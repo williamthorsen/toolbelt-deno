@@ -1,5 +1,21 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.7.0
+
+### Features
+
+Added function:
+
+- `assertFrozenArray`: Asserts that the input array is frozen at runtime.
+
+### Fixes
+
+Fixed the issue that `asNonEmptyArray` wrongly narrowed the type of the output to `never`.
+
+### Refactoring
+
+Simplified array typings.
+
 ## 2.6.0
 
 ### Features
