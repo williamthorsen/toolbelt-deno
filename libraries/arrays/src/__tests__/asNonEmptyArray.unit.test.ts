@@ -1,6 +1,6 @@
-import { assertEquals, assertStrictEquals, assertThrows, describe, it } from '../../dev_deps.ts';
+import { assertEquals, assertNotEquals, assertStrictEquals, assertThrows, describe, it } from '../../dev_deps.ts';
 
-import { asNonEmptyArray, assertNonEmptyArray } from '../asNonEmptyArray.ts';
+import { asNonEmptyArray, assertFrozenArray, assertNonEmptyArray } from '../asNonEmptyArray.ts';
 
 // Function to test TypeScript's ability to narrow a value's type to a non-empty array
 function expectNonEmpty<T>(firstItem: T, ...otherItems: T[]): Readonly<[T, ...T[]]> {
@@ -62,6 +62,31 @@ describe('asNonEmptyArray()', () => {
   });
 });
 
+describe('assertFrozenArray()', () => {
+  it('if array is read-only but not immutable, succeeds at compile-time but fails at runtime', () => {
+    const mutableItems: readonly string[] = ['item'];
+
+    const throwingFn = () => assertFrozenArray(mutableItems); // no compilation error
+
+    assertThrows(throwingFn, Error, 'Invalid input. Array cannot be mutable.');
+  });
+
+  it('guarantees immunity from side effects', () => {
+    function expectFrozenArray(items: ReadonlyArray<string>): void {
+      // `items` is declared to be read-only in this function, but is not frozen
+      assertFrozenArray(items);
+      // This code is unreachable because the assertion throws an error
+      assertEquals(true, false);
+    }
+
+    assertThrows(
+      () => expectFrozenArray(['item']),
+      Error,
+      'Invalid input. Array cannot be mutable.',
+    );
+  });
+});
+
 describe('assertNonEmptyArray()', () => {
   it('if array is immutable and non-empty, narrows the type', () => {
     const items = Object.freeze([1]);
@@ -87,7 +112,24 @@ describe('assertNonEmptyArray()', () => {
   it('if array is immutable, fails to compile', () => {
     const mutableItems = ['item'];
 
+    // The following assertion fails at compile-time but succeeds at runtime.
+    // Only a frozen array is guaranteed to be immutable.
     // @ts-expect-error - Mutable array is not valid input
     assertNonEmptyArray(mutableItems);
+  });
+
+  it('does not guarantees immunity from side effects', () => {
+    // Array is mutable in the scope of this function
+    const items = [1];
+
+    (<TItem>(array: ReadonlyArray<TItem>, pushToArray: () => void): void => {
+      const copy = [...array];
+      assertNonEmptyArray(array);
+
+      // Even though the array is read-only to this function, it can still be mutated elsewhere
+      assertEquals([...array], [...copy]);
+      pushToArray();
+      assertNotEquals([...array], [...copy]);
+    })(items, () => items.push(2));
   });
 });

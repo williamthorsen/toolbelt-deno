@@ -1,5 +1,5 @@
 export { arraify } from './src/arraify.ts';
-export { asNonEmptyArray, assertNonEmptyArray } from './src/asNonEmptyArray.ts';
+export { asNonEmptyArray, assertFrozenArray, assertNonEmptyArray } from './src/asNonEmptyArray.ts';
 export { findOrThrow } from './src/findOrThrow.ts';
 export { getDuplicates } from './src/getDuplicates.ts';
 export { getSetItems } from './src/getSetItems.ts';

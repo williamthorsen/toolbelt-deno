@@ -1,5 +1,7 @@
-export type AnyArray<TItem> = WritableArray<TItem> | ReadonlyArray<TItem>;
+export type AnyArray<TItem> = Array<TItem> | ReadonlyArray<TItem>;
 
-export type NonEmptyArray<TItem> = [TItem, ...TItem[]];
+export type ImmutableArray<TItem> = Immutable<AnyArray<TItem>>;
 
-export type WritableArray<TItem> = Array<TItem>;
+export type NonEmptyArray<TItem> = Readonly<[TItem, ...TItem[]]>;
+
+type Immutable<T> = T & { push?: never };

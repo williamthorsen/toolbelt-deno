@@ -2,6 +2,7 @@ export {
   assert,
   assertArrayIncludes,
   assertEquals,
+  assertNotEquals,
   assertNotStrictEquals,
   assertStrictEquals,
   assertThrows,
