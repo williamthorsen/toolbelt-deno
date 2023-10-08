@@ -12,10 +12,7 @@ export function pickVariants(text: string, options: Options = {}): string {
   const seed = SeededRng.spawn(options.seed);
 
   // Check that the delimiters are correctly nested
-  const validationResult = validateDelimiters(text, { opening: '[', closing: ']' });
-  if (!validationResult.isValid) {
-    throw new Error(validationResult.errors[0].message);
-  }
+  validateDelimiters(text, { opening: '[', closing: ']', throwOnError: true });
 
   const variantRegex = /\[([^\[\]]*?)]/g;
   const result = text.replace(variantRegex, (_delimitedVariants, variants: string): string => {
