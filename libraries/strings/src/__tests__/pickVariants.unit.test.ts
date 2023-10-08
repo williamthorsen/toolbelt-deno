@@ -44,7 +44,7 @@ describe('pickVariants()', () => {
     assertThrows(
       throwingFn,
       Error,
-      'Variant delimiters [ ] are incorrectly nested.',
+      'Text has unmatched opening delimiter "[".',
     );
   });
 
@@ -55,7 +55,7 @@ describe('pickVariants()', () => {
     assertThrows(
       throwingFn,
       Error,
-      'Variant delimiters [ ] are incorrectly nested.',
+      'Text has unmatched closing delimiter "]".',
     );
   });
 
