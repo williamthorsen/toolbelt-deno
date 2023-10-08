@@ -28,15 +28,6 @@ describe('pickVariants()', () => {
     assertEquals(output, expected);
   });
 
-  it('if variants are nested, recursively picks variants', () => {
-    const input = 'Hello, [name|[title|[planet|world]]] [A|B]!';
-    const expected = /Hello, (name|planet|title|world) [AB]!/;
-
-    const output = pickVariants(input);
-
-    assertMatch(output, expected);
-  });
-
   it('if delimiters are mismatched, throws an error', () => {
     const input = 'Hello, [name|world!';
 
@@ -59,9 +50,19 @@ describe('pickVariants()', () => {
     );
   });
 
+  it('if variants are nested, recursively picks variants', () => {
+    const seed = 1234;
+    const input = 'Hello, [Lord [Mars|Ares]|Lady [Venus|Aphrodite]] to Planet [Terra|Gaia]!';
+    const expected = /^Hello, (Lord (Mars|Ares)|Lady (Venus|Aphrodite)) to Planet (Terra|Gaia)!$/;
+
+    const actual = pickVariants(input, { seed });
+
+    assertMatch(actual, expected);
+  });
+
   it('given the same seed, always returns the same output', () => {
     const seed = 1234;
-    const input = '[1|2|3|4]';
+    const input = '[1[a[1|2]|b[3|4]]|2[d[5|6]|e[7|8]]]';
 
     const result1 = pickVariants(input, { seed });
     const result2 = pickVariants(input, { seed });
