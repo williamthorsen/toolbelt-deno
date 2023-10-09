@@ -1,5 +1,11 @@
 # toolbelt-deno
 
+## 2.7.0
+
+### Dependencies
+
+Upgraded all dependencies and runtimes to latest version.
+
 ### 2.3.0
 
 ### Tooling

@@ -11,4 +11,5 @@ export { assertStrictEquals } from 'https://deno.land/std@0.203.0/assert/assert_
 export { assertThrows } from 'https://deno.land/std@0.203.0/assert/assert_throws.ts';
 // export { equal } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 export { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
-export { assertSnapshot } from 'https://deno.land/std@0.203.0/testing/snapshot.ts';
+// Causes ESM tests to fail in distribution bundle
+// export { assertSnapshot } from 'https://deno.land/std@0.203.0/testing/snapshot.ts';
