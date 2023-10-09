@@ -17,21 +17,21 @@ export abstract class TextNode {
   }
 
   static create(content: string): TextNode {
-    if (Token.isDelimited(content)) {
-      return new Variant(content);
+    if (TokenNode.isDelimited(content)) {
+      return new VariantNode(content);
     } else {
-      return new Token(content);
+      return new TokenNode(content);
     }
   }
 
-  static decodeIndices(encodedVariants: string | Integer[]): Integer[] {
-    if (Array.isArray(encodedVariants)) return encodedVariants;
+  static decodeIndices(encodedIndices: string | VariantIndices): Integer[] {
+    if (Array.isArray(encodedIndices)) return flatten(encodedIndices);
 
     const regex = /\d+/g;
     let match;
     const indices = [];
 
-    while ((match = regex.exec(encodedVariants)) !== null) {
+    while ((match = regex.exec(encodedIndices)) !== null) {
       indices.push(Number(match[0]));
     }
 
@@ -39,12 +39,32 @@ export abstract class TextNode {
   }
 
   static delimit(content: string): string {
-    return DELIMIT.opening + content + DELIMIT.closing;
+    return enclose(content, DELIMIT);
+  }
+
+  static encodeIndices(arr: VariantIndices, depth = 0): string {
+    let result = '';
+
+    for (let i = 0; i < arr.length; i++) {
+      const element = arr[i];
+      if (typeof element === 'number') {
+        result += element.toString();
+      } else if (Array.isArray(element)) {
+        let encodedIndices = TextNode.encodeIndices(element, depth + 1);
+        if (depth) encodedIndices = TextNode.delimit(encodedIndices);
+        result += encodedIndices;
+      }
+      const isNotLastElement = i < arr.length - 1;
+      const separator = depth === 0 ? enclose(DELIMIT.separator, { opening: ' ', closing: ' ' }) : DELIMIT.separator;
+      if (isNotLastElement && (!(Array.isArray(arr[i + 1])) || depth === 0)) result += separator;
+    }
+
+    return result;
   }
 
   static fromContent(content: string): TextNode | string {
-    if (Token.isDelimited(content)) return new Variant(content);
-    else if (Token.hasDelimited(content)) return new Token(content);
+    if (TokenNode.isDelimited(content)) return new VariantNode(content);
+    else if (TokenNode.hasDelimited(content)) return new TokenNode(content);
     return content;
   }
 
@@ -58,16 +78,16 @@ export abstract class TextNode {
 
   abstract pick(options?: { seed?: Seed | undefined }): string;
 
-  abstract pickIndices(options?: { indices?: Integer[] | undefined; seed?: Seed | undefined }): Integer[];
+  abstract pickIndices(
+    options?: { depth?: Integer; indices?: VariantIndices | undefined; seed?: Seed | undefined },
+  ): VariantIndices;
 
-  abstract pickIndices1(options?: { parentIndex?: string | undefined; seed?: Seed | undefined }): string[];
-
-  abstract selectVariants(indices: Integer[] | string): string;
+  abstract selectVariants(indices: string | VariantIndices): string;
 
   abstract toString(): string;
 }
 
-class Token extends TextNode {
+class TokenNode extends TextNode {
   children?: (TextNode | string)[];
   kind: 'token' = 'token';
 
@@ -86,30 +106,36 @@ class Token extends TextNode {
     return this.content;
   }
 
-  pickIndices(options: { indices?: Integer[] | undefined; seed?: Seed | undefined } = {}): Integer[] {
-    const { indices = [] } = options;
+  pickIndices(options: { depth?: Integer; seed?: Seed | undefined } = {}): VariantIndices {
+    const { depth = 0 } = options;
     const seed = IntSeededRng.spawn(options.seed);
+
+    const indices: VariantIndices = [];
 
     (this.children || [])
-      .filter((child): child is TextNode => typeof child !== 'string')
-      .forEach((child) => {
-        child.pickIndices({ indices, seed });
+      .filter((child): child is VariantNode => child instanceof VariantNode)
+      .forEach((variant) => {
+        const childIndices = variant.pickIndices({ depth: depth + 1, seed });
+        indices.push(
+          childIndices.length === 1 ? childIndices[0] : childIndices,
+        );
       });
-    return indices;
+
+    // Avoid unnecessary nesting
+    return (indices.length === 1 && Array.isArray(indices[0])) ? indices[0] : indices;
   }
 
-  pickIndices1(options: { parentIndex?: string | undefined; seed?: Seed | undefined } = {}): string[] {
-    const { parentIndex = '' } = options;
-    const seed = IntSeededRng.spawn(options.seed);
-
-    return (this.children || [])
-      .map((child) => typeof child === 'string' ? [] : child.pickIndices1({ parentIndex, seed }))
-      .flat();
-  }
-
-  selectVariants(indices: Integer[] | string): string {
+  selectVariants(indices: string | VariantIndices): string {
     const indicesArray = TextNode.decodeIndices(indices);
-    return this.children?.map((child) => typeof child === 'string' ? child : child.selectVariants(indicesArray))?.join('') ?? '';
+    if (!this.children) {
+      return '';
+    }
+
+    const childContents = this.children.map((child) => {
+      if (typeof child === 'string') return child;
+      return child.selectVariants(indicesArray);
+    });
+    return childContents.join('');
   }
 
   toString(): string {
@@ -120,13 +146,9 @@ class Token extends TextNode {
   }
 }
 
-export class Variant extends TextNode {
+export class VariantNode extends TextNode {
   kind: 'variant' = 'variant';
   variants: (TextNode | string)[] = [];
-
-  static buildIndex(parentIndex: number | string, childIndex: number | string): string {
-    return [String(parentIndex ?? ''), String(childIndex)].filter(Boolean).join('.');
-  }
 
   constructor(content: string) {
     super(content);
@@ -144,40 +166,29 @@ export class Variant extends TextNode {
     return variant.pick({ seed });
   }
 
-  pickIndices(options: { indices?: Integer[] | undefined; seed?: Seed | undefined } = {}): Integer[] {
-    const { indices = [] } = options;
+  pickIndices(options: { depth?: Integer; seed?: Seed | undefined } = {}): VariantIndices {
+    const { depth = 0 } = options;
     const seed = IntSeededRng.spawn(options.seed);
 
     const index = pickInteger({ max: this.variants.length - 1, seed });
-    indices.push(index);
-    const variant = this.variants[index];
-    if (typeof variant === 'string') return indices;
-    return variant.pickIndices({ indices, seed });
-  }
+    const nodeOrString = this.variants[index];
 
-  pickIndices1(options: { parentIndex?: string | undefined; seed?: Seed | undefined } = {}): string[] {
-    const { parentIndex = '' } = options;
-    const seed = IntSeededRng.spawn(options.seed);
+    const indices: VariantIndices = [index]; // index of the picked variant
 
-    const index = pickInteger({ max: this.variants.length - 1, seed });
-    const pickedIndex = Variant.buildIndex(parentIndex, index);
-
-    const variant = this.variants[index];
-
-    if (typeof variant === 'string') {
-      return [pickedIndex];
+    if (nodeOrString instanceof TextNode) {
+      const childIndices = nodeOrString.pickIndices({ depth: depth + 1, seed });
+      if (childIndices.length > 0) indices.push(childIndices);
     }
-    return variant.pickIndices1({ parentIndex: pickedIndex, seed });
+
+    return indices;
   }
 
-  selectVariants(indices: Integer[] | string): string {
-    const indicesArray = TextNode.decodeIndices(indices);
-
-    const variantIndex = indicesArray.shift();
-    if (variantIndex === undefined) throw new Error('No variant index provided');
+  selectVariants(indices: number[]): string {
+    const variantIndex = indices.shift();
+    if (variantIndex === undefined) throw new Error('Not enough indices to resolve all variants.');
     const selectedVariant = this.variants[variantIndex];
     if (typeof selectedVariant === 'string') return selectedVariant;
-    return selectedVariant.selectVariants(indicesArray);
+    return selectedVariant.selectVariants(indices);
   }
 
   toString(): string {
@@ -185,4 +196,23 @@ export class Variant extends TextNode {
   }
 }
 
+function enclose(content: string, options: { opening: string; closing: string }): string {
+  const { opening, closing } = options;
+  return opening + content + closing;
+}
+
+function flatten(indices: VariantIndices): number[] {
+  let flatIndices: number[] = [];
+  for (const index of indices) {
+    if (Array.isArray(index)) {
+      flatIndices = flatIndices.concat(flatten(index));
+    } else {
+      flatIndices.push(index);
+    }
+  }
+  return flatIndices;
+}
+
 type Integer = number;
+
+type VariantIndices = (Integer | VariantIndices)[];

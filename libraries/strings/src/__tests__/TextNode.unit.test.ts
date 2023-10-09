@@ -1,6 +1,6 @@
-import { assertEquals, assertMatch, assertObjectMatch, describe, it } from '../../dev_deps.ts';
+import { assertEquals, assertMatch, assertObjectMatch, assertThrows, describe, it } from '../../dev_deps.ts';
 
-import { TextNode, Variant } from '../TextNode.ts';
+import { TextNode, VariantNode } from '../TextNode.ts';
 
 describe('TextNode', () => {
   describe('static create()', () => {
@@ -133,36 +133,27 @@ describe('TextNode', () => {
     const input = '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D[1|2][a|b]|E]';
     const testCases = [
       { seed: 1234, expectedIndices: [1, 2], expectedString: '1:B | 2:E' },
-      { seed: 1236, expectedIndices: [0, 1, 0, 1, 1, 1], expectedString: '1:A2c | 2:D2b' },
-      { seed: 1249, expectedIndices: [0, 1, 1, 1, 0, 0], expectedString: '1:A2d | 2:D1a' },
+      { seed: 1236, expectedIndices: [[0, [1, [0]]], [1, [1, 1]]], expectedString: '1:A2c | 2:D2b' },
+      { seed: 1249, expectedIndices: [[0, [1, [1]]], [1, [0, 0]]], expectedString: '1:A2d | 2:D1a' },
     ];
     for (const { seed, expectedIndices, expectedString } of testCases) {
       it('selects depth-first indices to resolve variants', () => {
         const actualIndices = TextNode.create(input).pickIndices({ seed });
-        const actuaString = TextNode.create(input).pick({ seed });
+        const actualString = TextNode.create(input).pick({ seed });
 
-        assertEquals(actuaString, expectedString);
+        assertEquals(actualString, expectedString);
         assertEquals(actualIndices, expectedIndices);
       });
     }
-  });
 
-  describe('pickIndices1()', () => {
-    const input = '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D[1|2][a|b]|E]';
-    const testCases = [
-      { seed: 1234, expectedIndices: ['1', '2'], expectedString: '1:B | 2:E' },
-      { seed: 1236, expectedIndices: ['0.1.0', '1.1', '1.1'], expectedString: '1:A2c | 2:D2b' },
-      { seed: 1249, expectedIndices: ['0.1.1', '1.0', '1.0'], expectedString: '1:A2d | 2:D1a' },
-    ];
-    for (const { seed, expectedIndices, expectedString } of testCases) {
-      it('given the same seed, always returns the same result', () => {
-        const actualIndices = TextNode.create(input).pickIndices1({ seed });
-        const actuaString = TextNode.create(input).pick({ seed });
+    it('given a node without children, returns an empty array', () => {
+      const input = 'Hello';
+      const expected: number[] = [];
 
-        assertEquals(actualIndices, expectedIndices);
-        assertEquals(actuaString, expectedString);
-      });
-    }
+      const actual = TextNode.create(input).pickIndices();
+
+      assertEquals(actual, expected);
+    });
   });
 
   describe('selectVariants()', () => {
@@ -171,15 +162,38 @@ describe('TextNode', () => {
       const textNode = TextNode.create(input);
 
       const indices = [0, 1, 1, 1];
+      const nestedIndices = [[0, [1, [1]]], 1];
       const encoding = '0[1[1]]] | 1';
       const expected = '1:A2d | 2:D';
 
       const actualFromIndices = textNode.selectVariants(indices);
+      const actualFromNestedIndices = textNode.selectVariants(nestedIndices);
       const actualFromEncoding = textNode.selectVariants(encoding);
 
       assertEquals(actualFromIndices, expected);
+      assertEquals(actualFromNestedIndices, expected);
       assertEquals(actualFromEncoding, expected);
     });
+
+    it('given a text without children, returns an empty string', () => {
+      const input = '';
+      const expected = '';
+
+      const actual = TextNode.create(input).selectVariants([]);
+
+      assertEquals(actual, expected);
+    });
+
+    it('given too few indices to resolve all variants, throws an error', () => {
+      const input = '[A|B|C]';
+
+      const throwingFn = () => TextNode.create(input).selectVariants([]);
+
+      assertThrows(throwingFn, Error, 'Not enough indices to resolve all variants.');
+    });
+
+    // itTodo('given too many indices, throws an error');
+    // itTodo('given an invalid index, throws an error');
   });
 
   describe('toString()', () => {
@@ -191,16 +205,48 @@ describe('TextNode', () => {
 
       assertEquals(actual, expected);
     });
+
+    it('given a text without children, returns an empty string', () => {
+      const input = '';
+      const expected = '';
+
+      const actual = TextNode.create(input).toString();
+
+      assertEquals(actual, expected);
+    });
   });
 });
 
-describe('Variant class', () => {
+describe('VariantNode class', () => {
+  const nestedIndices = [[0, [1, [1]]], [1, [0, 0]]];
+  const encodedIndices = '0[1[1]] | 1[0|0]';
+
   describe('static decodeIndices()', () => {
     it('splits on non-numeric sequences and converts numeric strings to numbers', () => {
-      const input = '0[1[1]]] | 1';
-      const expected = [0, 1, 1, 1];
+      const input = encodedIndices;
+      const expected = [0, 1, 1, 1, 0, 0];
 
-      const actual = Variant.decodeIndices(input);
+      const actual = VariantNode.decodeIndices(input);
+
+      assertEquals(actual, expected);
+    });
+
+    it('flattens nested arrays', () => {
+      const input = nestedIndices;
+      const expected = [0, 1, 1, 1, 0, 0];
+
+      const actual = VariantNode.decodeIndices(input);
+
+      assertEquals(actual, expected);
+    });
+  });
+
+  describe('static encodeIndices()', () => {
+    it('transforms an arbitrarily nested array of numbers into a string', () => {
+      const input = nestedIndices;
+      const expected = encodedIndices;
+
+      const actual = VariantNode.encodeIndices(input);
 
       assertEquals(actual, expected);
     });
