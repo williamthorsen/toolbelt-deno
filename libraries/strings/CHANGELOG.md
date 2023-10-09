@@ -1,5 +1,34 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.2.0
+
+### Fixes
+
+Fixed incorrect parsing of nested variants by `pickVariants`.
+
+### Experimental features
+
+Added experimental `TextNode` class (name is not final and may change):
+
+- provides the same functionality as `pickVariants`, creating reproducible results from the same seed
+- can return an array of the selected variant indices, which can be used to recreate the selected string
+- can encode the array as a string
+
+### Internal features
+
+Added functions, both used by the `TextNode` class:
+
+- `segmentByDelimited`: Splits a string into segments, treating top-level delimited strings as segment boundaries.
+- `splitDelimited`: Parses a delimited string and returns an array of its elements.
+
+### Refactoring
+
+Modified `pickVariants` to use the `TextNode` class under the hood.
+
+### Tooling
+
+Refactored the build script to use a separate configuration file, `scripts/buildOptions.ts`.
+
 ## 1.1.0
 
 ### Features
