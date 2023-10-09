@@ -41,7 +41,7 @@ export function toEntryPoint(pathToEntryPointFile: string): EntryPoint {
   }
   return {
     kind: 'export',
-    name: pathToEntryPointFile.replace(/\.ts$/, ''),
+    name: pathToEntryPointFile.replace(/\.ts$/, '.js'),
     path: pathToEntryPointFile,
   };
 }
