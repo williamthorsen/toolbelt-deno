@@ -11,51 +11,60 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
     throw new Error('Opening and closing delimiters must be different.');
   }
 
-  let openedCount = 0;
-  for (const char of text) {
-    if (char === opening) {
-      openedCount++;
-      if (openedCount > 1 && disallowNested) {
-        return {
-          isValid: false,
-          errors: [{
-            code: 'NESTED_DELIMITERS',
-            message: `Text has nested delimiters.`,
-          }],
-        };
+  const validationResult = (() => {
+    let openedCount = 0;
+    for (const char of text) {
+      if (char === opening) {
+        openedCount++;
+        if (openedCount > 1 && disallowNested) {
+          return {
+            isValid: false,
+            errors: [{
+              code: 'NESTED_DELIMITERS',
+              message: `Text has nested delimiters.`,
+            }],
+          };
+        }
+      } else if (char === closing) {
+        if (openedCount === 0) {
+          return {
+            isValid: false,
+            errors: [{
+              code: 'UNMATCHED_CLOSING_DELIMITER',
+              message: `Text has unmatched closing delimiter "${closing}".`,
+            }],
+          };
+        }
+        openedCount--;
       }
-    } else if (char === closing) {
-      if (openedCount === 0) {
-        return {
-          isValid: false,
-          errors: [{
-            code: 'UNMATCHED_CLOSING_DELIMITER',
-            message: `Text has unmatched closing delimiter "${closing}".`,
-          }],
-        };
-      }
-      openedCount--;
     }
-  }
 
-  if (openedCount !== 0) {
+    if (openedCount !== 0) {
+      return {
+        isValid: false,
+        errors: [{
+          code: 'UNMATCHED_OPENING_DELIMITER',
+          message: `Text has unmatched opening delimiter "${opening}".`,
+        }],
+      };
+    }
+
     return {
-      isValid: false,
-      errors: [{
-        code: 'UNMATCHED_OPENING_DELIMITER',
-        message: `Text has unmatched opening delimiter "${opening}".`,
-      }],
+      isValid: true,
+      errors: [],
     };
+  })();
+
+  if (!validationResult.isValid && params.throwOnError) {
+    throw new Error(validationResult.errors[0].message);
   }
 
-  return {
-    isValid: true,
-    errors: [],
-  };
+  return validationResult;
 }
 
 interface Params {
   opening: string;
   closing: string;
   disallowNested?: boolean | undefined;
+  throwOnError?: boolean | undefined;
 }

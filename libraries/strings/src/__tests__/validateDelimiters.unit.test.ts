@@ -68,7 +68,7 @@ describe('validateDelimiters()', () => {
     assertEquals(actual, expected);
   });
 
-  it('if delimiters match, throws an error', () => {
+  it('if opening & closing delimiters are the same character, throws an error', () => {
     const input = '';
     const badParams = { opening: '{', closing: '{' };
     const expectedMessage = 'Opening and closing delimiters must be different.';
@@ -80,6 +80,16 @@ describe('validateDelimiters()', () => {
       Error,
       expectedMessage,
     );
+  });
+
+  it('if throwOnError=true, throws an error containing the first error message', () => {
+    const input = 'Hello, [wo]r]ld!';
+    const withErrorParams = { opening: '[', closing: ']', throwOnError: true };
+    const expectedErrorMessage = 'Text has unmatched closing delimiter "]"';
+
+    const throwingFn = () => validateDelimiters(input, withErrorParams);
+
+    assertThrows(throwingFn, Error, expectedErrorMessage);
   });
 
   describe('disallowNested option with correct nesting', () => {
