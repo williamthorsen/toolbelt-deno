@@ -105,7 +105,7 @@ export abstract class TextNode {
   abstract pick(options?: { seed?: Seed | undefined }): string;
 
   abstract pickIndices(
-    options?: { depth?: Integer; indices?: VariantIndices | undefined; seed?: Seed | undefined },
+    options?: { indices?: VariantIndices | undefined; seed?: Seed | undefined },
   ): VariantIndices;
 
   abstract selectVariants(indices: string | VariantIndices, options?: { depth?: Integer }): string;
@@ -131,8 +131,7 @@ class TokenNode extends TextNode {
     return this.content;
   }
 
-  pickIndices(options: { depth?: Integer; seed?: Seed | undefined } = {}): VariantIndices {
-    const { depth = 0 } = options;
+  pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
     const indices: VariantIndices = [];
@@ -140,7 +139,7 @@ class TokenNode extends TextNode {
     (this.children || [])
       .filter((child): child is VariantNode => child instanceof VariantNode)
       .forEach((variant) => {
-        const childIndices = variant.pickIndices({ depth: depth + 1, seed });
+        const childIndices = variant.pickIndices({ seed });
         indices.push(
           childIndices.length === 1 ? childIndices[0] : childIndices,
         );
@@ -197,8 +196,7 @@ export class VariantNode extends TextNode {
     return variant.pick({ seed });
   }
 
-  pickIndices(options: { depth?: Integer; seed?: Seed | undefined } = {}): VariantIndices {
-    const { depth = 0 } = options;
+  pickIndices(options: { seed?: Seed | undefined } = {}): VariantIndices {
     const seed = IntSeededRng.spawn(options.seed);
 
     const index = pickInteger({ max: this.variants.length - 1, seed });
@@ -207,7 +205,7 @@ export class VariantNode extends TextNode {
     const indices: VariantIndices = [index]; // index of the picked variant
 
     if (nodeOrString instanceof TextNode) {
-      const childIndices = nodeOrString.pickIndices({ depth: depth + 1, seed });
+      const childIndices = nodeOrString.pickIndices({ seed });
       if (childIndices.length > 0) indices.push(childIndices);
     }
 
