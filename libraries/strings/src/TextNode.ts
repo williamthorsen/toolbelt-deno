@@ -38,11 +38,14 @@ export abstract class TextNode {
       return flatten(encodedIndices);
     }
 
+    // Remove the trailing seed, if any
+    const [deseededIndices, _seed] = encodedIndices.split(':');
+
     const regex = /\d+/g;
     let match;
     const indices = [];
 
-    while ((match = regex.exec(encodedIndices)) !== null) {
+    while ((match = regex.exec(deseededIndices)) !== null) {
       indices.push(Number(match[0]));
     }
 
@@ -53,24 +56,30 @@ export abstract class TextNode {
     return enclose(content, DELIMIT);
   }
 
-  static encodeIndices(arr: VariantIndices, depth = 0): string {
-    let result = '';
+  /**
+   * Returns a string representation of arbitrarily nested indices.
+   */
+  static encodeIndices(indices: VariantIndices, depth = 0): string {
+    let encodedIndices = '';
 
-    for (let i = 0; i < arr.length; i++) {
-      const element = arr[i];
+    for (let i = 0; i < indices.length; i++) {
+      const element = indices[i];
       if (typeof element === 'number') {
-        result += element.toString();
+        encodedIndices += element.toString();
       } else if (Array.isArray(element)) {
-        let encodedIndices = TextNode.encodeIndices(element, depth + 1);
-        if (depth) encodedIndices = TextNode.delimit(encodedIndices);
-        result += encodedIndices;
+        let encodedChildIndices = TextNode.encodeIndices(element, depth + 1);
+        if (depth) encodedChildIndices = TextNode.delimit(encodedChildIndices);
+        encodedIndices += encodedChildIndices;
       }
-      const isNotLastElement = i < arr.length - 1;
-      const separator = depth === 0 ? enclose(DELIMIT.separator, { opening: ' ', closing: ' ' }) : DELIMIT.separator;
-      if (isNotLastElement && (!(Array.isArray(arr[i + 1])) || depth === 0)) result += separator;
+      const isNotLastElement = i < indices.length - 1;
+      if (isNotLastElement && (!(Array.isArray(indices[i + 1])) || depth === 0)) encodedIndices += DELIMIT.separator;
     }
 
-    return result;
+    return encodedIndices;
+  }
+
+  static fingerprint(seed: number, encodedIndices: string): string {
+    return `${encodedIndices}:${seed}`.replace(/\s/g, '');
   }
 
   static fromContent(content: string): TextNode | string {
@@ -107,6 +116,25 @@ export abstract class TextNode {
   abstract pickIndices(
     options?: { indices?: VariantIndices | undefined; seed?: Seed | undefined },
   ): VariantIndices;
+
+  pickWithFingerprint(
+    options: { seed?: Seed | undefined } = {},
+  ): PickSummary {
+    const seededRng = IntSeededRng.cloneOrCreate(options.seed);
+    const seed = options.seed ?? seededRng;
+    const initialSeed = seededRng.seed;
+
+    const indices = this.pickIndices({ seed });
+    const content = this.selectVariants(indices);
+
+    return {
+      content,
+      encodedIndices: TokenNode.encodeIndices(indices),
+      fingerprint: TokenNode.fingerprint(initialSeed, TokenNode.encodeIndices(indices)),
+      indices,
+      seed: initialSeed,
+    };
+  }
 
   abstract selectVariants(indices: string | VariantIndices, options?: { depth?: Integer }): string;
 
@@ -262,5 +290,13 @@ function isNumberArray(items: unknown[]): items is number[] {
 }
 
 type Integer = number;
+
+interface PickSummary {
+  content: string;
+  encodedIndices: string;
+  fingerprint: string;
+  indices: VariantIndices;
+  seed: Integer;
+}
 
 type VariantIndices = (Integer | VariantIndices)[];
