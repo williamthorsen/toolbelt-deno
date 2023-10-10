@@ -20,9 +20,9 @@ export class SeededRng implements SeededGenerator {
     return evaluateSeed(seed);
   }
 
-  // Creates a child; does not mutate the parent seed
-  // By default, the child's base is incremented to produce a different output than the parent
-  // while still being deterministic. Set nIncrements to 0 to produce the same output.
+  /**
+   * Creates a child from a seed without mutating the parent seed.
+   */
   static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: undefined, nIncrements?: number): undefined;
   static clone<T extends ThisConstructor<typeof SeededRng>>(this: T, seed: Seed, nIncrements?: number): This<T>;
   static clone<T extends ThisConstructor<typeof SeededRng>>(
@@ -39,6 +39,17 @@ export class SeededRng implements SeededGenerator {
       return new this(seed.seed).increment(nIncrements);
     }
     return seed === undefined ? undefined : new this(seed).increment(nIncrements);
+  }
+
+  /**
+   * Clones the given seed or creates a new one if none is given.
+   */
+  static cloneOrCreate<T extends ThisConstructor<typeof SeededRng>>(
+    this: T,
+    seed?: Seed,
+    nIncrements?: number,
+  ): This<T> {
+    return seed === undefined ? new this() : this.clone(seed, nIncrements);
   }
 
   // Creates a child; mutates the input seed, if it is a Seed instance or generator

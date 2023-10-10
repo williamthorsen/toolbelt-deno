@@ -128,6 +128,27 @@ describe('SeededRng class', () => {
     });
   });
 
+  describe('static cloneOrCreate()', () => {
+    it('if a seed is given, returns an RNG that uses the same seed', () => {
+      const seed = 1234;
+      const expectedSeed = seed;
+
+      const actualSeed = SeededRng.cloneOrCreate(seed).seed;
+
+      assertEquals(actualSeed, expectedSeed);
+    });
+
+    it('if no seed is given, return a new RNG', () => {
+      const seed = undefined;
+      const rng = SeededRng.cloneOrCreate(seed);
+
+      assertInstanceOf(
+        rng,
+        SeededRng,
+      );
+    });
+  });
+
   describe('static spawn()', () => {
     it('given a numeric seed, returns an RNG that uses the number as its seed', () => {
       const seed = 1234;
