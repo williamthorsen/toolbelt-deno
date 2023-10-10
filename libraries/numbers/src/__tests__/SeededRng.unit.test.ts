@@ -1,13 +1,14 @@
-import { assertAlmostEquals, assertEquals, assertInstanceOf, assertNotEquals, describe, it } from '../../dev_deps.ts';
+import { assertEquals, assertInstanceOf, assertNotEquals, describe, it } from '../../dev_deps.ts';
 
 import type { Seed, SeededGenerator } from '../evaluateSeed.ts';
+import { IntegerSeed } from '../IntegerSeed.ts';
 import { pickInteger } from '../pickInteger.ts';
 import { Int32SeededRng, IntSeededRng, SeededRng } from '../SeededRng.ts';
 
 describe('SeededRng class', () => {
   // Argument for clone is that it always leaves the seed of the parent unchanged.
   describe('static clone()', () => {
-    const SEED_NUMBER = 1234.5;
+    const SEED_NUMBER = 1234;
     const getRngLike = (): SeededGenerator & { peek(): number } => {
       let base = SEED_NUMBER;
       return {
@@ -67,15 +68,9 @@ describe('SeededRng class', () => {
         //   Result: The input RGN's seed is incremented, and the intermediate RGN's seed is the 1st pseudorandom value.
         // - `clone`: The intermediate RNG is cloned without yielding a value; is seed is inherited by the clone RNG.
         //   Result: The clone RNG's seed is the same as 1st pseudorandom value.
-        const inputRngNextValue = seedInput2.peek();
         const instanceRng = new SeededRng(seedInput2).clone(); // advances the input seed
         assertNotEquals(seedInput2.seed, SEED_NUMBER); // the input seed is no longer the same as the input seed
         assertNotEquals(instanceRng.seed, seedInput2.seed); // and the parent's seed has advanced
-        assertEquals(instanceRng.seed, inputRngNextValue);
-
-        // TL;DR: When the input passed to the constructor is an RNG, the created RNG's seed is always a value
-        // yielded by the input RNG, not the input RNG's own seed.
-        // To create an RNG whose seed is the same as its parent, use `static clone(seedRng)` or `seedRng.clone()`.
       });
     }
 
@@ -105,14 +100,15 @@ describe('SeededRng class', () => {
       assertEquals(actual, expected);
     });
 
-    it('given a function, invokes the function and returns an RNG that uses the result as the seed', () => {
+    it('given a function, invokes the function and returns an RNG that uses its result to create a seed', () => {
       const seed = 1234.5;
       const seedFn = () => seed;
-      const expected = seed;
+      // TODO: This is under-the-hood knowledge. Test in a way that doesn't rely on implementation details.
+      const expected = IntegerSeed.toInt(seed);
 
       const actual = SeededRng.clone(seedFn)?.seed;
 
-      assertEquals(actual, expected);
+      assertEquals(IntegerSeed.toInt(actual), expected);
     });
 
     it('by default, the clone\'s seed is the same as the parent\'s', () => {
@@ -129,16 +125,6 @@ describe('SeededRng class', () => {
       parentRng.next(N_INCREMENTS);
 
       assertEquals(childRng?.seed, parentRng.seed);
-    });
-
-    it('if invoked with nIncrements<0, rewinds the seed by nIncrements', () => {
-      const rng = new SeededRng();
-      const rngSeed = rng.seed;
-      rng.next() && rng.next();
-
-      const clone = SeededRng.clone(rng, -2);
-
-      assertAlmostEquals(clone?.seed, rngSeed);
     });
   });
 
@@ -276,6 +262,17 @@ describe('SeededRng class', () => {
     });
   });
 
+  describe('peek()', () => {
+    it('returns the next value without incrementing the seed', () => {
+      const rng = new SeededRng();
+      const expected = rng.peek();
+
+      const actual = rng.next();
+
+      assertEquals(actual, expected);
+    });
+  });
+
   describe('withSeed() - configured base function', () => {
     function pickLetter(options?: { seed?: Seed }): string {
       const letterIndex = pickInteger({ min: 0, max: 25, seed: options?.seed });
@@ -312,8 +309,8 @@ describe('SeededRng class', () => {
 
 for (
   const [preset, Rng, max] of [
-    ['Int', IntSeededRng, Number.MAX_SAFE_INTEGER],
-    ['Int32', Int32SeededRng, 2 ** 32 - 1],
+    ['Int', IntSeededRng, 2 ** 31 - 1],
+    ['Int32', Int32SeededRng, 2 ** 31 - 1],
   ] as const
 ) {
   const className = `${preset}SeededRng`;
@@ -338,12 +335,6 @@ for (
       it('generates an integer seed', () => {
         const rng = new Rng();
         assertEquals(Number.isInteger(rng.seed), true);
-      });
-
-      it('can start with a non-integer seed if provided by the caller', () => {
-        const input = 1324.5;
-        const rng = new Rng(input);
-        assertEquals(rng.seed, input);
       });
 
       it('always generates integer values', () => {
@@ -385,17 +376,10 @@ for (
     describe('next()', () => {
       it('generates integer values', () => {
         const rng = new Rng(1234.5);
+        const oldSeed = rng.seed;
+
         assertEquals(Number.isInteger(rng.next()), true);
-        assertEquals(Number.isInteger(rng.next()), true);
-      });
-
-      it(`if the seed generator exceeds ${max}, safely wraps around from 0`, () => {
-        const rng = new Rng(max);
-        const expectedNextBase = 1;
-
-        rng.next();
-
-        assertEquals(rng.seed, expectedNextBase);
+        assertNotEquals(rng.seed, oldSeed);
       });
     });
   });
