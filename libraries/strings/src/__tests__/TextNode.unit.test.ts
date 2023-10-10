@@ -1,14 +1,7 @@
-import {
-  assertEquals,
-  assertMatch,
-  assertObjectMatch,
-  assertSnapshot,
-  assertThrows,
-  describe,
-  it,
-} from '../../dev_deps.ts';
+import { assertEquals, assertMatch, assertObjectMatch, assertThrows, describe, it } from '../../dev_deps.ts';
 
 import { TextNode, VariantNode } from '../TextNode.ts';
+import expectedNestedAst from './__fixtures__/TextNode.fixture.ts';
 
 describe('TextNode', () => {
   // These are all equivalent inputs to `selectVariants`
@@ -64,12 +57,13 @@ describe('TextNode', () => {
       assertObjectMatch(actual, expected);
     });
 
-    it('can handle nested delimiters', async (snapshot) => {
+    it('can handle nested delimiters', () => {
       const input = '1:[A[1[a|b]|2[c|d]]|B] 2:[C|D]';
+      const expected = expectedNestedAst;
 
       const actual = TextNode.create(input);
 
-      await assertSnapshot(snapshot, actual);
+      assertObjectMatch(actual, expected);
     });
   });
 
@@ -129,7 +123,7 @@ describe('TextNode', () => {
     it('given the same seed, always returns the same result', () => {
       const seed = 1236;
       const input = 'token1 [A[1[a|b]|2[c|d]]|B] token2 [C|D[1|2]]';
-      const knownExpected = 'token1 A2c token2 D2';
+      const knownExpected = 'token1 A2c token2 D1';
 
       const actual = TextNode.create(input).pick({ seed });
 
@@ -140,14 +134,14 @@ describe('TextNode', () => {
   describe('pickIndices', () => {
     const input = '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D[1|2][a|b]|E]';
     const testCases = [
-      { seed: 1234, expectedIndices: [1, 2], expectedString: '1:B | 2:E' },
-      { seed: 1236, expectedIndices: [[0, [1, [0]]], [1, [1, 1]]], expectedString: '1:A2c | 2:D2b' },
-      { seed: 1249, expectedIndices: [[0, [1, [1]]], [1, [0, 0]]], expectedString: '1:A2d | 2:D1a' },
+      { seed: 1233, expectedIndices: [1, [1, [0, 1]]], expectedString: '1:B | 2:D1b' },
+      { seed: 1234, expectedIndices: [[0, [1, [1]]], 0], expectedString: '1:A2d | 2:C' },
+      { seed: 1236, expectedIndices: [[0, [1, [0]]], [1, [0, 1]]], expectedString: '1:A2c | 2:D1b' },
     ];
     for (const { seed, expectedIndices, expectedString } of testCases) {
-      it('selects depth-first indices to resolve variants', () => {
-        const actualIndices = TextNode.create(input).pickIndices({ seed });
+      it(`selects depth-first indices to resolve variants (seed ${seed})`, () => {
         const actualString = TextNode.create(input).pick({ seed });
+        const actualIndices = TextNode.create(input).pickIndices({ seed });
 
         assertEquals(actualString, expectedString);
         assertEquals(actualIndices, expectedIndices);

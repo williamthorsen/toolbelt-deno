@@ -1,6 +1,6 @@
 import { segmentByDelimited } from './segmentByDelimited.ts';
 import { splitDelimited } from './splitDelimited.ts';
-import { IntSeededRng, pickInteger, Seed } from '../../numbers/mod.ts';
+import { IntSeededRng, pickInteger, Seed } from '../sibling_deps.ts';
 import { validateDelimiters } from './validateDelimiters.ts';
 
 const DELIMIT = {

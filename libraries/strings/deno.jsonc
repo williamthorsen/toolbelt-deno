@@ -34,8 +34,8 @@
       '../arrays/**/pickItem.unit.test.ts',
       '../numbers/**/createNumberGenerator.unit.test.ts',
       '../numbers/**/pickInteger.unit.test.ts',
+      '../numbers/**/scale.unit.test.ts',
       '../numbers/**/SeededRng.unit.test.ts',
-      '../numbers/**/wrapSum.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included
       '../strings/**/*.test.ts'
     ],
