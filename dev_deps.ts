@@ -13,3 +13,5 @@ export { assertThrows } from 'https://deno.land/std@0.203.0/assert/assert_throws
 export { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 // Causes ESM tests to fail in distribution bundle
 // export { assertSnapshot } from 'https://deno.land/std@0.203.0/testing/snapshot.ts';
+
+export { exec } from 'https://deno.land/x/exec@0.0.5/mod.ts';
