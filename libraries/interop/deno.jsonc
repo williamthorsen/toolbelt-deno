@@ -2,10 +2,27 @@
 {
   fmt: {
     exclude: [
+      '**/cov_profile/',
+      '**/dist/',
       'deno.jsonc',
     ],
     lineWidth: 120,
     "proseWrap": "preserve",
     singleQuote: true,
   },
+  lint: {
+    exclude: [
+      '**/cov_profile/',
+      '**/dist/',
+    ],
+  },
+  tasks: {
+    'ws': '../../scripts/run-workspace-script.ts'
+  },
+  test: {
+    exclude: [
+      '**/cov_profile/',
+      "**/dist/",
+    ],
+  }
 }

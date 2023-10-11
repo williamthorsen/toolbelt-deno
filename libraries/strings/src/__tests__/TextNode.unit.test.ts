@@ -1,13 +1,26 @@
-import { assertEquals, assertMatch, assertObjectMatch, assertThrows, describe, it } from '../../dev_deps.ts';
+import {
+  assertEquals,
+  assertMatch,
+  assertNotEquals,
+  assertObjectMatch,
+  assertThrows,
+  describe,
+  it,
+} from '../../dev_deps.ts';
 
 import { TextNode, VariantNode } from '../TextNode.ts';
 import expectedNestedAst from './__fixtures__/TextNode.fixture.ts';
 
 describe('TextNode', () => {
-  // These are all equivalent inputs to `selectVariants`
-  const nestedIndices = [[0, [1, [1]]], [1, [0, 0]]];
-  const encodedIndices = '0[1[1]] | 1[0|0]';
-  const flatIndices = [0, 1, 1, 1, 0, 0];
+  const testCase = {
+    input: '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D[1|2][a|b]|E]',
+    output: '1:A2c | 2:D1b',
+    fingerprint: '0[1[0]]|1[0|1]:1236',
+    seed: 1236,
+    encodedIndices: '0[1[0]]|1[0|1]',
+    flatIndices: [0, 1, 0, 1, 0, 1],
+    nestedIndices: [[0, [1, [0]]], [1, [0, 1]]],
+  };
 
   describe('static create()', () => {
     it('if given a simple phrase, returns a single TextNode', () => {
@@ -68,35 +81,44 @@ describe('TextNode', () => {
   });
 
   describe('static decodeIndices()', () => {
-    it('given a string, splits on non-numeric sequences and returns an array of numbers', () => {
-      const input = encodedIndices;
-      const expected = flatIndices;
+    it('given encoded indices, splits on non-numeric sequences and returns an array of numbers', () => {
+      const input = testCase.encodedIndices;
+      const expected = testCase.flatIndices;
 
-      const actual = TextNode.create('').decodeIndices(input);
+      const actual = TextNode.decodeIndices(input);
+
+      assertEquals(actual, expected);
+    });
+
+    it('given a fingerprint, strips the seed and parses the decodes the indices', () => {
+      const fingerprint = '0[1]]:1236';
+      const expected = TextNode.decodeIndices('0[1]]');
+
+      const actual = TextNode.decodeIndices(fingerprint);
 
       assertEquals(actual, expected);
     });
 
     it('flattens nested arrays', () => {
-      const input = nestedIndices;
-      const expected = flatIndices;
+      const input = testCase.nestedIndices;
+      const expected = testCase.flatIndices;
 
-      const actual = TextNode.create('').decodeIndices(input);
+      const actual = TextNode.decodeIndices(input);
 
       assertEquals(actual, expected);
     });
 
     describe('static encodeIndices()', () => {
-      it('transforms an arbitrarily nested array of numbers into a string', () => {
-        const input = nestedIndices;
-        const expectedEncoded = encodedIndices;
+      it('transforms an arbitrarily nested array of numbers into a fingerprint', () => {
+        const input = testCase.nestedIndices;
+        const expected = testCase.encodedIndices;
 
-        const actualEncoded = VariantNode.encodeIndices(input);
+        const actual = VariantNode.encodeIndices(input);
 
-        assertEquals(actualEncoded, expectedEncoded);
+        assertEquals(actual, expected);
 
         // Verify that the encoded string is equivalent to the input string
-        assertEquals(TextNode.decodeIndices(actualEncoded), TextNode.decodeIndices(input));
+        assertEquals(TextNode.decodeIndices(actual), TextNode.decodeIndices(input));
       });
     });
   });
@@ -119,34 +141,18 @@ describe('TextNode', () => {
 
       assertMatch(actual, expected);
     });
-
-    it('given the same seed, always returns the same result', () => {
-      const seed = 1236;
-      const input = 'token1 [A[1[a|b]|2[c|d]]|B] token2 [C|D[1|2]]';
-      const knownExpected = 'token1 A2c token2 D1';
-
-      const actual = TextNode.create(input).pick({ seed });
-
-      assertEquals(actual, knownExpected);
-    });
   });
 
   describe('pickIndices', () => {
-    const input = '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D[1|2][a|b]|E]';
-    const testCases = [
-      { seed: 1233, expectedIndices: [1, [1, [0, 1]]], expectedString: '1:B | 2:D1b' },
-      { seed: 1234, expectedIndices: [[0, [1, [1]]], 0], expectedString: '1:A2d | 2:C' },
-      { seed: 1236, expectedIndices: [[0, [1, [0]]], [1, [0, 1]]], expectedString: '1:A2c | 2:D1b' },
-    ];
-    for (const { seed, expectedIndices, expectedString } of testCases) {
-      it(`selects depth-first indices to resolve variants (seed ${seed})`, () => {
-        const actualString = TextNode.create(input).pick({ seed });
-        const actualIndices = TextNode.create(input).pickIndices({ seed });
+    it('selects depth-first indices to resolve variants', () => {
+      const { input, seed } = testCase;
 
-        assertEquals(actualString, expectedString);
-        assertEquals(actualIndices, expectedIndices);
-      });
-    }
+      const actualString = TextNode.create(input).pick({ seed });
+      const actualIndices = TextNode.create(input).pickIndices({ seed });
+
+      assertEquals(actualString, testCase.output);
+      assertEquals(actualIndices, testCase.nestedIndices);
+    });
 
     it('given a node without children, returns an empty array', () => {
       const input = 'Hello';
@@ -158,23 +164,58 @@ describe('TextNode', () => {
     });
   });
 
+  describe('pickWithFingerprint()', () => {
+    it('returns an object containing the picked content and fingerprint', () => {
+      const { input, output, encodedIndices, nestedIndices, seed } = testCase;
+      const textNode = TextNode.create(input);
+      const expected = {
+        content: output,
+        encodedIndices,
+        fingerprint: `${encodedIndices}:${seed}`,
+        indices: nestedIndices,
+        seed,
+      };
+
+      const actual = textNode.pickWithFingerprint({ seed });
+
+      assertObjectMatch(actual, expected);
+    });
+
+    it('given no seed, generates an integer seed and returns a new one', () => {
+      const textNode = TextNode.create(testCase.input);
+
+      const { seed } = textNode.pickWithFingerprint();
+
+      assertEquals(Number.isInteger(seed), true);
+    });
+
+    it('given a non-integer seed, generates a deterministic integer from it and returns it', () => {
+      const inputSeed = 0.1234;
+      const textNode = TextNode.create(testCase.input);
+
+      const outputSeed = textNode.pickWithFingerprint({ seed: inputSeed }).seed;
+      const outputSeed2 = textNode.pickWithFingerprint({ seed: inputSeed }).seed;
+
+      assertNotEquals(outputSeed, inputSeed); // not the same as the input seed
+      assertEquals(outputSeed, outputSeed2); // but deterministically determined
+      assertEquals(Number.isInteger(outputSeed), true);
+    });
+  });
+
   describe('selectVariants()', () => {
     it('consumes indices to select variants depth-first', () => {
-      const input = '1:[A[1[a|b]|2[c|d]]|B] | 2:[C|D]';
-      const textNode = TextNode.create(input);
+      const textNode = TextNode.create(testCase.input);
+      const expected = textNode.pick({ seed: testCase.seed });
 
-      const indices = [0, 1, 1, 1];
-      const nestedIndices = [[0, [1, [1]]], 1];
-      const encoding = '0[1[1]]] | 1';
-      const expected = '1:A2d | 2:D';
+      assertEquals(expected, testCase.output);
 
-      const actualFromIndices = textNode.selectVariants(indices);
-      const actualFromNestedIndices = textNode.selectVariants(nestedIndices);
-      const actualFromEncoding = textNode.selectVariants(encoding);
+      const actualFromIndices = textNode.selectVariants(testCase.flatIndices);
+      const actualFromNestedIndices = textNode.selectVariants(testCase.nestedIndices);
+      const actualFromEncoding = textNode.selectVariants(testCase.encodedIndices);
 
-      assertEquals(actualFromIndices, expected);
-      assertEquals(actualFromNestedIndices, expected);
-      assertEquals(actualFromEncoding, expected);
+      assertEquals(actualFromIndices, testCase.output);
+      assertEquals(actualFromNestedIndices, testCase.output);
+      assertEquals(actualFromEncoding, testCase.output);
     });
 
     it('works when top-level node is a VariantNode', () => {

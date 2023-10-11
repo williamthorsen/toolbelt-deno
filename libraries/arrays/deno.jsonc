@@ -17,12 +17,7 @@
     ],
   },
   tasks: {
-    build: 'deno run --allow-env --allow-net --allow-read --allow-run=pnpm --allow-write=dist scripts/build-node-module.ts',
-    check: 'deno task typecheck && deno fmt --check && deno lint && deno task test:coverage',
-    publish: 'deno run --allow-net --allow-read --allow-run=pnpm --allow-write=dist ../../scripts/publish-node-module.ts',
-    'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
-    typecheck: "../../scripts/typecheck.sh",
-    'view-coverage': 'deno coverage --lcov cov_profile > tracefile.lcov && genhtml --output-directory ./coverage tracefile.lcov && open coverage/index.html',
+    'ws': '../../scripts/run-workspace-script.ts --include=publish',
   },
   test: {
     exclude: [
@@ -31,7 +26,9 @@
     ],
     include: [
       // Coverage check will not be 100% unless sibling deps are tested
+      '../numbers/**/IntegerSeed.unit.test.ts',
       '../numbers/**/pickInteger.unit.test.ts',
+      '../numbers/**/scale.unit.test.ts',
       '../numbers/**/SeededRng.unit.test.ts',
       '../numbers/**/wrapSum.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included

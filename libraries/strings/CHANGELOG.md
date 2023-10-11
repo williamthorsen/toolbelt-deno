@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.3.0
+
+### Experimental features
+
+Added to `TextNode` class: `pickWithFingerprint` method, which returns an object containing the picked content, its indices, an encoded version of the indices, the seed, and a "fingerprint" string containing the seed and the encoded indices.
+
 ## 1.2.0
 
 ### Fixes

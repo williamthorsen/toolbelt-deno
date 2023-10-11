@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.numbers
 
+## 3.3.0
+
+### Features
+
+Added to `SeededRng` class:
+
+- `cloneOrCreate` method: Creates a clone of the instance if it is not `undefined`, otherwise creates a new instance with a new seed.
+
 ## 3.2.0
 
 ### Breaking changes

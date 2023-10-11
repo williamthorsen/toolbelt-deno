@@ -18,17 +18,19 @@
     ],
   },
   tasks: {
-    build: './scripts/build.sh',
-    check: 'deno task typecheck && deno fmt --check && deno lint && ./scripts/test-coverage.sh',
-    ci: 'deno task check && deno task build',
-    'rebuild-lock-files': './scripts/rebuild-lock-files.sh',
-    'test:coverage': 'rm -rf cov_profile coverage tracefile.lcov && deno test --allow-all --coverage=cov_profile && deno coverage cov_profile',
+    build: './scripts/build-all.sh',
+    'build:root': './scripts/build-root.sh',
+    check: 'deno task typecheck && deno fmt --check --quiet && deno lint --compact && deno task test:coverage',
+    ci: 'deno task build',
+    test: 'deno test --allow-read --allow-env',
+    'test:coverage': './scripts/test-coverage-all.sh --quiet',
     typecheck: './scripts/typecheck.sh',
   },
   test: {
     exclude: [
       '**/cov_profile/',
       '**/dist/',
+      '**/scripts/',
     ],
   },
 }

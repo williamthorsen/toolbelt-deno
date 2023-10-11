@@ -1,5 +1,14 @@
 # toolbelt-deno
 
+## 3.3.0
+
+### Tooling
+
+Centralized Deno tasks in files and modified all library `deno.jsonc` files to use them:
+
+- `check`: `check.sh`
+- `test:coverage`: `test-coverage.sh`
+
 ## 2.7.0
 
 ### Dependencies
