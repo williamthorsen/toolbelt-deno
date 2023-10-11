@@ -14,4 +14,4 @@ export { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.203
 // Causes ESM tests to fail in distribution bundle
 // export { assertSnapshot } from 'https://deno.land/std@0.203.0/testing/snapshot.ts';
 
-export { exec } from 'https://deno.land/x/exec@0.0.5/mod.ts';
+export { exec } from './scripts/helpers/exec.ts';

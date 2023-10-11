@@ -22,9 +22,9 @@ rebuild() {
   echo -n "- $library ..."
   cd libraries/$library
   if [[ $build == "build" ]]; then
-    local output=$(deno task check 2>/dev/null && deno task build 2>/dev/null)
+    local output=$(deno task ws check 2>/dev/null && deno task ws build 2>/dev/null)
   else
-    local output=$(deno task check 2>/dev/null)
+    local output=$(deno task ws check 2>/dev/null)
   fi
   done_or_failed $library $? || failedLibraries+=($library)
   cd ../..

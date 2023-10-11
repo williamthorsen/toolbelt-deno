@@ -19,15 +19,18 @@
   },
   tasks: {
     build: './scripts/build-all.sh',
-    check: 'deno task typecheck && deno fmt --check && deno lint && ./scripts/test-coverage.sh --quiet',
+    'build:root': './scripts/build-root.sh',
+    check: 'deno task typecheck && deno fmt --check --quiet && deno lint --compact && deno task test:coverage',
     ci: 'deno task build',
-    'test:coverage': './scripts/test-coverage-all.sh',
+    test: 'deno test --allow-read --allow-env',
+    'test:coverage': './scripts/test-coverage-all.sh --quiet',
     typecheck: './scripts/typecheck.sh',
   },
   test: {
     exclude: [
       '**/cov_profile/',
       '**/dist/',
+      '**/scripts/',
     ],
   },
 }

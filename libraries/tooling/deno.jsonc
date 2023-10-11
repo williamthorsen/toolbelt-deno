@@ -17,10 +17,7 @@
     ],
   },
   tasks: {
-    check: '../../scripts/check.sh',
-    'test:coverage': '../../scripts/test-coverage.sh --quiet',
-    typecheck: "../../scripts/typecheck.sh",
-    'view-coverage': 'deno coverage --lcov cov_profile > tracefile.lcov && genhtml --output-directory ./coverage tracefile.lcov && open coverage/index.html',
+    'ws': '../../scripts/run-workspace-script.ts'
   },
   test: {
     exclude: [

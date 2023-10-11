@@ -42,7 +42,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Capture & display the coverage output.
-coverage_output=$(deno coverage cov_profile)
+coverage_output=$(deno coverage cov_profile --exclude=scripts/helpers)
 display "$coverage_output" $QUIET
 
 
