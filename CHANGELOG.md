@@ -1,5 +1,14 @@
 # toolbelt-deno
 
+## 3.3.1
+
+### Dependencies
+
+Upgraded all runtimes to latest version:
+
+- deno: 1.37.1 -> 1.37.2
+- pnpm: 8.9.0 -> 8.9.2
+
 ## 3.3.0
 
 ### Tooling

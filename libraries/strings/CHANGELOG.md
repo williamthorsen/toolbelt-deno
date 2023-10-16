@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.4.0
+
+### Features
+
+Added `interpolate` function as a wrapper for simple calls to `Interpolator.interpolate`.
+
+### Refactoring
+
+Renamed `Interpolable` class to `Interpolator`. Deprecated the old name.
+
 ## 1.3.0
 
 ### Experimental features
