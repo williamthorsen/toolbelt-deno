@@ -1,13 +1,27 @@
 import { assertEquals, assertObjectMatch, assertThrows, describe, it } from '../../dev_deps.ts';
-import { Interpolable } from '../Interpolable.ts';
+import { interpolate, Interpolator } from '../Interpolator.ts';
 
-describe('Interpolable class', () => {
+describe('Interpolator class', () => {
+  describe('static interpolate() & standalone interpolate()', () => {
+    it('can be called without creating an instance', () => {
+      const template = '{Salutation} {TITLE} {unmatched} {}';
+      const mapping = { salutation: 'dear', title: 'sir' };
+      const expected = 'Dear SIR {unmatched} {}';
+
+      const staticActual = Interpolator.interpolate(template, mapping);
+      const fnActual = interpolate(template, mapping);
+
+      assertEquals(staticActual, expected);
+      assertEquals(fnActual, expected);
+    });
+  });
+
   describe('getKeys()', () => {
     const template = 'not used in this test';
 
     it('if the mapping contains no keys, returns an empty set', () => {
       const mapping = {};
-      const interpolable = new Interpolable(template);
+      const interpolable = new Interpolator(template);
       const expected = new Set();
 
       const actual = interpolable.getKeys({ mapping });
@@ -17,7 +31,7 @@ describe('Interpolable class', () => {
 
     it('if the mapping contains entries, returns a unique array of their keys in lower case', () => {
       const mapping = { firstName: 'John', lastName: 'Doe' };
-      const interpolable = new Interpolable(template).setOptions({ mapping });
+      const interpolable = new Interpolator(template).setOptions({ mapping });
       const expected = new Set(['firstname', 'lastname']);
 
       const actual = interpolable.getKeys();
@@ -29,7 +43,7 @@ describe('Interpolable class', () => {
   describe('getPlaceholders()', () => {
     it('if the template contains no placeholders, returns an empty array', () => {
       const template = 'Hello, World!';
-      const interpolable = new Interpolable(template);
+      const interpolable = new Interpolator(template);
       const expected = new Set();
 
       const actual = interpolable.getPlaceholders();
@@ -39,7 +53,7 @@ describe('Interpolable class', () => {
 
     it('if the template contains placeholders, returns a unique array of them in lower case', () => {
       const template = 'To {firstName} {lastName}! Hello, {firstName}!';
-      const interpolable = new Interpolable(template);
+      const interpolable = new Interpolator(template);
       const expected = new Set(['firstname', 'lastname']);
 
       const actual = interpolable.getPlaceholders();
@@ -51,7 +65,7 @@ describe('Interpolable class', () => {
   describe('getSets()', () => {
     it('correctly identifies matched & unmatched keys and placeholders', () => {
       const template = '{match1}{templateOnly}{match2}';
-      const interpolable = new Interpolable(template);
+      const interpolable = new Interpolator(template);
       const mapping = { mappingOnly: 'value', match1: 'value', match2: 'value' };
       const expected = {
         matches: new Set(['match1', 'match2']),
@@ -71,7 +85,7 @@ describe('Interpolable class', () => {
       const mapping = { name: 'World' };
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -81,7 +95,7 @@ describe('Interpolable class', () => {
       const mapping = { greeting: 'Hi' };
       const expected = 'Hello, {name}!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -91,7 +105,7 @@ describe('Interpolable class', () => {
       const mapping = { name: 'World', delimiter: '|' };
       const expected = '|Hello, World!|';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -101,7 +115,7 @@ describe('Interpolable class', () => {
       const mapping = { name: 'World' };
       const expected = 'Hello, {}!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -111,7 +125,7 @@ describe('Interpolable class', () => {
       const mapping = { name: 'World' };
       const expected = '';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -121,7 +135,7 @@ describe('Interpolable class', () => {
       const mapping = {};
       const expected = 'Hello, {name}!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -131,7 +145,7 @@ describe('Interpolable class', () => {
       const mapping = { name_1: 'World' };
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -141,7 +155,7 @@ describe('Interpolable class', () => {
       const mapping = { '1name': 'World' };
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -151,7 +165,7 @@ describe('Interpolable class', () => {
       const mapping = { 'name with space': 'World' };
       const expected = 'Hello, World!';
 
-      const actual = Interpolable.interpolate(template, mapping);
+      const actual = Interpolator.interpolate(template, mapping);
 
       assertEquals(actual, expected);
     });
@@ -164,7 +178,7 @@ describe('Interpolable class', () => {
       const mapping: Mapping = { name: 'World' };
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -178,7 +192,7 @@ describe('Interpolable class', () => {
       const mapping: Mapping = { required: 'World' };
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -192,7 +206,7 @@ describe('Interpolable class', () => {
     ) {
       it('if delimiters are mismatched or nested, throws an error', () => {
         const mapping = { name: 'World' };
-        const throwingFn = () => new Interpolable(badTemplate).interpolate({ mapping });
+        const throwingFn = () => new Interpolator(badTemplate).interpolate({ mapping });
 
         assertThrows(
           throwingFn,
@@ -209,7 +223,7 @@ describe('Interpolable class', () => {
         .set('planet', 'World');
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -219,7 +233,7 @@ describe('Interpolable class', () => {
       const mapping = ['Hello', 'World'];
       const expected = 'Hello, World!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -230,7 +244,7 @@ describe('Interpolable class', () => {
         .set(/h.llo/, 'hello');
       const expected = 'hello, hello!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -241,7 +255,7 @@ describe('Interpolable class', () => {
         .set(/key/, 'value');
       const expected = 'value, {key2}!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -252,7 +266,7 @@ describe('Interpolable class', () => {
         .set(/key/i, 'value');
       const expected = 'value value value';
 
-      const actual = Interpolable.interpolate(template, mapping);
+      const actual = Interpolator.interpolate(template, mapping);
 
       assertEquals(actual, expected);
     });
@@ -265,7 +279,7 @@ describe('Interpolable class', () => {
         .set(/.*/, 'unmatched');
       const expected = 'Value1 value2 unmatched';
 
-      const actual = new Interpolable(template).setMapping(mapping).interpolate();
+      const actual = new Interpolator(template).setMapping(mapping).interpolate();
 
       assertEquals(actual, expected);
     });
@@ -275,7 +289,7 @@ describe('Interpolable class', () => {
       const mapping = { 'audience': 'world' };
       const expected = 'Hello, WORLD!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -286,7 +300,7 @@ describe('Interpolable class', () => {
       const mapping = { 'key': 'value', 'mixedKey': 'value' };
       const expected = 'lowercase value, uppercase VALUE, capitalized Value, mixed-case value, unmatched {otherKey}';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -296,7 +310,7 @@ describe('Interpolable class', () => {
       const mapping = { greeting: 'Hello', myPlanet: 'World' };
       const expected = 'Hello, World! This is a {grEeting}!';
 
-      const actual = new Interpolable(template).interpolate({ mapping });
+      const actual = new Interpolator(template).interpolate({ mapping });
 
       assertEquals(actual, expected);
     });
@@ -304,7 +318,7 @@ describe('Interpolable class', () => {
     describe('ifMissing options', () => {
       const template = '{matched} {unmatched1} {UNMATCHED2}';
       const mapping = { matched: 'value' };
-      const interpolable = new Interpolable(template).setMapping(mapping);
+      const interpolable = new Interpolator(template).setMapping(mapping);
 
       it('if ifMissing=THROW and there are unmatched placeholders, throws  error listing the unused placeholders in lower case', () => {
         const ifMissing = 'THROW';
@@ -337,7 +351,7 @@ describe('Interpolable class', () => {
 
   describe('setOptions()', () => {
     const template = 'Hello, {name}';
-    const interpolable = new Interpolable(template);
+    const interpolable = new Interpolator(template);
     for (
       const mapping of [
         new Map().set('0', 'World'),
@@ -380,7 +394,7 @@ describe('Interpolable class', () => {
         errors: [{ code: 'NESTED_DELIMITERS' }],
       };
 
-      const actual = Interpolable.validateTemplate(template);
+      const actual = Interpolator.validateTemplate(template);
 
       assertObjectMatch(actual, expected);
     });
@@ -392,7 +406,7 @@ describe('Interpolable class', () => {
         errors: [{ code: 'UNMATCHED_OPENING_DELIMITER' }],
       };
 
-      const actual = Interpolable.validateTemplate(template);
+      const actual = Interpolator.validateTemplate(template);
 
       assertObjectMatch(actual, expected);
     });
