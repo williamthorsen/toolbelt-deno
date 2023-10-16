@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.5.0
+
+### Features
+
+Added function:
+
+- `enclose`: Wraps a string in delimiters.
+
 ## 1.4.0
 
 ### Features
