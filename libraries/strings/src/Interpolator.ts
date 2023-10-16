@@ -3,14 +3,14 @@ import { validateDelimiters } from './validateDelimiters.ts';
 import { setDifference, setIntersection } from './set-functions.ts';
 import { deriveCaseTransformer } from './deriveCaseTransformer.ts';
 
-export class Interpolable {
-  ifMissing: InterpolateOptions['ifMissing'] = 'IGNORE';
+export class Interpolator {
+  ifMissing: InterpolatorOptions['ifMissing'] = 'IGNORE';
   mapping: Map<RegExp | string, string> = new Map<string, string>();
   noAdaptCase = false; // if true, don't adapt mapping values to the case of the placeholders
   template: string;
 
-  static interpolate<T>(template: string, mapping: StringMapping<T>, options: InterpolateOptions = {}): string {
-    return new Interpolable(template, options).interpolate({ mapping });
+  static interpolate<T>(template: string, mapping: StringMapping<T>, options: InterpolatorOptions = {}): string {
+    return new Interpolator(template, options).interpolate({ mapping });
   }
 
   static validateTemplate(template: string) {
@@ -30,7 +30,7 @@ export class Interpolable {
     };
   }
 
-  constructor(template: string, options: InterpolateOptions = {}) {
+  constructor(template: string, options: InterpolatorOptions = {}) {
     this.template = template;
     this.assertIsValidTemplate();
     this.setOptions(options);
@@ -88,7 +88,7 @@ export class Interpolable {
     return { matches, unmatchedKeys, unmatchedPlaceholders };
   }
 
-  interpolate<T>(options: InterpolableOptions<T> = {}): string {
+  interpolate<T>(options: InterpolateOptions<T> = {}): string {
     const mergedOptions = {
       noAdaptCase: this.noAdaptCase,
       ifMissing: this.ifMissing,
@@ -154,7 +154,7 @@ export class Interpolable {
     return this;
   }
 
-  setOptions<T>(options: InterpolableOptions<T> = {}): this {
+  setOptions<T>(options: InterpolateOptions<T> = {}): this {
     const { noAdaptCase, mapping, ifMissing } = options;
     if (ifMissing !== undefined) this.ifMissing = ifMissing;
     if (mapping !== undefined) this.setMapping(mapping);
@@ -185,7 +185,7 @@ export class Interpolable {
   }
 
   private assertIsValidTemplate(): void | never {
-    const [validationError] = Interpolable.validateTemplate(this.template).errors;
+    const [validationError] = Interpolator.validateTemplate(this.template).errors;
     if (validationError) throw new Error(validationError.message);
   }
 
@@ -196,6 +196,17 @@ export class Interpolable {
     options.noValidation || this.assertIsValidMapping({ mapping });
     return mapping instanceof Map ? mapping : new Map(Object.entries(mapping));
   }
+}
+
+/** @deprecated Use `Interpolator` instead. */
+export const Interpolable = Interpolator;
+
+export function interpolate<T>(
+  template: string,
+  substitutionMap: StringMapping<T>,
+  options?: InterpolatorOptions,
+): string {
+  return Interpolator.interpolate(template, substitutionMap, options);
 }
 
 /**
@@ -230,13 +241,13 @@ interface Sets {
   unmatchedPlaceholders: Set<string>;
 }
 
-export interface InterpolateOptions {
+export interface InterpolatorOptions {
   // what to do if a placeholder is not found in the mapping
   ifMissing?: 'IGNORE' | 'THROW' | 'USE_KEY' | ((placeholder: string) => string) | undefined;
   // if false, will try to adapt the case of the mapping value to match the placeholder
   noAdaptCase?: boolean | undefined;
 }
 
-export interface InterpolableOptions<T> extends InterpolateOptions {
+export interface InterpolateOptions<T> extends InterpolatorOptions {
   mapping?: StringMapping<T> | undefined;
 }
