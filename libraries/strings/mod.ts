@@ -1,5 +1,6 @@
 export { capitalize } from './src/capitalize.ts';
 export { concatenate } from './src/concatenate.ts';
+export { enclose } from './src/enclose.ts';
 export { Interpolable, interpolate, Interpolator } from './src/Interpolator.ts';
 export { obfuscate } from './src/obfuscate.ts';
 export { pickVariants } from './src/pickVariants.ts';
