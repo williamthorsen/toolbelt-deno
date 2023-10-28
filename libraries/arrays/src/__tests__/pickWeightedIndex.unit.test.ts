@@ -35,6 +35,15 @@ describe('pickWeightedIndex()', () => {
     );
   });
 
+  it('if the total weight is 0, throws an error', () => {
+    const throwingFn = () => pickWeightedIndex([0, 0]);
+    assertThrows(
+      throwingFn,
+      Error,
+      'Cannot pick an item from an array with total weight 0.',
+    );
+  });
+
   it('allows a seed in options to produce deterministic results', () => {
     const cumulativeWeights = [1, 2, 3, 4];
     const options = { seed: 12345 };
