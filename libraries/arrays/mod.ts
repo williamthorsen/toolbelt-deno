@@ -11,7 +11,7 @@ export { reverseComparator } from './src/reverseComparator.ts';
 export { shuffle, shuffleInPlace } from './src/shuffle.ts';
 
 // Weighting functions
-export { accumulateItemWeights, accumulateWeights, getCumulativeWeights } from './src/accumulateWeights.ts';
+export { accumulateWeights, getCumulativeWeights, toCumulativeValues } from './src/toCumulativeValues.ts';
 export { getWeightedIndex } from './src/getWeightedIndex.ts';
 export { pickWeightedIndex } from './src/pickWeightedIndex.ts';
 export { pickWeightedItem, toPickWeightedItem } from './src/pickWeightedItem.ts';
