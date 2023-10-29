@@ -1,5 +1,21 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.8.0
+
+### Deprecations
+
+- `getCumulativeWeights`: Use `toCumulativeValues` instead.
+
+### Features
+
+Added function:
+
+- `accumulateWeights`: Extracts weights from array elements and returns an array of cumulative weights.
+
+### Refactoring
+
+- Renamed `getCumulativeWeights` to `toCumulativeValues`.
+
 ## 2.7.0
 
 ### Features

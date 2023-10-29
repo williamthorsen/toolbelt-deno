@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.11.0
+
+### Features
+
+Added function:
+
+- `get`: Returns a function that gets the value mapped to the given key.
+
 ## 0.10.1
 
 ### Formatting
