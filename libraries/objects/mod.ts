@@ -1,3 +1,4 @@
+export { get } from './src/get.ts';
 export { hasOwnProperty } from './src/hasOwnProperty.ts';
 export { isNonNullObject } from './src/isNonNullObject.ts';
 export type { PlainObject } from './src/isPlainObject.ts';
