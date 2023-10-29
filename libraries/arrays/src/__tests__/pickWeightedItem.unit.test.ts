@@ -1,11 +1,12 @@
 import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
-import { toPickWeightedItem } from '../toPickWeightedItem.ts';
+import { pickWeightedItem } from '../pickWeightedItem.ts';
+import { pickItem } from '../pickItem.ts';
 
-describe('toPickWeightedItem()', () => {
+describe('pickWeightedItem()', () => {
   it('returns one item from the array using weights', () => {
     const items = [1, 2, 3, 4];
     const weights = [1, 1, 1, 1];
-    const pickItem = toPickWeightedItem(items, weights);
+    const pickItem = pickWeightedItem(items, weights);
 
     assertEquals(items.includes(pickItem()), true);
   });
@@ -13,7 +14,7 @@ describe('toPickWeightedItem()', () => {
   it('if the array has a single item, returns the item', () => {
     const items = [1];
     const weights = [1];
-    const pickItem = toPickWeightedItem(items, weights);
+    const pickItem = pickWeightedItem(items, weights);
 
     assertEquals(pickItem(), 1);
   });
@@ -21,13 +22,13 @@ describe('toPickWeightedItem()', () => {
   it('accepts a read-only array', () => {
     const items = Object.freeze([1, 2, 3, 4]);
     const weights = Object.freeze([1, 1, 1, 1]);
-    const pickItem = toPickWeightedItem(items, weights);
+    const pickItem = pickWeightedItem(items, weights);
 
     assertEquals(items.includes(pickItem()), true);
   });
 
   it('if the array is empty, throws an error', () => {
-    const throwingFn = () => toPickWeightedItem([], []);
+    const throwingFn = () => pickWeightedItem([], []);
     assertThrows(
       throwingFn,
       Error,
@@ -38,7 +39,7 @@ describe('toPickWeightedItem()', () => {
   it('throws an error if weights array and items array are of different lengths', () => {
     const items = [1, 2, 3, 4];
     const weights = [1, 1];
-    const throwingFn = () => toPickWeightedItem(items, weights);
+    const throwingFn = () => pickWeightedItem(items, weights);
 
     assertThrows(
       throwingFn,
@@ -51,8 +52,19 @@ describe('toPickWeightedItem()', () => {
     const items = [1, 2, 3, 4];
     const weights = [1, 1, 1, 1];
     const options = { seed: 12345 };
-    const pickItem = toPickWeightedItem(items, weights);
+    const pickItem = pickWeightedItem(items, weights);
 
     assertEquals(pickItem(options), pickItem(options));
+  });
+
+  it('returns results identical to pickItem when weights are uniform', () => {
+    const seed = 12345;
+    const items = [1, 2, 3, 4];
+    const cumulativeWeights = [1, 2, 3, 4];
+    const expected = pickItem(items, { seed });
+
+    const actual = pickWeightedItem(items, cumulativeWeights)({ seed });
+
+    assertEquals(actual, expected);
   });
 });

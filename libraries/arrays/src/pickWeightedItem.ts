@@ -5,7 +5,7 @@ import { pickWeightedIndex } from './pickWeightedIndex.ts';
  * Returns a random item from the array using weighted odds.
  * If the array is empty, throws an error.
  */
-export function toPickWeightedItem<T>(
+export function pickWeightedItem<T>(
   items: ReadonlyArray<T>,
   cumulativeWeights: ReadonlyArray<number>,
 ): (options?: PickWeightedItemOptions) => T {
@@ -18,7 +18,7 @@ export function toPickWeightedItem<T>(
     throw new Error('The number of weights must match the number of items.');
   }
 
-  return function pickWeightedItem(options: PickWeightedItemOptions = {}): T {
+  return function pickItem(options: PickWeightedItemOptions = {}): T {
     const index = pickWeightedIndex(cumulativeWeights, options);
     return items[index];
   };
@@ -27,3 +27,6 @@ export function toPickWeightedItem<T>(
 export interface PickWeightedItemOptions {
   seed?: Seed | undefined;
 }
+
+/** @deprecated Use `pickWeightedItem` instead. */
+export const toPickWeightedItem = pickWeightedItem;
