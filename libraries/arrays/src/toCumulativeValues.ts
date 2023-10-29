@@ -1,5 +1,6 @@
 /**
  * Returns an array in which each element contains the running total of the input array up to the same index.
+ * Undefined values are treated as 0.
  */
 export function toCumulativeValues(weights: ReadonlyArray<number | undefined>): number[] {
   const cumulativeWeights: number[] = [];
@@ -22,8 +23,13 @@ export function toCumulativeValues(weights: ReadonlyArray<number | undefined>): 
 export const getCumulativeWeights = toCumulativeValues;
 
 /**
- * Wrapper for `toCumulativeValues` that accepts an array of items and a function that extracts the weight of each item.
+ * Wrapper for `toCumulativeValues` allowing it to be used with items that are not weights but have extractable weights.
+ * @items The array of items.
+ * @getWeight A function that extracts the weight of each item.
  */
-export function accumulateWeights<T>(items: ReadonlyArray<T>, getWeight: (item: T, index?: number) => number) {
+export function accumulateWeights<T>(
+  items: ReadonlyArray<T>,
+  getWeight: (item: T, index: number, items: ReadonlyArray<T>) => number | undefined,
+) {
   return toCumulativeValues(items.map(getWeight));
 }

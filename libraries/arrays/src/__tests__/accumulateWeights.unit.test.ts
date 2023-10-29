@@ -50,4 +50,13 @@ describe('accumulateWeights', () => {
 
     assertEquals(cumulativeWeights, [1, 3, 6]);
   });
+
+  it('accepts a predicate function that returns undefined', () => {
+    const items = [{ weight: 1 }, { weight: 2 }, {}];
+    const getWeight = (item: { weight?: number }) => item.weight;
+
+    const cumulativeWeights = accumulateWeights(items, getWeight);
+
+    assertEquals(cumulativeWeights, [1, 3, 3]);
+  });
 });
