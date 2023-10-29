@@ -1,5 +1,5 @@
 import type { Seed } from '../sibling_deps.ts';
-import { pickWeightedIndex } from './pickWeightedIndex.ts';
+import { assertCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.ts';
 
 /**
  * Returns a random item from the array using weighted odds.
@@ -10,13 +10,7 @@ export function pickWeightedItem<T>(
   cumulativeWeights: ReadonlyArray<number>,
 ): (options?: PickWeightedItemOptions) => T {
   // By performing this check now, we can guarantee that the returned function always returns a defined value.
-  if (items.length === 0) {
-    throw new Error('Cannot create function with an empty array.');
-  }
-
-  if (cumulativeWeights.length !== items.length) {
-    throw new Error('The number of weights must match the number of items.');
-  }
+  assertCumulativeWeights(cumulativeWeights, items.length);
 
   return function pickItem(options: PickWeightedItemOptions = {}): T {
     const index = pickWeightedIndex(cumulativeWeights, options);

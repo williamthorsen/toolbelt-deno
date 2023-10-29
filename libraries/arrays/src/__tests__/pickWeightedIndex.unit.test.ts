@@ -1,5 +1,5 @@
 import { assert, assertThrows, describe, it } from '../../dev_deps.ts';
-import { pickWeightedIndex } from '../pickWeightedIndex.ts';
+import { assertCumulativeWeights, pickWeightedIndex } from '../pickWeightedIndex.ts';
 
 describe('pickWeightedIndex()', () => {
   it('returns an integer index from the cumulative weights array', () => {
@@ -60,5 +60,50 @@ describe('pickWeightedIndex()', () => {
 
     assert(index >= 0);
     assert(index < cumulativeWeights.length);
+  });
+});
+
+describe('assertCumulativeWeights()', () => {
+  it('if the weights array does not have the same number of elements as the primary array, throws an error', () => {
+    const items = [1, 2, 3];
+    const weights = [1, 2];
+
+    const throwingFn = () => assertCumulativeWeights(weights, items.length);
+    assertThrows(
+      throwingFn,
+      Error,
+      'The number of weights must match the number of items.',
+    );
+  });
+
+  it('if the weights array is empty, throws an error', () => {
+    const throwingFn = () => assertCumulativeWeights([]);
+    assertThrows(
+      throwingFn,
+      Error,
+      'Cannot pick an item from an empty array.',
+    );
+  });
+
+  it('if the weights array has a negative weight, throws an error', () => {
+    const badWeights = [1, -1];
+
+    const throwingFn = () => assertCumulativeWeights(badWeights);
+    assertThrows(
+      throwingFn,
+      Error,
+      'Weights cannot be negative.',
+    );
+  });
+
+  it('if the weights are not ascending, throws an error', () => {
+    const badWeights = [1, 2, 1];
+
+    const throwingFn = () => assertCumulativeWeights(badWeights);
+    assertThrows(
+      throwingFn,
+      Error,
+      'Cumulative weights must be in ascending order.',
+    );
   });
 });

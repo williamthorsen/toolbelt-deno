@@ -10,7 +10,7 @@ export function pickWeightedIndex(
   cumulativeWeights: ReadonlyArray<number>,
   options: PickRandomOptions = {},
 ): Integer {
-  assertCumulativeWeightsAreValid(cumulativeWeights);
+  assertCumulativeWeights(cumulativeWeights);
 
   const cumulativeWeight = cumulativeWeights[cumulativeWeights.length - 1];
   const targetWeight = random(options) * cumulativeWeight;
@@ -19,13 +19,37 @@ export function pickWeightedIndex(
   return getWeightedIndex(cumulativeWeights, targetWeight) as Integer;
 }
 
-export function assertCumulativeWeightsAreValid(cumulativeWeights: ReadonlyArray<number>): void | never {
-  if (cumulativeWeights.length === 0) {
+export function assertCumulativeWeights(weights: ReadonlyArray<number>, nItems = weights.length): void | never {
+  if (weights.length !== nItems) {
+    throw new Error('The number of weights must match the number of items.');
+  }
+
+  assertPositiveWeights(weights);
+  assertAscendingWeights(weights);
+
+  if (weights[weights.length - 1] === 0) {
+    throw new Error('Cannot pick an item from an array with total weight 0.');
+  }
+}
+
+/**
+ * Verifies that the values in the numeric series are in ascending order.
+ */
+function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
+  for (let i = 1; i < values.length; i++) {
+    if (values[i] < values[i - 1]) {
+      throw new Error('Cumulative weights must be in ascending order.');
+    }
+  }
+}
+
+function assertPositiveWeights(weights: ReadonlyArray<number>): void | never {
+  if (weights.length === 0) {
     throw new Error('Cannot pick an item from an empty array.');
   }
 
-  if (cumulativeWeights[cumulativeWeights.length - 1] === 0) {
-    throw new Error('Cannot pick an item from an array with total weight 0.');
+  if (weights.some((weight) => weight < 0)) {
+    throw new Error('Weights cannot be negative.');
   }
 }
 

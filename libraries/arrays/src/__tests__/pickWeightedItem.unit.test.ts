@@ -32,7 +32,7 @@ describe('pickWeightedItem()', () => {
     assertThrows(
       throwingFn,
       Error,
-      'Cannot create function with an empty array.',
+      'Cannot pick an item from an empty array.',
     );
   });
 

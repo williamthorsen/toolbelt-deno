@@ -1,4 +1,4 @@
-import { getCumulativeWeights } from './getCumulativeWeights.ts';
+import { accumulateWeights } from './accumulateWeights.ts';
 import { pickWeightedItem } from './pickWeightedItem.ts';
 
 /**
@@ -27,7 +27,7 @@ export function toPickWeightedItemFromDistribution<TItem, TCategory extends stri
     throw new Error('Cannot create function with an empty array.');
   }
 
-  const cumulativeWeights = getCumulativeWeights(filteredWeights);
+  const cumulativeWeights = accumulateWeights(filteredWeights);
 
   return pickWeightedItem(filteredItems, cumulativeWeights);
 }
