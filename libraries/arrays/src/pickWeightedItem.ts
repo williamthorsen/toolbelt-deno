@@ -1,4 +1,5 @@
 import type { Seed } from '../sibling_deps.ts';
+import { itemAt } from './itemAt.ts';
 import { assertCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.ts';
 import { toCumulativeValues } from './toCumulativeValues.ts';
 
@@ -17,7 +18,7 @@ export function pickWeightedItem<T>(
 
   return function pickItem(options: PickWeightedItemOptions = {}): T {
     const index = pickWeightedIndex(cumulativeWeights, options);
-    return items[index];
+    return itemAt(items, index);
   };
 }
 
