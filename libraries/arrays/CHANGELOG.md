@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.9.0
+
+### Features
+
+Enhanced function:
+
+- `accumulateWeights`: Given inputs that produce only undefined weights, returns a uniform distribution instead of an unusable all-zero distribution.
+
 ## 2.8.1
 
 ### Refactoring
