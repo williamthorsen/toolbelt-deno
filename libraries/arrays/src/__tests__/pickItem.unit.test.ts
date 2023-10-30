@@ -46,4 +46,19 @@ describe('pickItem()', () => {
 
     assertEquals(randomItem1, randomItem2);
   });
+
+  it('given an identical seed, always returns the same result', () => {
+    const items = Array.from({ length: 1000 }, (_, index) => index);
+    const seeds = Array.from({ length: 5 }, (_, index) => index);
+    const snapshot = [
+      861,
+      3,
+      138,
+      281,
+      437,
+    ];
+    const results = seeds.map((seed) => pickItem(items, { seed }));
+
+    assertEquals(results, snapshot);
+  });
 });

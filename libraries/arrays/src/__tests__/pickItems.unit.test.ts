@@ -24,10 +24,21 @@ describe('pickItems', () => {
   });
 
   it('given a seed, deterministically picks items', () => {
-    const picked1 = pickItems(array, 2, { seed: SEED });
-    const picked2 = pickItems(array, 2, { seed: SEED });
+    const items = Array.from({ length: 100 }, (_, i) => i);
+    // This snapshot is intended to confirm that, despite any code changes, seeds produce consistent results.
+    const snapshot = [
+      [58, 75, 60],
+      [38, 69, 19],
+      [87, 50, 60],
+    ];
 
-    assertEquals(picked1, picked2);
+    const pickedItems = [
+      pickItems(items, 3, { seed: SEED + 1 }),
+      pickItems(items, 3, { seed: SEED + 2 }),
+      pickItems(items, 3, { seed: SEED + 3 }),
+    ];
+
+    assertEquals(pickedItems, snapshot);
   });
 
   it('given an offset, skips that number of items', () => {

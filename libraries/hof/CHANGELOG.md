@@ -1,5 +1,13 @@
 # libraries/hof
 
+## 0.4.0
+
+### Features
+
+Added functions:
+
+- `map`: Functional wrapper for `Array#map`. Creates a function that returns the result of applying the function to each item in the array.
+
 ## 0.3.0
 
 ### Features

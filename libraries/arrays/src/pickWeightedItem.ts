@@ -1,24 +1,18 @@
 import type { Seed } from '../sibling_deps.ts';
-import { pickWeightedIndex } from './pickWeightedIndex.ts';
+import { assertCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.ts';
 
 /**
  * Returns a random item from the array using weighted odds.
  * If the array is empty, throws an error.
  */
-export function toPickWeightedItem<T>(
+export function pickWeightedItem<T>(
   items: ReadonlyArray<T>,
   cumulativeWeights: ReadonlyArray<number>,
 ): (options?: PickWeightedItemOptions) => T {
   // By performing this check now, we can guarantee that the returned function always returns a defined value.
-  if (items.length === 0) {
-    throw new Error('Cannot create function with an empty array.');
-  }
+  assertCumulativeWeights(cumulativeWeights, items.length);
 
-  if (cumulativeWeights.length !== items.length) {
-    throw new Error('The number of weights must match the number of items.');
-  }
-
-  return function pickWeightedItem(options: PickWeightedItemOptions = {}): T {
+  return function pickItem(options: PickWeightedItemOptions = {}): T {
     const index = pickWeightedIndex(cumulativeWeights, options);
     return items[index];
   };
@@ -27,3 +21,6 @@ export function toPickWeightedItem<T>(
 export interface PickWeightedItemOptions {
   seed?: Seed | undefined;
 }
+
+/** @deprecated Use `pickWeightedItem` instead. */
+export const toPickWeightedItem = pickWeightedItem;

@@ -11,10 +11,10 @@ export { reverseComparator } from './src/reverseComparator.ts';
 export { shuffle, shuffleInPlace } from './src/shuffle.ts';
 
 // Weighting functions
-export { getCumulativeWeights } from './src/getCumulativeWeights.ts';
+export { accumulateWeights, getCumulativeWeights, toCumulativeValues } from './src/toCumulativeValues.ts';
 export { getWeightedIndex } from './src/getWeightedIndex.ts';
 export { pickWeightedIndex } from './src/pickWeightedIndex.ts';
-export { toPickWeightedItem } from './src/toPickWeightedItem.ts';
+export { pickWeightedItem, toPickWeightedItem } from './src/pickWeightedItem.ts';
 export { toPickWeightedItemFromDistribution } from './src/toPickWeightedItemFromDistribution.ts';
 
 export * from './types.ts';
