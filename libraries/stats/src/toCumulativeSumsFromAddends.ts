@@ -1,3 +1,5 @@
+import { itemAt } from '../sibling_deps.ts';
+
 /**
  * Given an array of addends, returns the running total at each index.
  *
@@ -9,10 +11,10 @@ export function toCumulativeSumsFromAddends(addends: number[]): number[] {
     return addends;
   }
 
-  let sum = addends[0];
+  let sum = itemAt(addends, 0);
   const cumulativeSums = [sum];
   for (let i = 1; i < addends.length; i++) {
-    sum += addends[i];
+    sum += itemAt(addends, i);
     cumulativeSums.push(sum);
   }
   return cumulativeSums;

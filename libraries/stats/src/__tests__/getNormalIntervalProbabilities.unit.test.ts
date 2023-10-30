@@ -1,5 +1,6 @@
 import { assertAlmostEquals, assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
 import { getNormalIntervalProbabilities } from '../getNormalIntervalProbabilities.ts';
+import { itemAt } from '../../sibling_deps.ts';
 
 describe('getNormalIntervalProbabilities()', () => {
   const tolerance = 0.0001;
@@ -13,8 +14,8 @@ describe('getNormalIntervalProbabilities()', () => {
 
     const { additive } = getNormalIntervalProbabilities(params);
 
-    assertAlmostEquals(additive[0], additive[4], tolerance);
-    assertAlmostEquals(additive[1], additive[3], tolerance);
+    assertAlmostEquals(itemAt(additive, 0), itemAt(additive, 4), tolerance);
+    assertAlmostEquals(itemAt(additive, 1), itemAt(additive, 3), tolerance);
   });
 
   it('returns a symmetrical array of probabilities when nIntervals is even', () => {
@@ -26,8 +27,8 @@ describe('getNormalIntervalProbabilities()', () => {
 
     const { additive } = getNormalIntervalProbabilities(params);
 
-    assertAlmostEquals(additive[0], additive[3], tolerance);
-    assertAlmostEquals(additive[1], additive[2], tolerance);
+    assertAlmostEquals(itemAt(additive, 0), itemAt(additive, 3), tolerance);
+    assertAlmostEquals(itemAt(additive, 1), itemAt(additive, 2), tolerance);
   });
 
   it('returns a cumulative probability of approximately 1', () => {
@@ -39,7 +40,7 @@ describe('getNormalIntervalProbabilities()', () => {
 
     const { additive, cumulative } = getNormalIntervalProbabilities(params);
 
-    assertAlmostEquals(cumulative[params.nIntervals - 1], 1, tolerance);
+    assertAlmostEquals(itemAt(cumulative, params.nIntervals - 1), 1, tolerance);
     assertAlmostEquals(sum(additive), 1, tolerance);
   });
 
@@ -52,8 +53,8 @@ describe('getNormalIntervalProbabilities()', () => {
 
     const { additive, cumulative } = getNormalIntervalProbabilities(params);
 
-    assertAlmostEquals(additive[0], 1, tolerance);
-    assertAlmostEquals(cumulative[0], 1, tolerance);
+    assertAlmostEquals(itemAt(additive, 0), 1, tolerance);
+    assertAlmostEquals(itemAt(cumulative, 0), 1, tolerance);
   });
 
   it('if standard deviation = 0, returns uniform probabilities', () => {

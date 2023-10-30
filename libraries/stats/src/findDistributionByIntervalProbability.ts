@@ -1,5 +1,5 @@
-import { round } from '../sibling_deps.ts';
-import { getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
+import { itemAt, round } from '../sibling_deps.ts';
+import { assertPositiveInteger, getNormalIntervalProbabilities } from './getNormalIntervalProbabilities.ts';
 
 const TOLERANCE = 0.0001; // probability will be accepted if within target by no more than this amount
 
@@ -32,6 +32,8 @@ export function findDistributionByIntervalProbability(params: Params): NormalDis
     };
   }
 
+  assertPositiveInteger(nIntervals, 'nIntervals');
+
   if (sdMin >= sdMax) {
     throw new Error(
       'Maximum standard deviation (sdMax) must be greater than minimum (sdMin).',
@@ -54,7 +56,7 @@ export function findDistributionByIntervalProbability(params: Params): NormalDis
       standardDeviation: 0,
       intervalProbabilities: uniformProbabilities,
       // Extra info for
-      divergenceFromTarget: uniformProbabilities.additive[0] / target - 1,
+      divergenceFromTarget: itemAt(uniformProbabilities.additive, 0) / target - 1,
       iterations: iteration,
     };
   }
@@ -84,8 +86,8 @@ export function findDistributionByIntervalProbability(params: Params): NormalDis
   if (startIndex === -1) {
     throw new Error(`Cannot find requested probability with standard deviation in range [${sdMin}, ${sdMax}]`);
   }
-  const lowerProbDistribution = distributions[startIndex - 1];
-  const higherProbDistribution = distributions[startIndex];
+  const lowerProbDistribution = itemAt(distributions, startIndex - 1);
+  const higherProbDistribution = itemAt(distributions, startIndex);
 
   const newParams = {
     ...params,
@@ -108,7 +110,7 @@ function getBestMatchDistribution(
     .sort((a, b) => {
       return Math.abs(targetProbability - a.probability) - Math.abs(targetProbability - b.probability);
     });
-  return bestMatchDistributions[0];
+  return itemAt(bestMatchDistributions, 0);
 }
 
 /**
@@ -122,7 +124,7 @@ function getDistributions(sdMin: number, sdMax: number, nIntervals: number): Dis
     const probabilities = getNormalIntervalProbabilities({ nIntervals, standardDeviation }).additive;
     distributions.push({
       standardDeviation: round(standardDeviation, 6),
-      probability: round(probabilities[0], 6),
+      probability: round(itemAt(probabilities, 0), 6),
     });
   }
   return distributions;
