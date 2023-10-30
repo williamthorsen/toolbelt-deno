@@ -1,5 +1,6 @@
 import type { Seed } from '../sibling_deps.ts';
 import { assertCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.ts';
+import { toCumulativeValues } from './toCumulativeValues.ts';
 
 /**
  * Returns a random item from the array using weighted odds.
@@ -7,8 +8,10 @@ import { assertCumulativeWeights, pickWeightedIndex } from './pickWeightedIndex.
  */
 export function pickWeightedItem<T>(
   items: ReadonlyArray<T>,
-  cumulativeWeights: ReadonlyArray<number>,
+  weights: ReadonlyArray<number>,
 ): (options?: PickWeightedItemOptions) => T {
+  const cumulativeWeights = toCumulativeValues(weights);
+
   // By performing this check now, we can guarantee that the returned function always returns a defined value.
   assertCumulativeWeights(cumulativeWeights, items.length);
 

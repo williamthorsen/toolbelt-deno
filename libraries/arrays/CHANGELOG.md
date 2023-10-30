@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.9.1
+
+### Fixes
+
+Reversed the change to `pickWeightedItem` that caused it to expect cumulative weights instead of discrete weights, which was a breaking change.
+
 ## 2.9.0
 
 ### Features
