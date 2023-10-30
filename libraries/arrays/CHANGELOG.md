@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.10.0
+
+### Features
+
+Added function:
+
+- `extractWeights`: Extracts weights from array elements.
+
 ## 2.9.1
 
 ### Fixes
