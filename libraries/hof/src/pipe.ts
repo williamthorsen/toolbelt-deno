@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import { itemAt } from '../sibling_deps.ts';
 import { isPromise } from './isPromise.ts';
 
 // Adapted from github.com/MathisBullinger/froebel
@@ -14,7 +15,7 @@ export function pipe<T extends [Fn, ...Fn[]]>(...fns: PipeReturn<T> extends neve
     let nextArgs: unknown[] = args;
 
     for (let i = 0; i < fns.length; i++) {
-      const [result] = nextArgs = [fns[i](...nextArgs)];
+      const [result] = nextArgs = [itemAt(fns, i)(...nextArgs)];
       if (isPromise(result)) return resolveAsync(result, fns.slice(i + 1));
     }
 
