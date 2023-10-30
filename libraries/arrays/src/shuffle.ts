@@ -1,5 +1,6 @@
 import type { Seed } from '../sibling_deps.ts';
 import { random, SeededRng } from '../sibling_deps.ts';
+import { itemAt } from './itemAt.ts';
 
 /**
  * Returns a new array with the items shuffled.
@@ -20,7 +21,7 @@ export function shuffleInPlace<T>(items: T[], options: Options = {}): void {
   // Fisher-Yates algorithm
   for (let i = items.length - 1; i > 0; i--) {
     const j = Math.floor(random({ seed }) * (i + 1));
-    [items[i], items[j]] = [items[j], items[i]];
+    [items[i], items[j]] = [itemAt(items, j), itemAt(items, i)];
   }
 }
 
