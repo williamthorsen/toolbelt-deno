@@ -1,5 +1,8 @@
 /* See the deno.jsonc file in the project root for comments. */
 {
+  compilerOptions: {
+    noUncheckedIndexedAccess: true,
+  },
   fmt: {
     exclude: [
       '**/cov_profile/',
@@ -7,6 +10,7 @@
       'deno.jsonc',
     ],
     lineWidth: 120,
+    proseWrap: "preserve",
     singleQuote: true,
   },
   lint: {
