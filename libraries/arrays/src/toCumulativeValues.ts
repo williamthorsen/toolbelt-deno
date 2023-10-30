@@ -6,8 +6,8 @@ export function toCumulativeValues(values: ReadonlyArray<number | undefined>): n
   const cumulativeValues: number[] = [];
   let cumulativeValue = 0;
 
-  for (const weight of values) {
-    cumulativeValue += weight ?? 0;
+  for (const value of values) {
+    cumulativeValue += value ?? 0;
     cumulativeValues.push(cumulativeValue);
   }
 

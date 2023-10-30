@@ -9,8 +9,10 @@ export function extractWeights<T>(
   items: ReadonlyArray<T>,
   getWeight: (item: T, index: number, items: ReadonlyArray<T>) => number | undefined,
 ): number[] {
-  if (items.every((item, index, items) => getWeight(item, index, items) === undefined)) {
-    return items.map(() => 1);
+  const weights = items.map((item, index, items) => getWeight(item, index, items));
+  if (weights.every((weight) => weight === undefined)) {
+    const uniformWeight = 1 / items.length;
+    return Array.from({ length: items.length }, () => uniformWeight);
   }
-  return items.map((item, index, items) => getWeight(item, index, items) ?? 0);
+  return weights.map((weight) => weight ?? 0);
 }
