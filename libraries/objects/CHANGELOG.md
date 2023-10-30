@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.12.1
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
 ## 0.12.0
 
 ### Features
