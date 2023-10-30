@@ -1,6 +1,6 @@
+import { IntSeededRng, itemAt, pickInteger, Seed } from '../sibling_deps.ts';
 import { segmentByDelimited } from './segmentByDelimited.ts';
 import { splitDelimited } from './splitDelimited.ts';
-import { IntSeededRng, pickInteger, Seed } from '../sibling_deps.ts';
 import { validateDelimiters } from './validateDelimiters.ts';
 
 const DELIMIT = {
@@ -39,7 +39,8 @@ export abstract class TextNode {
     }
 
     // Remove the trailing seed, if any
-    const [deseededIndices, _seed] = encodedIndices.split(':');
+    // TODO: `deseededIndices` shouldn't need a default value, but TS later treats it as possibly undefined. Why?
+    const [deseededIndices = '', _seed] = encodedIndices.split(':');
 
     const regex = /\d+/g;
     let match;
@@ -169,7 +170,7 @@ class TokenNode extends TextNode {
       .forEach((variant) => {
         const childIndices = variant.pickIndices({ seed });
         indices.push(
-          childIndices.length === 1 ? childIndices[0] : childIndices,
+          childIndices.length === 1 ? itemAt(childIndices, 0) : childIndices,
         );
       });
 
@@ -219,7 +220,7 @@ export class VariantNode extends TextNode {
 
     const index = pickInteger({ max: this.variants.length - 1, seed });
 
-    const variant = this.variants[index];
+    const variant = itemAt(this.variants, index);
     if (typeof variant === 'string') return variant;
     return variant.pick({ seed });
   }

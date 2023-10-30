@@ -69,7 +69,8 @@ export class Interpolator {
     const matcher = createDelimitedMatcher(/([^}]+)/, { caseInsensitive: true });
     const placeholderMatches = this.template.matchAll(matcher);
     const placeholderSet = new Set<string>();
-    for (const [_, placeholder] of placeholderMatches) {
+    // TODO: `placeholder` needs a default or will be treated as possibly `undefined`. Is this actually possible?
+    for (const [_, placeholder = ''] of placeholderMatches) {
       placeholderSet.add(placeholder.toLowerCase());
     }
     return placeholderSet;
