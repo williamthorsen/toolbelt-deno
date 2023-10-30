@@ -1,3 +1,4 @@
+import { itemAt } from '../sibling_deps.ts';
 import { computeCdf } from './computeCdf.ts';
 import { toCumulativeSumsFromAddends } from './toCumulativeSumsFromAddends.ts';
 
@@ -9,12 +10,7 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
   const { mean = 0, nIntervals, standardDeviation = 1 } = params;
 
   // Validate nIntervals
-  if (!Number.isInteger(nIntervals)) {
-    throw new Error('nIntervals must be an integer.');
-  }
-  if (nIntervals < 1) {
-    throw new Error('nIntervals must be greater than 0.');
-  }
+  assertPositiveInteger(nIntervals, 'nIntervals');
 
   if (standardDeviation === 0) {
     const uniformProbability = 1 / nIntervals;
@@ -35,7 +31,7 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
 
   const weights: number[] = [];
   for (let i = 1; i < cumulativeWeights.length; i++) {
-    weights.push(cumulativeWeights[i] - cumulativeWeights[i - 1]);
+    weights.push(itemAt(cumulativeWeights, i) - itemAt(cumulativeWeights, i - 1));
   }
 
   // Compute the weights for each interval
@@ -46,6 +42,15 @@ export function getNormalIntervalProbabilities(params: Params): IntervalProbabil
     additive: probabilities,
     cumulative: cumulativeProbabilities,
   };
+}
+
+export function assertPositiveInteger(value: number, label: string): void | never {
+  if (!Number.isInteger(value)) {
+    throw new Error(`${label} must be an integer.`);
+  }
+  if (value < 1) {
+    throw new Error(`${label} must be greater than 0.`);
+  }
 }
 
 function sum(array: number[]): number {

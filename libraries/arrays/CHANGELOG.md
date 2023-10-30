@@ -1,5 +1,23 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.10.1
+
+### Internal features
+
+Added function:
+
+- `itemAt`: Provides type-safe access to array elements. Used to avoid the array-access errors revealed when `noUncheckedIndexedAccess` is enabled.
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
+### Refactoring
+
+Modified `extractWeights` to create uniform weights equal to 1 / the number of items (instead of 1, as previously).
+
+Wrapped unchecked array-access operations in `itemAt` to satisfy `noUncheckedIndexedAccess`.
+
 ## 2.10.0
 
 ### Features

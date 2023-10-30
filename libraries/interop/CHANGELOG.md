@@ -1,5 +1,11 @@
 # libraries/interop
 
+## 0.2.1
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
 ## 0.2.0
 
 ### Features

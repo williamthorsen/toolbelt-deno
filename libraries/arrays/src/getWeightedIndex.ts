@@ -1,11 +1,11 @@
+import { itemAt } from './itemAt.ts';
+
 /**
- * Returns the index of the first element of the cumulative weights greater than or equal to the target weight.
+ * Returns the index of the first element of the cumulative weights that is less than the target weight.
  * The caller is expected to ensure that the cumulative weights are non-decreasing.
  * Returns `undefined` if the target weight is outside the range of the cumulative weights, i.e., is
  * - negative or
  * - greater than the highest cumulative weight.
- *
- * TODO: If useful, adjust to support negative weights.
  */
 export function getWeightedIndex(
   cumulativeWeights: ReadonlyArray<number>,
@@ -23,7 +23,7 @@ export function getWeightedIndex(
 
   // If performance ever becomes a concern, replace this sequential search with a binary search.
   for (let i = 0; i < cumulativeWeights.length; i++) {
-    if (targetWeight <= cumulativeWeights[i]) {
+    if (targetWeight <= itemAt(cumulativeWeights, i)) {
       return i;
     }
   }

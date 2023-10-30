@@ -1,3 +1,4 @@
+import { itemAt } from '../sibling_deps.ts';
 import type { ValidationResult } from './strings.types.ts';
 
 /**
@@ -56,7 +57,7 @@ export function validateDelimiters(text: string, params: Params): ValidationResu
   })();
 
   if (!validationResult.isValid && params.throwOnError) {
-    throw new Error(validationResult.errors[0].message);
+    throw new Error(itemAt(validationResult.errors, 0).message);
   }
 
   return validationResult;

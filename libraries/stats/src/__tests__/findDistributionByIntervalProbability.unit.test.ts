@@ -1,5 +1,5 @@
 import { assertAlmostEquals, assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
-import { round } from '../../sibling_deps.ts';
+import { itemAt, round } from '../../sibling_deps.ts';
 import { findDistributionByIntervalProbability } from '../findDistributionByIntervalProbability.ts';
 import { getNormalIntervalProbabilities } from '../getNormalIntervalProbabilities.ts';
 
@@ -36,7 +36,7 @@ describe('findNormalDistribution()', () => {
         });
       }
 
-      assertAlmostEquals(intervalProbabilities.additive[0], probability, tolerance);
+      assertAlmostEquals(itemAt(intervalProbabilities.additive, 0), probability, tolerance);
       assertEquals(intervalProbabilities, getNormalIntervalProbabilities({ nIntervals, standardDeviation }));
     });
   });

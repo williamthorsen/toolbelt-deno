@@ -23,7 +23,8 @@ describe('accumulateWeights', () => {
   it('if all weights are undefined, returns uniform cumulative weights', () => {
     const items = [{ weight: undefined }, { weight: undefined }, {}];
     const getWeight = (item: { weight?: number }) => item.weight;
-    const expectedCumulativeWeights = [1, 2, 3];
+    const uniformWeight = 1 / items.length;
+    const expectedCumulativeWeights = items.map((_, index) => uniformWeight * (index + 1));
 
     const actualCumulativeWeights = accumulateWeights(items, getWeight);
 

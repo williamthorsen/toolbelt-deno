@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.dstructs
 
+## 0.1.2
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
 ## 0.1.1
 
 ### Fixes

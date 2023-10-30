@@ -1,5 +1,11 @@
 # @williamthorsen/toolbelt.datetime
 
+## 0.5.1
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
 ## 0.5.0
 
 ### Features

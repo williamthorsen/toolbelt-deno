@@ -20,10 +20,11 @@ describe('extractWeights', () => {
     assertEquals(weights, [1, 2, 0]);
   });
 
-  it('if all weights are undefined, returns uniform cumulative weights', () => {
+  it('if all weights are undefined, returns uniform weights', () => {
     const items = [{ weight: undefined }, { weight: undefined }, {}];
     const getWeight = (item: { weight?: number }) => item.weight;
-    const expectedWeights = [1, 1, 1];
+    const expectedWeight = 1 / items.length;
+    const expectedWeights = items.map(() => expectedWeight);
 
     const actualWeights = extractWeights(items, getWeight);
 

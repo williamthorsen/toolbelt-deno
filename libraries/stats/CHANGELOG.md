@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.stats
 
+## 0.4.3
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
+### Refactoring
+
+Wrapped array-access operations in `itemAt` to satisfy `noUncheckedIndexedAccess`.
+
 ## 0.4.2
 
 ### Dependencies

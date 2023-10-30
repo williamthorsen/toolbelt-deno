@@ -1,5 +1,8 @@
 /* See the deno.jsonc file in the project root for comments. */
 {
+  compilerOptions: {
+    noUncheckedIndexedAccess: true,
+  },
   fmt: {
     exclude: [
       '**/cov_profile/',
@@ -7,7 +10,7 @@
       'deno.jsonc',
     ],
     lineWidth: 120,
-    "proseWrap": "preserve",
+    proseWrap: 'preserve',
     singleQuote: true,
   },
   lint: {
@@ -27,6 +30,7 @@
     ],
     include: [
       // Coverage check will not be 100% unless sibling deps (and their transitive deps) are tested
+      '../arrays/**/itemAt.unit.test.ts',
       '../arrays/**/pickItem.unit.test.ts',
       '../numbers/**/createNumberGenerator.unit.test.ts',
       '../numbers/**/IntegerSeed.unit.test.ts',

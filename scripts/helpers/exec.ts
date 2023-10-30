@@ -111,7 +111,7 @@ export const execSequence = async (
   const results: IExecResponse[] = [];
 
   for (let i = 0; i < commands.length; i++) {
-    const result = await exec(commands[i], { output, continueOnError, verbose });
+    const result = await exec(commands[i]!, { output, continueOnError, verbose });
     results.push(result);
     if (continueOnError == false && result.status.code != 0) {
       break;

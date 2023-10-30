@@ -1,5 +1,15 @@
 # @williamthorsen/toolbelt.strings
 
+## 1.5.1
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
+### Refactoring
+
+Wrapped array-access operations in `itemAt` to satisfy `noUncheckedIndexedAccess`.
+
 ## 1.5.0
 
 ### Features

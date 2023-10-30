@@ -67,7 +67,7 @@ export class Timestamp {
    * Returns the date & time in the format `YYYYMMDD-HHMM[SS[.sss]]` (depending on the time unit). UTC is implied.
    */
   toCompactString(options: Options = {}): string {
-    const [datePart, timePart = ''] = this.toIsoString(options).split('T');
+    const [datePart = '', timePart = ''] = this.toIsoString(options).split('T');
     const formattedDatePart = datePart.replace(/[-Z]/g, '');
     const formattedTimePart = timePart.replace(/[:Z]/g, '');
 

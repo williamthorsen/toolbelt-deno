@@ -1,5 +1,11 @@
 # libraries/_template
 
+## 0.1.1
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
 ## 0.1.0
 
 ### Refactoring

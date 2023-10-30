@@ -1,5 +1,15 @@
 # libraries/hof
 
+## 0.4.1
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
+### Refactoring
+
+Wrapped unchecked array-access operations in `itemAt` to satisfy `noUncheckedIndexedAccess`.
+
 ## 0.4.0
 
 ### Features

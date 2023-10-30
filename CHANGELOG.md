@@ -1,5 +1,21 @@
 # toolbelt-deno
 
+## 3.3.2
+
+### Tooling
+
+Enabled `noUncheckedIndexedAccess` in TypeScript settings.
+
+### Refactoring
+
+Added non-null assertion to satisfy `noUncheckedIndexedAccess`.
+
+### Dependencies
+
+Upgraded all runtimes to latest version:
+
+- pnpm: 8.9.2 -> 8.10.0
+
 ## 3.3.1
 
 ### Dependencies
