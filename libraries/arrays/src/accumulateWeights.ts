@@ -1,4 +1,5 @@
 import { toCumulativeValues } from './toCumulativeValues.ts';
+import { extractWeights } from './extractWeights.ts';
 
 /**
  * Extracts weights from an array of items and returns an array of cumulative weights.
@@ -11,8 +12,6 @@ export function accumulateWeights<T>(
   items: ReadonlyArray<T>,
   getWeight: (item: T, index: number, items: ReadonlyArray<T>) => number | undefined,
 ): number[] {
-  if (items.every((item, index, items) => getWeight(item, index, items) === undefined)) {
-    return items.map((_, index) => index + 1);
-  }
-  return toCumulativeValues(items.map(getWeight));
+  const weights = extractWeights(items, getWeight);
+  return toCumulativeValues(weights);
 }
