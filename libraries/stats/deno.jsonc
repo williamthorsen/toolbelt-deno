@@ -25,6 +25,7 @@
     ],
     include: [
       // Coverage check will not be 100% unless sibling deps (and their transitive deps) are tested
+      '../arrays/src/**/itemAt.unit.test.ts',
       '../numbers/src/**/round.unit.test.ts',
       // Because `include` is defined, this library's tests must be explicitly included
       '../stats/src/**/*.test.ts'
