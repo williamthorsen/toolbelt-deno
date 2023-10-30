@@ -1,5 +1,13 @@
 # @williamthorsen/toolbelt.objects
 
+## 0.12.0
+
+### Features
+
+Enhanced function:
+
+- `get`: Now allows a default value to be specified.
+
 ## 0.11.0
 
 ### Features

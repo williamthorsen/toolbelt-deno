@@ -1,5 +1,12 @@
 # @williamthorsen/toolbelt.arrays
 
+## 2.8.1
+
+### Refactoring
+
+Modified the typing of `accumulateWeights` to allow the predicate function to return `undefined`,
+because `undefined` is allowed by the wrapped `toCumulativeValues` function.
+
 ## 2.8.0
 
 ### Deprecations
