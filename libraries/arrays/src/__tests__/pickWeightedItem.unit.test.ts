@@ -1,6 +1,7 @@
 import { assertEquals, assertThrows, describe, it } from '../../dev_deps.ts';
 import { pickWeightedItem } from '../pickWeightedItem.ts';
 import { pickItem } from '../pickItem.ts';
+import { toCumulativeValues } from '../toCumulativeValues.ts';
 
 describe('pickWeightedItem()', () => {
   it('returns one item from the array using weights', () => {
@@ -66,5 +67,21 @@ describe('pickWeightedItem()', () => {
     const actual = pickWeightedItem(items, cumulativeWeights)({ seed });
 
     assertEquals(actual, expected);
+  });
+
+  it('given an identical seed, always returns the same result', () => {
+    const items = Array.from({ length: 1000 }, (_, index) => index);
+    const cumulativeWeights = toCumulativeValues(items);
+    const seeds = Array.from({ length: 5 }, (_, index) => index);
+    const snapshot = [
+      928,
+      57,
+      371,
+      530,
+      661,
+    ];
+    const results = seeds.map((seed) => pickWeightedItem(items, cumulativeWeights)({ seed }));
+
+    assertEquals(results, snapshot);
   });
 });
