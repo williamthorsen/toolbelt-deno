@@ -12,6 +12,7 @@ export { shuffle, shuffleInPlace } from './src/shuffle.ts';
 
 // Weighting functions
 export { accumulateWeights } from './src/accumulateWeights.ts';
+export { extractWeights } from './src/extractWeights.ts';
 export { getCumulativeWeights, toCumulativeValues } from './src/toCumulativeValues.ts';
 export { getWeightedIndex } from './src/getWeightedIndex.ts';
 export { pickWeightedIndex } from './src/pickWeightedIndex.ts';
