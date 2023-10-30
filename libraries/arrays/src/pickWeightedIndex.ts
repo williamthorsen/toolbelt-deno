@@ -14,8 +14,7 @@ export function pickWeightedIndex(
 
   const cumulativeWeight = cumulativeWeights[cumulativeWeights.length - 1];
   const targetWeight = random(options) * cumulativeWeight;
-  // Because the array is non-empty, the target weight is guaranteed to be within the range of the
-  // cumulative weights.
+  // Because the array is non-empty, the target weight is guaranteed to be within the range [0, cumulativeWeight).
   return getWeightedIndex(cumulativeWeights, targetWeight) as Integer;
 }
 
