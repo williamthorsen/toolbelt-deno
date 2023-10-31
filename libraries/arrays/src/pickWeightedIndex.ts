@@ -24,6 +24,7 @@ export function assertCumulativeWeights(weights: ReadonlyArray<number>, nItems =
     throw new Error('The number of weights must match the number of items.');
   }
 
+  assertNonEmptyArray(weights);
   assertPositiveWeights(weights);
   assertAscendingWeights(weights);
 
@@ -43,11 +44,13 @@ function assertAscendingWeights(values: ReadonlyArray<number>): void | never {
   }
 }
 
-function assertPositiveWeights(weights: ReadonlyArray<number>): void | never {
-  if (weights.length === 0) {
+function assertNonEmptyArray(array: ReadonlyArray<unknown>): void | never {
+  if (array.length === 0) {
     throw new Error('Cannot pick an item from an empty array.');
   }
+}
 
+function assertPositiveWeights(weights: ReadonlyArray<number>): void | never {
   if (weights.some((weight) => weight < 0)) {
     throw new Error('Weights cannot be negative.');
   }
