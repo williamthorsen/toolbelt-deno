@@ -2,7 +2,7 @@
 
 ## 0.1.1
 
-### Tooling
+### Tooling 
 
 Enabled `noUncheckedIndexedAccess` in TypeScript settings.
 
